@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script type="nice-page-builder/object" for="page-option">
+{
+ title : 'No title!'
+}
+</script>
+<script type="nice-page-builder/js" for="beforeBuild">
+    // 全ページのリンクを取得
+    var links = [], path, label;
+    for( path in pages ){
+        links.push({title:pages[path].title,path:pages[path].FILE_PATH});
+    };
+    // リンクリストを書きだすメソッドの追加
+    Page.prototype.ALL_LINK = links;
+    Page.prototype.createLinkList = function(){
+        var html = [], i = -1, link;
+        for( ; link = this.ALL_LINK[++i]; ){
+            if( link.path !== this.FILE_PATH )
+                html.push('<a href="'+ this.toRelativePath(link.path).replace('index.html','') + '">' + link.title + '</a>');
+        };
+        return html.join(',');
+    };
+</script>
+<html>
+<head>
+    <title>{$$ (this.category ? this.category + ' / ' : '' ) + this.title $$}</title>
+    <link rel="stylesheet" type="text/css" href="($$ /css/all.css $$)">
+</head>
+<body>
+    <header><h1>{$$ (this.category ? this.category + ' / ' : '' ) + this.title $$}</h1></header>
+    <main>{$$ this.CONTENT $$}</main>
+    <footer>{$$ this.createLinkList() $$}</footer>
+</body>
+</html>

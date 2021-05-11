@@ -1,0 +1,19 @@
+{
+  "name": "gulp-nice-page-builder",
+  "version": "1.0.0",
+  "description": "static site generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp tutorial_1"
+  },
+  "author": "itozyun (https://outcloud.blogspot.com/)",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  },
+  "dependencies": {
+    "plugin-error": "^1.0.1",
+    "through2": "^4.0.2",
+    "vinyl": "^2.2.1"
+  }
+}

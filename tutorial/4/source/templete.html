@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script type="nice-page-builder/object" for="page-option">
+{
+ title : 'No title!'
+}
+</script>
+<html>
+<head>
+<title>{$$ (this.category ? this.category + ' / ' : '' ) + this.title $$}</title>
+<link rel="stylesheet" type="text/css" href="($$ /css/all.css $$)">
+</head>
+<body>
+    <header><h1>{$$ (this.category ? this.category + ' / ' : '' ) + this.title $$}</h1></header>
+    <main>{$$ this.CONTENT $$}</main>
+    <footer></footer>
+</body>
+</html>
