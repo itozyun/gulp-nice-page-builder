@@ -25,19 +25,43 @@
 ~~~js
 gulp.task( 'html', function(){
     return gulp.src( './src/**/*.html' )
-               .pipe( nicePageBuilder( {
-                    rootPath : './src',
-                    json     : {
-                        comments : 'json/comments.json',
-                        tweets   : 'jsons/tweets.json'
-                    }
-                }) )
-                .pipe( cleanHTML() )
+               .pipe(
+                   nicePageBuilder(
+                        {
+                            srcRootPath : './src',
+                            json : {
+                                comments : 'json/comments.json',
+                                tweets   : 'jsons/tweets.json'
+                            }
+                        }
+                   )
+                ) // .pipe( cleanHTML() )
                 .pipe( gulp.dest( './public' ) );
 );
 ~~~
 
 TODO csv
+
+
+## 名称
+
+| 名称 |　説明 |
+|:--|:--|
+| コンテンツ HTML | コンテンツと拡張タグだけが書かれた HTML |
+| テンプレート HTML | コンテンツ HTML、ミックスインから参照される。必ずインラインスクリプト `{$$ this.CONTENTS $$}}` を持つこと |
+| ミックスイン | json 形式、または js のオブジェクト |
+| 拡張タグ ページのプロパティ | `<script type="nice-page-builder/object" for="page-option">` |
+| 拡張タグ `beforeBuild` スクリプト | `<script type="nice-page-builder/js" for="beforeBuild">` |
+| 拡張表記 インラインスクリプト | `{$$ $$}` |
+| 拡張表記 ソースのルート相対パスを相対パスへ | `($$ $$)` |
+
+MIXIN と TEMPLETE はソ―スのルート下に置く。コンテンツ HTML 等からルート相対パスで参照するため。
+
+json にはその制限がありません。
+
+## Page クラス
+
+
 
 ## tutorial
 
@@ -46,11 +70,6 @@ npm install
 ~~~
 
 [gulpfile.js](./gulpfile.js) を確認します。
-
-MIXIN と TEMPLETE はソ―スのルート下に置く。
-
-json はその制限がない
-
 
 ### 1. テンプレート、拡張タグ、インラインスクリプトについて
 

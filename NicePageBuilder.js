@@ -1,7 +1,6 @@
 "use strict";
 
 module.exports = {
-    reset    : reset,
     readHTML : readHTML,
     readJSON : readJSON,
     build    : build
@@ -10,15 +9,13 @@ module.exports = {
 /************************************************************
  * internel
  */
-var pages, externalJs, templetes, mixins, jsons, finished, extraPages,
-    onBeforeBuildFunctions,
-    buildStarted, skipResisterAsPage, createdByUserScript,
-    Page, createPageClassNow;
+var pages = {}, externalJs = {}, templetes = {}, mixins = {}, jsons = {}, finished = {}, extraPages = {},
+    onBeforeBuildFunctions = [],
+    buildPhase = false,
+    skipResisterAsPage, createdByUserScript;
 
 // 継承して使う
-function PageBase( path, createTime, updatedTime ){
-    if( createPageClassNow ) return;
-
+function Page( path, createTime, updatedTime ){
     var ary = path.split('/');
 
     this.FILE_PATH   = path;
@@ -43,12 +40,12 @@ function PageBase( path, createTime, updatedTime ){
     };
 };
 
-PageBase.prototype.toRelativePath = function( path ){
+Page.prototype.toRelativePath = function( path ){
     return toRelativePath( path, this.FOLDER_PATH );
 };
 
-PageBase.prototype.getPage = function( path ){
-    path = toProjectRootRelativePath( path, this.FOLDER_PATH );
+Page.prototype.getPage = function( path ){
+    path = toSourceRootRelativePath( path, this.FOLDER_PATH );
 
     if( path.charAt( path.length - 1 ) === '/' ){
         return pages[ path + 'index.html' ];
@@ -56,44 +53,18 @@ PageBase.prototype.getPage = function( path ){
     return pages[ path ];
 };
 
-PageBase.prototype.getJSON = function( name ){
+Page.prototype.getJSON = function( name ){
     return jsons[ name ];
-};
-
-reset();
-
-/************************************************************
- * 0. reset
- * 
- */
-function reset(){
-    externalJs = {};
-    templetes  = {};
-    pages      = {};
-    extraPages = {};
-    mixins     = {};
-    jsons      = {};
-    finished   = {};
-    onBeforeBuildFunctions = [];
-    buildStarted = false;
-
-    Page = function(){ PageBase.apply(this, arguments); };
-
-    createPageClassNow = true;
-    Page.prototype = new PageBase;
-    createPageClassNow = false;
-
-    Page.prototype.constructor = Page;
 };
 
 /************************************************************
  * 1. include HTML/JSON を攫って記憶
- * readHTML ret 
+ * readHTML @return [ '/importFile.html', ... ]
  * readJSON
  * 
  */
 function readHTML(path, htmlString, createTime, updatedTime ){
-    var mixin, ary, page, ret = [], i = -1, bbf;
+    var mixin, ary, page, importFiles = [], i = -1, bbf;
 
     if( externalJs[ path ] ){
         externalJs[ path ] = htmlString;
@@ -113,13 +84,13 @@ function readHTML(path, htmlString, createTime, updatedTime ){
         ary = path.split( '/' );
         ary.pop();
         if( path = mixin.TEMPLETE ){
-            path = toProjectRootRelativePath( path, ary.join( '/' ) );
+            path = toSourceRootRelativePath( path, ary.join( '/' ) );
             if( pages[ path ] ){
                 templetes[ path ] = pages[ path ];
                 delete pages[ path ];
             } else if( !templetes[ path ] ){
                 templetes[ path ] = true;
-                ret.push( path );
+                importFiles.push( path );
             };
         };
     } else {
@@ -152,25 +123,25 @@ function readHTML(path, htmlString, createTime, updatedTime ){
         // MIXIN の要求は重複しない
         if( page.MIXINS ){
             for( ; path = page.MIXINS[ ++i ]; ){
-                path = toProjectRootRelativePath( path, page.FOLDER_PATH );
+                path = toSourceRootRelativePath( path, page.FOLDER_PATH );
                 if( !mixins[ path ] ){
                 mixins[ path ] = true;
-                ret.push( path );
+                importFiles.push( path );
                 };
             };
         };
         if( path = page.TEMPLETE ){
-            path = toProjectRootRelativePath( path, page.FOLDER_PATH );
+            path = toSourceRootRelativePath( path, page.FOLDER_PATH );
             if( pages[ path ] ){
                 templetes[ path ] = pages[ path ];
                 delete pages[ path ];
             } else if( !templetes[ path ] ){
                 templetes[ path ] = true;
-                ret.push( path );
+                importFiles.push( path );
             };
         };
     };
-    return { importFiles : ret };
+    return importFiles.length && importFiles;
 };
 
 function readJSON( name, jsonString ){
@@ -209,7 +180,7 @@ function beforeBuild(){
         pages[ path ] = extraPages[ path ];
     };
 
-    buildStarted = true;
+    buildPhase = true;
 };
 
 function mergeMixinsAndTemplete( page ){
@@ -217,13 +188,13 @@ function mergeMixinsAndTemplete( page ){
 
     if( _mixins = page.MIXINS ){
         while( path = _mixins[ ++i ] ){
-            path  = toProjectRootRelativePath( path, page.FOLDER_PATH );
+            path  = toSourceRootRelativePath( path, page.FOLDER_PATH );
             mixin = mixins[ path ];
             mixin && mix( mixin );
         };
     };
     if( path = page.TEMPLETE ){
-        path = toProjectRootRelativePath( path, page.FOLDER_PATH );
+        path = toSourceRootRelativePath( path, page.FOLDER_PATH );
         if( tmpl = templetes[ path ] ){
             mix( tmpl );
         } else {
@@ -243,7 +214,7 @@ function mergeMixinsAndTemplete( page ){
 function build(){
     var path, page, updated, tmpl, html, last;
 
-    if( !buildStarted ) beforeBuild();
+    if( !buildPhase ) beforeBuild();
 
     for( path in pages ){
         page = pages[ path ];
@@ -259,7 +230,7 @@ function build(){
             };
         };
 
-        if(updated) continue;
+        if( updated ) continue;
 
         finished[ path ] = true;
 
@@ -368,9 +339,9 @@ function toRelativePath( targetPath, currentPath ){
 };
 
 /**
- * 相対リンクをプロジェクトルートを基準にするルート相対リンクに変更する
+ * 相対リンクをソースのルートからのルート相対リンクに変更する
  */
-function toProjectRootRelativePath( targetPath, currentPath ){
+function toSourceRootRelativePath( targetPath, currentPath ){
     if( targetPath.substr(0, 2) === '//' || targetPath.substr(0, 7) === 'http://' || targetPath.substr(0, 8) === 'https://' ){
         // error
     } else if( targetPath.charAt(0) === '/' ){

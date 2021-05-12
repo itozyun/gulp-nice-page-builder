@@ -12,19 +12,19 @@
 
 module.exports = function( _options ){
     var options     = _options || {},
-        rootPath    = toAbsolutePath( options.rootPath || './' ) + '/', // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
+        srcRootPath = toAbsolutePath( options.srcRootPath || './' ) + '/', // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
         jsonList    = options.json,
         SHOW_LOG    = options.log !== false;
-console.log(rootPath)
+
     function toAbsolutePath( path ){
-        if( rootPath ){
-            path = rootPath + ( path.charAt( 0 ) === '/' ? path.substr( 1 ) : path ); // 頭に / がいる場合
+        if( srcRootPath ){
+            path = srcRootPath + ( path.charAt( 0 ) === '/' ? path.substr( 1 ) : path ); // 頭に / がいる場合
         };
         return Path.resolve( path ).split( '\\' ).join( '/' );
     };
 
-    function toProjectRootRelativePath( path ){
-        return '/' + toAbsolutePath( path ).split( rootPath ).join( '' );
+    function toSourceRootRelativePath( path ){
+        return '/' + toAbsolutePath( path ).split( srcRootPath ).join( '' );
     };
 
     function toString( any ){
@@ -42,40 +42,40 @@ console.log(rootPath)
             this.push( vinyl );
             return callback();
         };
-        if( !vinyl.path.indexOf( rootPath ) === 0 ){
-            this.emit( 'error', new PluginError( pluginName, '"' + vinyl.path + '" is out of rootPath:"' + options.rootPath + '"' ) );
+        if( !vinyl.path.indexOf( srcRootPath ) === 0 ){
+            this.emit( 'error', new PluginError( pluginName, '"' + vinyl.path + '" is out of srcRootPath:"' + options.srcRootPath + '"' ) );
             return callback();
         };
 
-        var html = toString( vinyl.contents ),
-            path = toProjectRootRelativePath( vinyl.path ),
-            result, importFiles, text, stat;
+        var html          = toString( vinyl.contents ),
+            createdTimeMs = vinyl.stat.birthtimeMs / 1000,
+            updatedTimeMs = vinyl.stat.ctimeMs / 1000,
+            importFiles   = [],
+            _importFiles, srrPath, stat;
 
-        if( html ){
-            SHOW_LOG && console.log( path, html.length );
-            // readHTML(path, htmlString, createTime, updatedTime )
-            result = core.readHTML( path, html, vinyl.stat.birthtimeMs / 1000, vinyl.stat.ctimeMs / 1000 );
-
-            if( result && ( importFiles = result.importFiles ) ){
-                while( path = importFiles.shift() ){
-                    path = toAbsolutePath( path );
-                    text = toString( FS.readFileSync( path ) ); // Remove BOM
-                    stat = FS.statSync( path );
-                    if( text ){
-                        SHOW_LOG && console.log( toProjectRootRelativePath( path ), text.length );
-                        result = core.readHTML( toProjectRootRelativePath( path ), text, stat.birthtimeMs / 1000, stat.mtime.ctimeMs / 1000 );
-                        if( result ){
-                            importFiles.push.apply( importFiles, result.importFiles || [] );
-                        };
-                    } else {
-                        this.emit( 'error', new PluginError( pluginName, 'json:{"' + path + '"} not found!' ) );
-                        return callback();
-                    };
-                };
+        do {
+            if( srrPath ){
+                html          = toString( FS.readFileSync( toAbsolutePath( srrPath ) ) ); // Remove BOM
+                stat          = FS.statSync( toAbsolutePath( srrPath ) );
+                createdTimeMs = stat.birthtimeMs / 1000;
+                updatedTimeMs = stat.ctimeMs / 1000;
+            } else {
+                srrPath       = toSourceRootRelativePath( vinyl.path );
             };
-        } else {
-            this.push( vinyl );
-        };
+
+            SHOW_LOG && console.log( srrPath, html.length );
+
+            if( html ){
+                _importFiles = core.readHTML( srrPath, html, createdTimeMs, updatedTimeMs );
+                if( _importFiles ){
+                    importFiles.push.apply( importFiles, _importFiles );
+                };
+            } else {
+                this.emit( 'error', new PluginError( pluginName, 'json:{"' + srrPath + '"} not found!' ) );
+                return callback();
+            };
+        } while( srrPath = importFiles.shift() );
+
         callback();
     };
 
