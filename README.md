@@ -1,6 +1,8 @@
-# Nice Page builder
+# gulp-nice-page-builder
 
 ![](https://4.bp.blogspot.com/-_jS4oD7mDQ8/WJFq8Z7sZ-I/AAAAAAAARP0/SJJHoRWJ37cwdBuO2pvuHQ_rY3GI1nIHQCLcB/s800/NicePageBuilder_package.jpg '')
+
+Gulp plugin of Static Site Generator.
 
 ---
 
@@ -135,7 +137,7 @@ gulp tutorial_6
 
 ## History
 
-VS Code エクステンションの静的サイトジェネレータでした。
+0.1.x までは Visual Studio Code エクステンションでした。
 
 [Visual Studio Marketplace > Nice Page Builder](https://marketplace.visualstudio.com/items?itemName=itozyun.nice-page-builder)
 
