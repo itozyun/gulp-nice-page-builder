@@ -48,8 +48,8 @@ module.exports = function( _options ){
         };
 
         var html          = toString( vinyl.contents ),
-            createdTimeMs = vinyl.stat.birthtimeMs / 1000,
-            updatedTimeMs = vinyl.stat.ctimeMs / 1000,
+            createdTimeMs = parseInt( vinyl.stat.birthtimeMs, 10 ),
+            updatedTimeMs = parseInt( vinyl.stat.ctimeMs, 10 ),
             importFiles   = [],
             _importFiles, srrPath, stat;
 
@@ -57,8 +57,8 @@ module.exports = function( _options ){
             if( srrPath ){
                 html          = toString( FS.readFileSync( toAbsolutePath( srrPath ) ) ); // Remove BOM
                 stat          = FS.statSync( toAbsolutePath( srrPath ) );
-                createdTimeMs = stat.birthtimeMs / 1000;
-                updatedTimeMs = stat.ctimeMs / 1000;
+                createdTimeMs = parseInt( stat.birthtimeMs, 10 );
+                updatedTimeMs = parseInt( stat.ctimeMs, 10 );
             } else {
                 srrPath       = toSourceRootRelativePath( vinyl.path );
             };

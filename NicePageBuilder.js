@@ -14,7 +14,6 @@ var pages = {}, externalJs = {}, templetes = {}, mixins = {}, jsons = {}, finish
     buildPhase = false,
     skipResisterAsPage, createdByUserScript;
 
-// 継承して使う
 function Page( path, createTime, updatedTime ){
     var ary = path.split('/');
 
@@ -22,9 +21,9 @@ function Page( path, createTime, updatedTime ){
     this.FILE_NAME   = ary.pop();
     this.FOLDER_PATH = ary.join('/');
     this.URL         = this.FILE_NAME === 'index.html' ? this.FOLDER_PATH + '/' : path;
-    this.CREATED_AT  = createTime   || (new Date).getTime();
-    this.MODIFIED_AT = updatedTime  || (new Date).getTime();
-    this.UPDATED_AT  = updatedTime  || (new Date).getTime();
+    this.CREATED_AT  = createTime   || Date.now();
+    this.MODIFIED_AT = updatedTime  || Date.now();
+    this.UPDATED_AT  = updatedTime  || Date.now();
 
     if( skipResisterAsPage ){
         skipResisterAsPage = false;
