@@ -42,8 +42,7 @@ gulp.task( 'html', function(){
 );
 ~~~
 
-TODO csv
-
+<!-- TODO csv -->
 
 ## 名称
 
@@ -61,11 +60,67 @@ MIXIN と TEMPLETE はソ―スのルート下に置く。コンテンツ HTML �
 
 json にはその制限がありません。
 
+## 実行フロー
+
+1. コンテンツだけの HTML、このページのプロパティで関連付けられたテンプレートファイルとミックスインファイルの読み込み
+2. `"json"` に記述された json ファイルの読み込み
+3. HTML に拡張タグ内に記述された `beforeBuild` スクリプトの実行
+4. 書き出し 
+
+
+## 拡張タグ
+
+[Nice Page Builderのマニュアル &gt; 5. HTML の拡張タグ](https://outcloud.blogspot.com/2016/12/npb-manual.html?m=0#nice_page_builder_5_1)
+
+
+~~~html
+<script type="nice-page-builder/object" for="page-option">
+{
+　TEMPLETE : '/Templetes/templete.html',
+　MIXINS   : ['/Mixin/top.json'],
+　title    : '俺のサイトにようこそ！'
+}
+</script>
+~~~
+
+~~~html
+<script type="nice-page-builder/js" for="beforeBuild">
+// 全ページから label を回収
+var labels = {}, path, label;
+for( path in pages ){
+    if( pages[path].label ) labels[ label ] = true;
+};
+// ラベルリストを書きだすメソッドの追加
+Page.prototype.ALL_LABELS = labels;
+Page.prototype.createLabelList = function(){
+    var html = [], label;
+    for( label in this.ALL_LABELS ){
+        html.push('<b>' + label + '</b>');
+    };
+    return html.join(',');
+};
+</script>
+~~~
+
+## 拡張表記
+
+[Nice Page Builderのマニュアル &gt; 6. HTML の拡張表記](https://outcloud.blogspot.com/2016/12/npb-manual.html?m=0#nice_page_builder_6_1)
+
+~~~html
+<main>{$$ this.CONTENT $$}</main>
+~~~
+
+~~~html
+<link href="($$ /campany/about.html $$)">
+↓
+<link href="about.html">
+~~~
+
 ## Page クラス
 
+[Nice Page Builderのマニュアル &gt; 7. Page クラス](outcloud.blogspot.com/2016/12/npb-manual.html?m=0#nice_page_builder_7_1)
 
-
-## tutorial
+## Tutorials
 
 ~~~
 npm install
@@ -119,7 +174,7 @@ gulp tutorial_4
 gulp tutorial_5
 ~~~
 
-### 6. `page.getJSON()` の活用
+### 6. `page.getJSON()` を使う
 
 ~~~
 gulp tutorial_6

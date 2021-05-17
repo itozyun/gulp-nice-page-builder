@@ -1,11 +1,8 @@
 {
   "name": "gulp-nice-page-builder",
   "version": "0.2.0",
-  "description": "static site generator",
+  "description": "Gulp plugin of Static Site Generator",
   "main": "index.js",
-  "scripts": {
-    "test": "gulp tutorial_1"
-  },
   "author": "itozyun (https://outcloud.blogspot.com/)",
   "license": "ISC",
   "devDependencies": {
