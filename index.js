@@ -71,7 +71,7 @@ module.exports = function( _options ){
                     importFiles.push.apply( importFiles, _importFiles );
                 };
             } else {
-                this.emit( 'error', new PluginError( pluginName, 'json:{"' + srrPath + '"} not found!' ) );
+                this.emit( 'error', new PluginError( pluginName, 'html:{"' + srrPath + '"} not found!' ) );
                 return callback();
             };
         } while( srrPath = importFiles.shift() );
