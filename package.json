@@ -5,6 +5,14 @@
   "main": "index.js",
   "author": "itozyun (https://outcloud.blogspot.com/)",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itozyun/gulp-nice-page-builder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/itozyun/gulp-nice-page-builder/issues"
+  },
+  "homepage": "https://github.com/itozyun/gulp-nice-page-builder#readme",
   "devDependencies": {
     "gulp": "^4.0.2"
   },
