@@ -1,6 +1,6 @@
 {
   "name": "gulp-nice-page-builder",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Gulp plugin of Static Site Generator",
   "main": "index.js",
   "author": "itozyun (https://outcloud.blogspot.com/)",
