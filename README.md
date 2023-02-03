@@ -4,6 +4,8 @@
 
 Gulp plugin of Static Site Generator.
 
+Version 0.4.0 から、`<script>` タグの属性を変更しています！
+
 ---
 
 ## Overview 概要
@@ -51,8 +53,8 @@ gulp.task( 'html', function(){
 | コンテンツ HTML | コンテンツと拡張タグだけが書かれた HTML |
 | テンプレート HTML | コンテンツ HTML、ミックスインから参照される。必ずインラインスクリプト `{$$ this.CONTENTS $$}}` を持つこと |
 | ミックスイン | json 形式、または js のオブジェクト |
-| 拡張タグ ページのプロパティ | `<script type="nice-page-builder/object" for="page-option">` |
-| 拡張タグ `beforeBuild` スクリプト | `<script type="nice-page-builder/js" for="beforeBuild">` |
+| 拡張タグ ページのプロパティ | `<script type="application/json" for="page-option">` |
+| 拡張タグ `before-build` スクリプト | `<script for="before-build">` |
 | 拡張表記 インラインスクリプト | `{$$ $$}` |
 | 拡張表記 ソースのルート相対パスを相対パスへ | `($$ $$)` |
 
@@ -64,7 +66,7 @@ json にはその制限がありません。
 
 1. コンテンツだけの HTML、このページのプロパティで関連付けられたテンプレートファイルとミックスインファイルの読み込み
 2. `"json"` に記述された json ファイルの読み込み
-3. HTML に拡張タグ内に記述された `beforeBuild` スクリプトの実行
+3. HTML に拡張タグ内に記述された `before-build` スクリプトの実行
 4. 書き出し 
 
 
@@ -74,7 +76,7 @@ json にはその制限がありません。
 
 
 ~~~html
-<script type="nice-page-builder/object" for="page-option">
+<script type="application/json" for="page-option">
 {
 　TEMPLETE : '/Templetes/templete.html',
 　MIXINS   : ['/Mixin/top.json'],
@@ -84,7 +86,7 @@ json にはその制限がありません。
 ~~~
 
 ~~~html
-<script type="nice-page-builder/js" for="beforeBuild">
+<script for="before-build">
 // 全ページから label を回収
 var labels = {}, path, label;
 for( path in pages ){
@@ -138,7 +140,7 @@ gulp tutorial_1
 
 `tutorial/1/output` フォルダに生成された [output/index.html](./tutorial/1/output/index.html) を確認します。
 
-[source/index.html](./tutorial/1/source/index.html) の拡張タグ(`<script type="nice-page-builder/object" for="page-option">`)内で定義されている `TEMPLETE:'/templete.html'` がテンプレートを呼び出していること。
+[source/index.html](./tutorial/1/source/index.html) の拡張タグ(`<script type="application/json" for="page-option">`)内で定義されている `TEMPLETE:'/templete.html'` がテンプレートを呼び出していること。
 
 [source/templete.html](./tutorial/1/source/templete.html) のインラインスクリプト(`{$$ this.CONTENT $$}`)が [source/index.html](./tutorial/1/source/index.html) の本文(`<p>Hello, World!`)に置き換わったことを確認します。
 
@@ -168,7 +170,7 @@ gulp tutorial_3
 gulp tutorial_4
 ~~~
 
-### 5. `beforeBuild` コールバックと `Page` クラスの拡張
+### 5. `before-build` コールバックと `Page` クラスの拡張
 
 ~~~
 gulp tutorial_5

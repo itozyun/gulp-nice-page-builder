@@ -110,9 +110,21 @@ function readHTML(path, htmlString, createTime, updatedTime ){
             for(k in obj) if(!(k in page)) page[k] = obj[k];
             return '';
         } );
+    // <script type="application/json" for="page-option"></script> の評価
+        htmlString = splitString( htmlString, '<script type="application/json" for="page-option">', '</script>', function( code ){
+            var obj = toObjectByEval( code ), k;
+
+            for(k in obj) if(!(k in page)) page[k] = obj[k];
+            return '';
+        } );
 
         // <script type="nice-page-builder/js" for="beforeBuild"></script> の回収
         htmlString = splitString( htmlString, '<script type="nice-page-builder/js" for="beforeBuild">', '</script>', function( code ){
+            onBeforeBuildFunctions.push( { context : page, funcitonString : code } );
+            return '';
+        } );
+        // <script type="nice-page-builder/js" for="before-build"></script> の回収
+        htmlString = splitString( htmlString, '<script for="before-build">', '</script>', function( code ){
             onBeforeBuildFunctions.push( { context : page, funcitonString : code } );
             return '';
         } );
