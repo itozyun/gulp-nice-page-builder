@@ -40,7 +40,7 @@ function Page( path, createTime, updatedTime ){
 };
 
 Page.prototype.toRelativePath = function( path ){
-    return toRelativePath( path, this.FOLDER_PATH );
+    return toRelativePath( path, this.FILE_PATH );
 };
 
 Page.prototype.getPage = function( path ){
@@ -63,7 +63,7 @@ Page.prototype.getJSON = function( name ){
  * 
  */
 function readHTML(path, htmlString, createTime, updatedTime ){
-    var mixin, ary, page, importFiles = [], i = -1, bbf;
+    var mixin, mixinPath, page, importFiles = [], i = -1, bbf;
 
     if( externalJs[ path ] ){
         externalJs[ path ] = htmlString;
@@ -80,10 +80,8 @@ function readHTML(path, htmlString, createTime, updatedTime ){
         } else {
             throw 'MIXIN:' + path + ' is invalid js!';
         };
-        ary = path.split( '/' );
-        ary.pop();
-        if( path = mixin.TEMPLETE ){
-            path = toSourceRootRelativePath( path, ary.join( '/' ) );
+        if( mixinPath = mixin.TEMPLETE ){
+            path = toSourceRootRelativePath( mixinPath, path );
             if( pages[ path ] ){
                 templetes[ path ] = pages[ path ];
                 delete pages[ path ];
@@ -134,7 +132,7 @@ function readHTML(path, htmlString, createTime, updatedTime ){
         // MIXIN の要求は重複しない
         if( page.MIXINS ){
             for( ; path = page.MIXINS[ ++i ]; ){
-                path = toSourceRootRelativePath( path, page.FOLDER_PATH );
+                path = toSourceRootRelativePath( path, page.FILE_PATH );
                 if( !mixins[ path ] ){
                 mixins[ path ] = true;
                 importFiles.push( path );
@@ -142,7 +140,7 @@ function readHTML(path, htmlString, createTime, updatedTime ){
             };
         };
         if( path = page.TEMPLETE ){
-            path = toSourceRootRelativePath( path, page.FOLDER_PATH );
+            path = toSourceRootRelativePath( path, page.FILE_PATH );
             if( pages[ path ] ){
                 templetes[ path ] = pages[ path ];
                 delete pages[ path ];
@@ -199,13 +197,13 @@ function mergeMixinsAndTemplete( page ){
 
     if( _mixins = page.MIXINS ){
         while( path = _mixins[ ++i ] ){
-            path  = toSourceRootRelativePath( path, page.FOLDER_PATH );
+            path  = toSourceRootRelativePath( path, page.FILE_PATH );
             mixin = mixins[ path ];
             mixin && mix( mixin );
         };
     };
     if( path = page.TEMPLETE ){
-        path = toSourceRootRelativePath( path, page.FOLDER_PATH );
+        path = toSourceRootRelativePath( path, page.FILE_PATH );
         if( tmpl = templetes[ path ] ){
             mix( tmpl );
         } else {
@@ -258,7 +256,7 @@ function build(){
                 while(link.charAt(0) === ' ') link = link.substr(1);
                 while(link.charAt(link.length - 1) === ' ') link = link.substr(0,link.length - 1);
 
-                return toRelativePath( link, page.FOLDER_PATH );
+                return toRelativePath( link, page.FILE_PATH );
             } );
         };
 
@@ -319,32 +317,44 @@ function splitString( str, startStr, endStr, func ){
  * 相対リンクに変更する
  */
 function toRelativePath( targetPath, currentPath ){
-    var name, link, i, l, depth, skip;
+    var currentName, link, nameAndHash, targetName, i, l, targetHash, depth, skipCompare;
 
-    currentPath = currentPath.split( '/' );
-    currentPath[ 0 ] === '' && currentPath.shift();
-
-    if( targetPath.substr(0, 2) === '//' || targetPath.substr(0, 7) === 'http://' || targetPath.substr(0, 8) === 'https://' ){
+    if( targetPath.substr(0, 2) === '//' || targetPath.substr(0, 7) === 'http://' || targetPath.substr(0, 8) === 'https://' ){ // absolute path
         link = targetPath;
-    } else if( targetPath.charAt(0) === '/' ){ // ルート相対リンク
-        targetPath = targetPath.substr(1).split('/');
-        name = targetPath.pop();
-        for( i = 0, depth = currentPath.length, l = Math.max( targetPath.length, depth ), link = [], skip = false; i < l; ++i ){
-            if( skip || targetPath[ i ] !== currentPath[ i ] ){
-                if( i < depth ) link.unshift('..');
-                if( targetPath[ i ] ) link.push( targetPath[ i ] );
-                skip = true;
-            };
-        };
-        link.push(name);
-        link = link.join('/');
     } else {
-        // 相対リンク
-        while( targetPath.substr(0, 3) === '../' ){
-            targetPath = targetPath.substr(3);
-            --currentPath.length;
+        currentPath = currentPath.split( '/' );
+        currentPath[ 0 ] === '' && currentPath.shift();
+        currentName = currentPath.pop();
+        // currentName = currentName === 'index.html' ? '' : currentName;
+
+        if( targetPath.charAt(0) === '/' ){ // root relative
+            targetPath  = targetPath.substr(1).split('/');
+            nameAndHash = targetPath.pop().split('#');
+            targetName  = nameAndHash[0] === '' ? 'index.html' : nameAndHash[0];
+            targetHash  = nameAndHash[1] || '';
+            for( i = 0, depth = currentPath.length, l = Math.max( targetPath.length, depth ), link = [], skipCompare = false; i < l; ++i ){
+                if( skipCompare || targetPath[ i ] !== currentPath[ i ] ){
+                    if( i < depth ) link.unshift('..');
+                    if( targetPath[ i ] ) link.push( targetPath[ i ] );
+                    skipCompare = true;
+                };
+            };
+            if(skipCompare || currentName !== targetName){
+                link.push(targetName);
+            };
+            link = link.join('/');
+            link = link === 'index.html' ? './' : link;
+            if(targetHash){
+                link += '#' + targetHash;
+            };
+        } else {
+            // 相対リンク
+            while( targetPath.substr(0, 3) === '../' ){
+                targetPath = targetPath.substr(3);
+                --currentPath.length;
+            };
+            link = ( currentPath.length ? currentPath.join('/') + '/' : '' ) + targetPath;
         };
-        link = ( currentPath.length ? currentPath.join('/') + '/' : '' ) + targetPath;
     };
     return link;
 };
@@ -354,7 +364,7 @@ function toRelativePath( targetPath, currentPath ){
  */
 function toSourceRootRelativePath( targetPath, currentPath ){
     if( targetPath.substr(0, 2) === '//' || targetPath.substr(0, 7) === 'http://' || targetPath.substr(0, 8) === 'https://' ){
-        // error
+        throw 'toSourceRootRelativePath:' + targetPath + ' is absolute path!';
     } else if( targetPath.charAt(0) === '/' ){
         return targetPath;
     };
