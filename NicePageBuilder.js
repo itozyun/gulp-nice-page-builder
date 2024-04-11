@@ -44,6 +44,8 @@ Page.prototype.toRelativePath = function( path ){
 };
 
 Page.prototype.getPage = function( path ){
+    path = path.split( '?' )[ 0 ].split( '#' )[ 0 ];
+
     path = toSourceRootRelativePath( path, this.FOLDER_PATH );
 
     if( path.charAt( path.length - 1 ) === '/' ){
@@ -62,7 +64,7 @@ Page.prototype.getJSON = function( name ){
  * readJSON
  * 
  */
-function readHTML(path, htmlString, createTime, updatedTime ){
+function readHTML( path, htmlString, createTime, updatedTime ){
     var mixin, mixinPath, page, importFiles = [], i = -1, bbf;
 
     if( externalJs[ path ] ){
@@ -256,7 +258,7 @@ function build(){
                 while(link.charAt(0) === ' ') link = link.substr(1);
                 while(link.charAt(link.length - 1) === ' ') link = link.substr(0,link.length - 1);
 
-                return toRelativePath( link, page.FILE_PATH );
+                return filePathToURL( toRelativePath( link, page.FILE_PATH ) );
             } );
         };
 
@@ -369,4 +371,9 @@ function toSourceRootRelativePath( targetPath, currentPath ){
         return targetPath;
     };
     return '/' + toRelativePath( targetPath, currentPath );
+};
+
+function filePathToURL( path ){
+    path = path.split( 'index.html' ).join( '' );
+    return path ? path : '/';
 };
