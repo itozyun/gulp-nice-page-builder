@@ -146,19 +146,19 @@ module.exports = function( _options ){
             };
 
         // 書出し
-            for( const pagePath in PAGE_LIST ){
-                const htmlJson = NicePageBuilder( PAGE_LIST[ pagePath ], pagePath, TEMPLETE_LIST, MIXIN_LIST );
+            for( const filePath in PAGE_LIST ){
+                const htmlJson = NicePageBuilder( PAGE_LIST[ filePath ], filePath, TEMPLETE_LIST, MIXIN_LIST );
 
                 this.push(
                     new Vinyl(
                         {
                             base     : '/',
-                            path     : pagePath,
+                            path     : filePath,
                             contents : Buffer.from( JSON.stringify( htmlJson ) )
                         }
                     )
                 );
-                delete PAGE_LIST[ pagePath ];
+                delete PAGE_LIST[ filePath ];
             };
             callback();
         }

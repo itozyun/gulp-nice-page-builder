@@ -7,6 +7,7 @@ goog.provide( 'sourceRootRelativePath' );
 goog.require( 'insertContentToTemplete' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.getNiceOptions' );
+goog.require( 'NicePageBuilder.util.rootRelativePathToRootRelativeURL' );
 
 /**
  * @typedef {string}
@@ -52,12 +53,12 @@ var Mixin;
 
 /**
  * @param {!NicePageOrTemplete} nicePage
- * @param {sourceRootRelativePath} pagePath
+ * @param {sourceRootRelativePath} filePath
  * @param {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} TEMPLETE_LIST 
  * @param {!Object.<sourceRootRelativePath, !Mixin>} MIXIN_LIST 
  * @return {!Array}
  */
-NicePageBuilder = function( page, pagePath, TEMPLETE_LIST, MIXIN_LIST ){
+NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
     const pageOptions = NicePageBuilder.util.getNiceOptions( page );
     let templetePath = pageOptions.TEMPLETE;
 
@@ -115,12 +116,12 @@ NicePageBuilder = function( page, pagePath, TEMPLETE_LIST, MIXIN_LIST ){
         };
     };
 
-    const pathElements = pagePath.split( '/' );
+    const pathElements = filePath.split( '/' );
 
-    pageOptions.FILE_PATH   = pagePath;
+    pageOptions.FILE_PATH   = filePath;
     pageOptions.FILE_NAME   = pathElements.pop();
     pageOptions.FOLDER_PATH = pathElements.join( '/' );
-    pageOptions.URL         = NicePageBuilder.util.filePathToURL( pagePath );
+    pageOptions.URL         = NicePageBuilder.util.rootRelativePathToRootRelativeURL( filePath );
     pageOptions.CREATED_AT  = page[ CREATED_AT  ];
     pageOptions.MODIFIED_AT = page[ MODIFIED_AT ];
     pageOptions.UPDATED_AT  = page[ UPDATED_AT  ];

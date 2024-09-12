@@ -7,7 +7,7 @@ goog.provide( 'NicePageBuilder.util.isAbsolutePath' );
 goog.provide( 'NicePageBuilder.util.isRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.absolutePathToSrcRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.rootRelativePathToAbsolutePath' );
-goog.provide( 'NicePageBuilder.util.filePathToURL' );
+goog.provide( 'NicePageBuilder.util.rootRelativePathToRootRelativeURL' );
 goog.provide( 'NicePageBuilder.util.relativePathToSrcRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.relativeURLToSrcRootRelativeURL' );
 goog.provide( 'NicePageBuilder.util.rootRelativePathToRelativePath' );
@@ -97,21 +97,21 @@ NicePageBuilder.util.rootRelativePathToAbsolutePath = function( filePath ){
  * @param {string} filePath
  * @return {string}
  */
-NicePageBuilder.util.filePathToURL = function( filePath ){
+NicePageBuilder.util.rootRelativePathToRootRelativeURL = function( filePath ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !NicePageBuilder.util.isRootRelativePath( filePath ) ){
             throw filePath + ' is not a root relative path!';
         };
     };
 
-    filePath = filePath.split( 'index.html' );
+    var rootRelativeURL = filePath.split( 'index.html' );
 
     // "/index.html" => ["/", ""] => "/"
     // "/index.html/index.html" => ["/", "/", ""] => "/index.html/"
-    if( !filePath[ filePath.length - 1 ] ){
-        filePath.pop();
+    if( !rootRelativeURL[ rootRelativeURL.length - 1 ] ){
+        rootRelativeURL.pop();
     };
-    return filePath.join( 'index.html' );
+    return rootRelativeURL.join( 'index.html' );
 };
 
 /**
