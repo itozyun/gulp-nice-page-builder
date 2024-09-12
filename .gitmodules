@@ -1,0 +1,6 @@
+[submodule ".submodules/htmlparser"]
+	path = .submodules/htmlparser
+	url = https://github.com/ECMAScript2/htmlparser
+[submodule ".submodules/html.json"]
+	path = .submodules/html.json
+	url = https://github.com/itozyun/html.json

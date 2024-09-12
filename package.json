@@ -14,6 +14,8 @@
   },
   "homepage": "https://github.com/itozyun/gulp-nice-page-builder#readme",
   "devDependencies": {
+    "@externs/nodejs": "^1.5.0",
+    "google-closure-compiler": "^20240317.0.0",
     "gulp": "^4.0.2"
   },
   "dependencies": {
