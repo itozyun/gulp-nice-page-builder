@@ -1,5 +1,6 @@
 goog.provide( 'NicePageBuilder.gulp' );
 
+goog.require( 'htmljson.base' );
 goog.require( 'NicePageBuilder' );
 goog.require( 'NicePageBuilder.srcRootPath' );
 goog.require( 'NicePageBuilder.util.normalizePath' );
@@ -9,6 +10,7 @@ goog.requireType( 'NicePageOptions' );
 goog.requireType( 'NicePageOrTemplete' );
 goog.requireType( 'Mixin' );
 goog.requireType( 'sourceRootRelativePath' );
+goog.require( 'getScriptElement' );
 
 module.exports = function( _options ){
     const pluginName  = 'gulp-nice-page-builder',
@@ -59,9 +61,21 @@ module.exports = function( _options ){
                   updatedTimeMs    = parseInt( file.stat.ctimeMs, 10 ),
                   rootRelativePath = NicePageBuilder.util.absolutePathToSrcRootRelativePath( file.path );
     
-            if( Array.isArray( json ) ){
+            if( m_isArray( json ) ){
+                const script = getScriptElement( json );
+
+                // [ 11, [ 'script', {}, {...} ], [ 'p' ] ]
+                // ↓
+                // [ {...}, [ 'p' ] ]
+
+                // [ 9, 'xhtml', [ 'script', {}, {...} ], [ 'p' ] ]
+                // ↓
+                // [ {...}, 9, 'xhtml', [ 'p' ] ]
+                if( script ){
+                    json.unshift( eval( '(' + script[ 2 ] + ');' ) );
+                };
                 PAGES_OR_TEMPLETES[ rootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
-            } else if( json && typeof json === 'object' ){
+            } else if( m_isObject( json ) ){
                 MIXIN_LIST[ rootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
             } else {
                 // error
@@ -110,8 +124,8 @@ module.exports = function( _options ){
                     if( mixinPathList ){
                         for( let i = 0, l = mixinPathList.length; i < l; ++i ){
                             const mixinPath = mixinPathList[ i ];
-                            const path = NicePageBuilder.util.absolutePathToSrcRootRelativePath( mixinPath, pageOrTempletePath );
-                            const mixin = MIXIN_LIST[ path ];
+                            const path      = NicePageBuilder.util.absolutePathToSrcRootRelativePath( mixinPath, pageOrTempletePath );
+                            const mixin     = MIXIN_LIST[ path ];
                             
                             mixinPathList[ i ] = path; // toSourceRootRelativePath
                             if( mixin && mixin.length === 3 ){

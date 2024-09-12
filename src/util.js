@@ -71,11 +71,11 @@ NicePageBuilder.util.isRootRelativePath = function( filePathOrURL ){
 NicePageBuilder.util.absolutePathToSrcRootRelativePath = function( filePath ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !NicePageBuilder.util.isAbsoluteFilePath( filePath ) ){
-            throw filePath + ' は絶対パスではありません!';
+            throw filePath + ' is not a absolute path!';
         };
     };
     // pathElements.shift();
-    return '/' + NicePageBuilder.util.normalizePath( filePath ).substr( NicePageBuilder.srcRootPath.length );
+    return NicePageBuilder.util.normalizePath( filePath ).substr( NicePageBuilder.srcRootPath.length - 1 ); // -1 で "/" を残す
 };
 
 /**
