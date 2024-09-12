@@ -52,6 +52,17 @@ var NicePageOrTemplete;
 var Mixin;
 
 /**
+ * @enum {number}
+ */
+var STAT_INDEXES = {
+    HTML_JSON     : 0,
+    MIXIN_OPTIONS : 0,
+    CREATED_AT    : 1,
+    MODIFIED_AT   : 2,
+    UPDATED_AT    : 3
+};
+
+/**
  * @param {!NicePageOrTemplete} nicePage
  * @param {sourceRootRelativePath} filePath
  * @param {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} TEMPLETE_LIST 
@@ -69,7 +80,7 @@ NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
         const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
 
         if( templeteOptions ){
-            mix( templeteOptions, templete[ UPDATED_AT ] );
+            mix( templeteOptions, templete[ STAT_INDEXES.UPDATED_AT ] );
             mergeMinxins( templeteOptions.MIXINS );
             templetePath = templeteOptions.TEMPLETE;
         };
@@ -83,7 +94,7 @@ NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
             for( let i = 0; i < mixinPathList.length; ++i ){
                 const mixin = MIXIN_LIST[ mixinPathList[ i ] ];
 
-                mix( mixin[ 0 ], mixin[ UPDATED_AT ] );
+                mix( mixin[ STAT_INDEXES.MIXIN_OPTIONS ], mixin[ STAT_INDEXES.UPDATED_AT ] );
             };
         };
     };
@@ -98,8 +109,8 @@ NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
                 pageOptions[ k ] = altPageOptions[ k ];
             };
         };
-        if( page[ 3 ] < altUpdatedAt ){
-            page[ 3 ] = altUpdatedAt;
+        if( page[ STAT_INDEXES.UPDATED_AT ] < altUpdatedAt ){
+            page[ STAT_INDEXES.UPDATED_AT ] = altUpdatedAt;
         };
     };
 
@@ -122,9 +133,9 @@ NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
     pageOptions.FILE_NAME   = pathElements.pop();
     pageOptions.FOLDER_PATH = pathElements.join( '/' );
     pageOptions.URL         = NicePageBuilder.util.rootRelativePathToRootRelativeURL( filePath );
-    pageOptions.CREATED_AT  = page[ CREATED_AT  ];
-    pageOptions.MODIFIED_AT = page[ MODIFIED_AT ];
-    pageOptions.UPDATED_AT  = page[ UPDATED_AT  ];
+    pageOptions.CREATED_AT  = page[ STAT_INDEXES.CREATED_AT  ];
+    pageOptions.MODIFIED_AT = page[ STAT_INDEXES.MODIFIED_AT ];
+    pageOptions.UPDATED_AT  = page[ STAT_INDEXES.UPDATED_AT  ];
 
     return contentHtmlJson;
 };

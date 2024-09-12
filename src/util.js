@@ -17,6 +17,7 @@ goog.provide( 'NicePageBuilder.util.getNiceOptions' );
 
 goog.requireType( 'NicePageOrTemplete' );
 goog.requireType( 'NicePageOptions' );
+goog.require( 'STAT_INDEXES' );
 
 /** @type {string} */
 NicePageBuilder.srcRootPath = '';
@@ -240,7 +241,7 @@ NicePageBuilder.util.rootRelativeURLToRelativeURL = function( basePath, rootRela
  * @return {!Array}
  */
 NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
-    return /** @type {!Array} */ (nicePageOrTemplete[ 0 ]);
+    return /** @type {!Array} */ (nicePageOrTemplete[ STAT_INDEXES.HTML_JSON ]);
 };
 
 /**
