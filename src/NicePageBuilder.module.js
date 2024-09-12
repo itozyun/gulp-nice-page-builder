@@ -1,8 +1,8 @@
 goog.provide( 'NicePageBuilder.gulp' );
 
 goog.require( 'NicePageBuilder' );
-goog.require( 'NicePageBuilder.normalizePath' );
 goog.require( 'NicePageBuilder.srcRootPath' );
+goog.require( 'NicePageBuilder.util.normalizePath' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.getNiceOptions' );
 goog.requireType( 'NicePageOptions' );
@@ -54,15 +54,15 @@ module.exports = function( _options ){
                 return callback();
             };
     
-            const json                = JSON.parse( file.contents.toString( encoding ) ),
-                  createdTimeMs       = parseInt( file.stat.birthtimeMs, 10 ),
-                  updatedTimeMs       = parseInt( file.stat.ctimeMs, 10 ),
-                  srcRootRelativePath = NicePageBuilder.util.absolutePathToSrcRootRelativePath( file.path );
+            const json             = JSON.parse( file.contents.toString( encoding ) ),
+                  createdTimeMs    = parseInt( file.stat.birthtimeMs, 10 ),
+                  updatedTimeMs    = parseInt( file.stat.ctimeMs, 10 ),
+                  rootRelativePath = NicePageBuilder.util.absolutePathToSrcRootRelativePath( file.path );
     
             if( Array.isArray( json ) ){
-                PAGES_OR_TEMPLETES[ srcRootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
+                PAGES_OR_TEMPLETES[ rootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
             } else if( json && typeof json === 'object' ){
-                MIXIN_LIST[ srcRootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
+                MIXIN_LIST[ rootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
             } else {
                 // error
             };

@@ -1,6 +1,19 @@
 goog.provide( 'NicePageBuilder.util' );
-
 goog.provide( 'NicePageBuilder.srcRootPath' );
+goog.provide( 'NicePageBuilder.util.normalizePath' );
+goog.provide( 'NicePageBuilder.util.isAbsoluteFilePath' );
+goog.provide( 'NicePageBuilder.util.isAbsoluteURL' );
+goog.provide( 'NicePageBuilder.util.isAbsolutePath' );
+goog.provide( 'NicePageBuilder.util.isRootRelativePath' );
+goog.provide( 'NicePageBuilder.util.absolutePathToSrcRootRelativePath' );
+goog.provide( 'NicePageBuilder.util.rootRelativePathToAbsolutePath' );
+goog.provide( 'NicePageBuilder.util.filePathToURL' );
+goog.provide( 'NicePageBuilder.util.relativePathToSrcRootRelativePath' );
+goog.provide( 'NicePageBuilder.util.relativeURLToSrcRootRelativeURL' );
+goog.provide( 'NicePageBuilder.util.rootRelativePathToRelativePath' );
+goog.provide( 'NicePageBuilder.util.rootRelativeURLToRelativeURL' );
+goog.provide( 'NicePageBuilder.util.getHTMLJson' );
+goog.provide( 'NicePageBuilder.util.getNiceOptions' );
 
 goog.requireType( 'NicePageOrTemplete' );
 goog.requireType( 'NicePageOptions' );
@@ -29,7 +42,7 @@ NicePageBuilder.util.isAbsoluteFilePath = function( filePath ){
  * @return {boolean}
  */
 NicePageBuilder.util.isAbsoluteURL = function( url ){
-    return url.substr(0, 2) === '//' || url.substr(0, 7) === 'http://' || url.substr(0, 8) === 'https://';
+    return url.substr( 0, 2 ) === '//' || url.substr( 0, 7 ) === 'http://' || url.substr( 0, 8 ) === 'https://';
 };
 
 /**
@@ -45,10 +58,8 @@ NicePageBuilder.util.isAbsolutePath = function( filePathOrURL ){
  * @return {boolean}
  */
 NicePageBuilder.util.isRootRelativePath = function( filePathOrURL ){
-    return filePathOrURL.charAt( 0 ) === '/' &&
-           !NicePageBuilder.util.isAbsoluteURL( filePathOrURL ); // '//' で始まらない
+    return filePathOrURL.charAt( 0 ) === '/' && filePathOrURL.substr( 0, 2 ) !== '//';
 };
-
 
 /**
  * Absolute path => Source root relative path
@@ -63,7 +74,7 @@ NicePageBuilder.util.absolutePathToSrcRootRelativePath = function( filePath ){
         };
     };
     // pathElements.shift();
-    return '/' + NicePageBuilder.util.normalizePath( filePath ).substring( NicePageBuilder.srcRootPath.length );
+    return '/' + NicePageBuilder.util.normalizePath( filePath ).substr( NicePageBuilder.srcRootPath.length );
 };
 
 /**
@@ -72,10 +83,10 @@ NicePageBuilder.util.absolutePathToSrcRootRelativePath = function( filePath ){
  * @param {string} filePath
  * @return {string}
  */
-NicePageBuilder.util.srcRootRelativePathToAbsolutePath = function( filePath ){
+NicePageBuilder.util.rootRelativePathToAbsolutePath = function( filePath ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !NicePageBuilder.util.isRootRelativePath( filePath ) ){
-            throw filePath + ' はルート相対パスではありません!';
+            throw filePath + ' is not a root relative path!';
         };
     };
 
@@ -89,7 +100,7 @@ NicePageBuilder.util.srcRootRelativePathToAbsolutePath = function( filePath ){
 NicePageBuilder.util.filePathToURL = function( filePath ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !NicePageBuilder.util.isRootRelativePath( filePath ) ){
-            throw filePath + ' はルート相対パスではありません!';
+            throw filePath + ' is not a root relative path!';
         };
     };
 
@@ -111,10 +122,10 @@ NicePageBuilder.util.filePathToURL = function( filePath ){
 NicePageBuilder.util.relativePathToSrcRootRelativePath = function( basePath, relativePath ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !NicePageBuilder.util.isRootRelativePath( basePath ) ){
-            throw basePath + ' はルート相対パスではありません!';
+            throw basePath + ' is not a root relative path!';
         };
-        if( NicePageBuilder.util.isRootRelativePath( relativePath ) ){
-            throw relativePath + ' は相対パスではありません!';
+        if( NicePageBuilder.util.isRootRelativePath( relativePath ) || NicePageBuilder.util.isAbsolutePath( relativePath ) ){
+            throw relativePath + ' is not a relative path!';
         };
     };
 
@@ -129,93 +140,91 @@ NicePageBuilder.util.relativePathToSrcRootRelativePath = function( basePath, rel
     return ( basePath.length ? basePath.join( '/' ) + '/' : '' ) + relativePath;
 };
 
-
 /**
  * @param {string} basePath filePath!!
  * @param {string} relativeURL
  * @return {string}
  */
-NicePageBuilder.util.relativePathToSrcRootRelativePath = function( basePath, relativeURL ){
+NicePageBuilder.util.relativeURLToSrcRootRelativeURL = function( basePath, relativeURL ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !NicePageBuilder.util.isRootRelativePath( basePath ) ){
-            throw basePath + ' はルート相対パスではありません!';
+            throw basePath + ' is not a root relative path!';
         };
-        if( NicePageBuilder.util.isRootRelativePath( relativeURL ) ){
-            throw relativeURL + ' は相対パスではありません!';
+        if( NicePageBuilder.util.isRootRelativePath( relativePath ) || NicePageBuilder.util.isAbsolutePath( relativePath ) ){
+            throw relativeURL + ' is not a relative path!';
         };
     };
 
-    var targetHash       = relativeURL.substring( relativeURL.indexOf( '#' ) );
-    var rootRelativePath = NicePageBuilder.util.srcRootRelativePathToRelativePath( basePath, relativeURL.split( '#' )[ 0 ] )
+    var targetHash      = relativeURL.substr( relativeURL.indexOf( '#' ) );
+    var rootRelativeURL = NicePageBuilder.util.rootRelativePathToRelativePath( basePath, relativeURL.split( '#' )[ 0 ] )
 
-    rootRelativePath = rootRelativePath === '/index.html' ? '/' : rootRelativePath;
+    rootRelativeURL = rootRelativeURL === '/index.html' ? '/' : rootRelativeURL;
 
     if( targetHash ){
-        rootRelativePath += targetHash;
+        rootRelativeURL += targetHash;
     };
-    return rootRelativePath;
+    return rootRelativeURL;
 };
 
 /**
  * @param {string} basePath filePath!!
- * @param {string} srcRootRelativePath
+ * @param {string} rootRelativePath
  * @return {string}
  */
-NicePageBuilder.util.srcRootRelativePathToRelativePath = function( basePath, srcRootRelativePath ){
+NicePageBuilder.util.rootRelativePathToRelativePath = function( basePath, rootRelativePath ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !NicePageBuilder.util.isRootRelativePath( basePath ) ){
-            throw basePath + ' はルート相対パスではありません!';
+            throw basePath + ' is not a root relative path!';
         };
-        if( !NicePageBuilder.util.isRootRelativePath( srcRootRelativePath ) ){
-            throw srcRootRelativePath + ' はルート相対パスではありません!';
+        if( !NicePageBuilder.util.isRootRelativePath( rootRelativePath ) ){
+            throw rootRelativePath + ' is not a root relative path!';
         };
     };
 
-    var currentName, link = [], targetName, i = 0, l, depth, skipCompare = false;
+    var link = [], i = 0, skipCompare = false, baseName, targetName, l, depth;
 
     basePath = basePath.split( '/' );
     baseName = basePath.pop();
     baseName = baseName === '' ? 'index.html' : baseName;
 
-    srcRootRelativePath = srcRootRelativePath.split( '/' );
-    targetName = srcRootRelativePath.pop();
+    rootRelativePath = rootRelativePath.split( '/' );
+    targetName = rootRelativePath.pop();
     targetName = targetName === '' ? 'index.html' : targetName;
 
-    for( depth = basePath.length, l = Math.max( srcRootRelativePath.length, depth ); i < l; ++i ){
-        if( skipCompare || srcRootRelativePath[ i ] !== basePath[ i ] ){
+    for( depth = basePath.length, l = Math.max( rootRelativePath.length, depth ); i < l; ++i ){
+        if( skipCompare || rootRelativePath[ i ] !== basePath[ i ] ){
             if( i < depth ){
                 link.unshift( '..' );
             };
-            if( srcRootRelativePath[ i ] ){
-                link.push( srcRootRelativePath[ i ] );
+            if( rootRelativePath[ i ] ){
+                link.push( rootRelativePath[ i ] );
             };
             skipCompare = true;
         };
     };
-    if( skipCompare || currentName !== targetName ){
+    if( skipCompare || baseName !== targetName ){
         link.push( targetName );
     };
     return link.join( '/' );
 };
 
-
 /**
  * @param {string} basePath filePath!!
- * @param {string} srcRootRelativeURL
+ * @param {string} rootRelativeURL
  * @return {string}
  */
-NicePageBuilder.util.srcRootRelativeURLToRelativeURL = function( basePath, srcRootRelativeURL ){
+NicePageBuilder.util.rootRelativeURLToRelativeURL = function( basePath, rootRelativeURL ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !NicePageBuilder.util.isRootRelativePath( basePath ) ){
-            throw basePath + ' はルート相対パスではありません!';
+            throw basePath + ' is not a root relative path!';
         };
-        if( !NicePageBuilder.util.isRootRelativePath( srcRootRelativeURL ) ){
-            throw srcRootRelativeURL + ' はルート相対パスではありません!';
+        if( !NicePageBuilder.util.isRootRelativePath( rootRelativeURL ) ){
+            throw rootRelativeURL + ' is not a root relative path!';
         };
     };
 
-    var targetHash  = srcRootRelativePath.substring( srcRootRelativePath.indexOf( '#' ) );
-    var relativeURL = NicePageBuilder.util.srcRootRelativePathToRelativePath( basePath, srcRootRelativeURL.split( '#' )[ 0 ] )
+    var targetHash  = rootRelativePath.substr( rootRelativePath.indexOf( '#' ) );
+    var relativeURL = NicePageBuilder.util.rootRelativePathToRelativePath( basePath, rootRelativeURL.split( '#' )[ 0 ] )
 
     relativeURL = relativeURL === 'index.html' ? './' : relativeURL;
 
