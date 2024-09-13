@@ -33,9 +33,8 @@ var NicePageOptions;
 /**
  * [0] {Array} HTML JSON
  * [1] {number} CREATED_AT
- * [2] {number} MODIFIED_AT
- * [3] {number} UPDATED_AT
- * [4] {boolean} use templete
+ * [2] {number} UPDATED_AT
+ * [3] {boolean} use templete
  * 
  * @typedef {!Array.<(!Array | number | boolean)>}
  */
@@ -44,9 +43,8 @@ var NicePageOrTemplete;
 /**
  * [0] {Object} NicePageOptions
  * [1] {number} CREATED_AT
- * [2] {number} MODIFIED_AT
- * [3] {number} UPDATED_AT
- * [4] {boolean} used
+ * [2] {number} UPDATED_AT
+ * [3] {boolean} used
  * 
  * @typedef {!Array.<(!Object | number | boolean)>}
  */
@@ -59,23 +57,26 @@ var STAT_INDEXES = {
     HTML_JSON     : 0,
     MIXIN_OPTIONS : 0,
     CREATED_AT    : 1,
-    MODIFIED_AT   : 2,
-    UPDATED_AT    : 3
+    UPDATED_AT    : 2
 };
 
 /**
- * @param {!NicePageOrTemplete} nicePage
+ * @param {!Array} htmlJson
+ * @param {number} createdAt
+ * @param {number} updatedAt
  * @param {sourceRootRelativePath} filePath
  * @param {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} TEMPLETE_LIST 
  * @param {!Object.<sourceRootRelativePath, !Mixin>} MIXIN_LIST 
  * @return {!Array}
  */
-NicePageBuilder = function( nicePage, filePath, TEMPLETE_LIST, MIXIN_LIST ){
-    const pageOptions = NicePageBuilder.util.getNiceOptions( nicePage );
+NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_LIST, MIXIN_LIST ){
+    const pageOptions = !m_isArray( htmlJson[ 0 ] ) && m_isObject( htmlJson[ 0 ] ) ? htmlJson[ 0 ] : null;
 
     if( !pageOptions ){
-        return NicePageBuilder.util.getHTMLJson( nicePage );
+        return htmlJson;
     };
+
+    const modifiedAt = updatedAt;
 
     let templetePath = pageOptions.TEMPLETE;
 
@@ -117,12 +118,12 @@ NicePageBuilder = function( nicePage, filePath, TEMPLETE_LIST, MIXIN_LIST ){
                 pageOptions[ k ] = altPageOptions[ k ];
             };
         };
-        if( nicePage[ STAT_INDEXES.UPDATED_AT ] < altUpdatedAt ){
-            nicePage[ STAT_INDEXES.UPDATED_AT ] = altUpdatedAt;
+        if( updatedAt < altUpdatedAt ){
+            updatedAt = altUpdatedAt;
         };
     };
 
-    let contentHtmlJson = NicePageBuilder.util.getHTMLJson( nicePage );
+    let contentHtmlJson = htmlJson;
     templetePath = pageOptions.TEMPLETE;
 
     while( templetePath ){
@@ -143,9 +144,9 @@ NicePageBuilder = function( nicePage, filePath, TEMPLETE_LIST, MIXIN_LIST ){
     pageOptions.FILE_NAME   = pathElements.pop();
     pageOptions.FOLDER_PATH = pathElements.join( '/' );
     pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
-    pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ STAT_INDEXES.CREATED_AT  ]);
-    pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ STAT_INDEXES.MODIFIED_AT ]);
-    pageOptions.UPDATED_AT  = /** @type {number} */ (nicePage[ STAT_INDEXES.UPDATED_AT  ]);
+    pageOptions.CREATED_AT  = createdAt;
+    pageOptions.MODIFIED_AT = modifiedAt;
+    pageOptions.UPDATED_AT  = updatedAt;
 
     return contentHtmlJson;
 };

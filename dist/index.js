@@ -1,64 +1,64 @@
-function y(a) {
+function b(a) {
   return !(!a || a.pop !== [].pop);
 }
-function z(a) {
+function y(a) {
   return !(!a || "object" !== typeof a);
 }
 function A(a) {
-  return !y(a) && z(a);
+  return !b(a) && y(a);
 }
-function C(a) {
-  var c = a[0], b = c === +c ? 2 : 1;
+function B(a) {
+  var c = a[0], d = c === +c ? 2 : 1;
   if ("" + a === a || a === +a) {
-    var m = 3;
+    var g = 3;
   } else {
-    y(a) ? (m = a[0], "" + m === m ? m = 1 : (m = a[0], m = m === +m ? a[0] : -1)) : m = -1;
+    b(a) ? (g = a[0], "" + g === g ? g = 1 : (g = a[0], g = g === +g ? a[0] : -1)) : g = -1;
   }
-  return 1 === m || 17 === c ? A(a[b]) ? b + 1 : b : 11 === c ? 1 : 9 === c || 13 === c || 16 === c ? 2 : Infinity;
+  return 1 === g || 17 === c ? A(a[d]) ? d + 1 : d : 11 === c ? 1 : 9 === c || 13 === c || 16 === c ? 2 : Infinity;
 }
 ;function D(a, c) {
-  function b(p) {
-    let h = C(p), e = p.length;
-    for (var k; h < e; ++h) {
-      var f = p[h], d;
-      if (d = !("" + f === f || f === +f)) {
-        if (d = y(f)) {
+  function d(r) {
+    let t = B(r), p = r.length;
+    for (var f; t < p; ++t) {
+      var u = r[t], e;
+      if (e = !("" + u === u || u === +u)) {
+        if (e = b(u)) {
           a: {
-            k = f;
-            f = p;
-            d = h;
-            var g = k[0];
-            const n = k[1];
-            let t = g, u = 1;
-            switch(g) {
+            f = u;
+            u = r;
+            e = t;
+            var k = f[0];
+            const h = f[1];
+            let q = k, m = 1;
+            switch(k) {
               case 9:
               case 11:
               case 13:
               case 16:
-                k = b(k);
+                f = d(f);
                 break a;
               case 1:
               case 17:
-                t = n, u = 2;
+                q = h, m = 2;
               default:
-                if ("" + t === t) {
-                  g = k[u];
-                  k = c(t, A(g) ? g : null) ? [k, f, d] : b(k);
+                if ("" + q === q) {
+                  k = f[m];
+                  f = c(q, A(k) ? k : null) ? [f, u, e] : d(f);
                   break a;
                 }
             }
-            k = void 0;
+            f = void 0;
           }
-          d = k;
+          e = f;
         }
       }
-      if (d) {
-        return k;
+      if (e) {
+        return f;
       }
     }
   }
-  let m, q;
-  return A(a[0]) ? (m = a.shift(), q = b(a), a.unshift(m), q && q[1] === a ? [q[0], a, ++q[2]] : q) : b(a);
+  let g, l;
+  return A(a[0]) ? (g = a.shift(), l = d(a), a.unshift(g), l && l[1] === a ? [l[0], a, ++l[2]] : l) : d(a);
 }
 ;function E(a) {
   return D(a, function(c) {
@@ -67,165 +67,279 @@ function C(a) {
 }
 ;function F(a, c) {
   a = JSON.parse(JSON.stringify(a));
-  var b = E(a);
-  if (b) {
-    const m = b[1];
-    b = b[2];
-    let q;
-    A(c[0]) && (q = c.shift());
-    let p = C(c), h = c.length;
-    m.splice(b, 1);
-    for (b -= p; p < h; ++p) {
-      m.splice(b + p, 0, c[p]);
+  var d = E(a);
+  if (d) {
+    const g = d[1];
+    d = d[2];
+    let l;
+    A(c[0]) && (l = c.shift());
+    let r = B(c), t = c.length;
+    g.splice(d, 1);
+    for (d -= r; r < t; ++r) {
+      g.splice(d + r, 0, c[r]);
     }
-    q && a.unshift(q);
+    l && a.unshift(l);
   }
   return a;
 }
-;var G = "";
-function H(a) {
-  if (0 !== a.indexOf(G)) {
+;G.h = {};
+G.g = {};
+G.h.j = !0;
+G.m = "";
+G.g.F = function(a) {
+  return a.split("\\").join("/");
+};
+G.g.B = function(a) {
+  return 0 === a.indexOf(G.m);
+};
+G.g.D = function(a) {
+  return "//" === a.substr(0, 2) || "http://" === a.substr(0, 7) || "https://" === a.substr(0, 8);
+};
+G.g.C = function(a) {
+  return G.g.B(a) || G.g.D(a);
+};
+G.g.i = function(a) {
+  return "/" === a.charAt(0) && "//" !== a.substr(0, 2);
+};
+G.g.I = function(a) {
+  if (G.h.j && !G.g.B(a)) {
     throw a + " is not a absolute path!";
   }
-  return a.split("\\").join("/").substr(G.length - 1);
-}
-function I(a) {
+  return G.g.F(a).substr(G.m.length - 1);
+};
+G.g.R = function(a) {
+  if (G.h.j && !G.g.i(a)) {
+    throw a + " is not a root relative path!";
+  }
+  return G.m + a.substr(1);
+};
+G.g.v = function(a) {
   a = a.split("index.html");
   a[a.length - 1] || a.pop();
   return a.join("index.html");
-}
-function J(a, c) {
-  if ("/" !== a.charAt(0) || "//" === a.substr(0, 2)) {
-    throw a + " is not a root relative path!";
+};
+G.g.s = function(a) {
+  if (G.h.j && G.g.D(a)) {
+    throw a + " is not a root relative path or relative path!";
   }
-  var b;
-  (b = "/" === c.charAt(0) && "//" !== c.substr(0, 2)) || (b = c, b = 0 === b.indexOf(G) || "//" === b.substr(0, 2) || "http://" === b.substr(0, 7) || "https://" === b.substr(0, 8));
-  if (b) {
-    throw c + " is not a relative path!";
+  a = a.split("#")[0].split("/");
+  a[a.length - 1] || (a[a.length - 1] = "index.html");
+  return a.join("/");
+};
+G.g.G = function(a, c) {
+  if (G.h.j) {
+    if (!G.g.i(a)) {
+      throw a + " is not a root relative path!";
+    }
+    if (G.g.i(c) || G.g.C(c)) {
+      throw c + " is not a relative path!";
+    }
   }
   a = a.split("/");
   for ("" === a[0] && a.shift(); "../" === c.substr(0, 3);) {
     c = c.substr(3), --a.length;
   }
   return (a.length ? a.join("/") + "/" : "") + c;
-}
-;function K(a, c, b, m) {
-  function q(f) {
-    if (f) {
-      for (let d = 0; d < f.length; ++d) {
-        const g = m[f[d]];
-        p(g[0], g[3]);
+};
+G.g.P = function(a, c) {
+  if (G.h.j) {
+    if (!G.g.i(a)) {
+      throw a + " is not a root relative path!";
+    }
+    if (G.g.i(c) || G.g.C(c)) {
+      throw c + " is not a relative path!";
+    }
+  }
+  var d = c.substr(c.indexOf("#"));
+  a = G.g.v(G.g.H(G.g.s(a), G.g.s(c)));
+  d && (a += d);
+  return a;
+};
+G.g.H = function(a, c) {
+  if (G.h.j) {
+    if (!G.g.i(a)) {
+      throw a + " is not a root relative path!";
+    }
+    if (!G.g.i(c)) {
+      throw c + " is not a root relative path!";
+    }
+  }
+  var d = [], g = 0, l = !1, r;
+  var t = a.split("/");
+  var p = t.pop();
+  if (a === c) {
+    return p;
+  }
+  a = c.split("/");
+  c = a.pop();
+  var f = t.length;
+  for (r = Math.max(a.length, f); g < r; ++g) {
+    if (l || a[g] !== t[g]) {
+      g < f && d.unshift(".."), a[g] && d.push(a[g]), l = !0;
+    }
+  }
+  (l || p !== c) && d.push(c);
+  return d.join("/");
+};
+G.g.S = function(a, c) {
+  if (G.h.j) {
+    if (!G.g.i(a)) {
+      throw a + " is not a root relative path!";
+    }
+    if (!G.g.i(c)) {
+      throw c + " is not a root relative path!";
+    }
+  }
+  var d = c.substr(c.indexOf("#"));
+  a = G.g.v(G.g.H(G.g.s(a), G.g.s(c)));
+  d && (a += d);
+  return a ? a : "./";
+};
+G.g.A = function(a) {
+  a = a[H];
+  if (G.h.j && !b(a)) {
+    throw "NOT_HTML_JSON_ERROR!";
+  }
+  return a;
+};
+G.g.o = function(a) {
+  a = G.g.A(a)[0];
+  return !b(a) && y(a) ? a : null;
+};
+var H = 0;
+function G(a, c, d, g, l, r) {
+  function t(h) {
+    if (h) {
+      for (let q = 0; q < h.length; ++q) {
+        const m = r[h[q]];
+        p(m[0], m[2]);
       }
     }
   }
-  function p(f, d) {
-    for (const g in f) {
-      void 0 === h[g] && (h[g] = f[g]);
+  function p(h, q) {
+    for (const m in h) {
+      void 0 === f[m] && (f[m] = h[m]);
     }
-    a[3] < d && (a[3] = d);
+    d < q && (d = q);
   }
-  const h = a[0][0];
-  if (!h) {
-    return a[0];
+  const f = !b(a[0]) && y(a[0]) ? a[0] : null;
+  if (!f) {
+    return a;
   }
-  var e = h.g;
-  for (q(h.h); e;) {
-    var k = b[e];
-    (e = k[0][0]) ? (p(e, k[3]), q(e.h), e = e.g) : e = "";
+  const u = d;
+  var e = f.l;
+  for (t(f.u); e;) {
+    e = l[e];
+    var k = G.g.o(e);
+    k ? (p(k, e[2]), t(k.u), e = k.l) : e = "";
   }
-  k = a[0];
-  for (e = h.g; e;) {
-    const f = b[e], d = f[0][0];
-    k = F(f[0], k);
-    d ? e = d.g : e = "";
+  for (e = f.l; e;) {
+    k = l[e];
+    const h = G.g.o(k);
+    a = F(G.g.A(k), a);
+    h ? e = h.l : e = "";
   }
-  b = c.split("/");
-  h.l = c;
-  h.j = b.pop();
-  h.m = b.join("/");
-  h.URL = I(c);
-  h.i = a[1];
-  h.o = a[2];
-  h.s = a[3];
-  return k;
+  l = g.split("/");
+  f.L = g;
+  f.K = l.pop();
+  f.M = l.join("/");
+  f.URL = G.g.v(g);
+  f.J = c;
+  f.N = u;
+  f.O = d;
+  return a;
 }
-;function L(a) {
-  return D(a, function(c, b) {
-    return "script" === c && b && "application/json" === b.type || !1;
+;G.module = {};
+module.exports = G;
+G.DOCUMENT_NODE = 9;
+G.DOCUMENT_FRAGMENT_NODE = 11;
+G.ELEMENT_NODE = 1;
+G.TEXT_NODE = 3;
+G.CDATA_SECTION = 4;
+G.PROCESSING_INSTRUCTION = 7;
+G.COMMENT_NODE = 8;
+G.COND_CMT_HIDE_LOWER = 13;
+G.COND_CMT_SHOW_LOWER_START = 14;
+G.NETSCAPE4_COND_CMT_HIDE_LOWER = 16;
+G.ELEMENT_START_TAG = 17;
+G.ELEMENT_END_TAG = 18;
+function I(a) {
+  return D(a, function(c, d) {
+    return "script" === c && d && "application/json" === d.type || !1;
   });
 }
-;module.exports = function(a) {
-  const c = require("plugin-error"), b = require("vinyl"), m = require("through2"), q = require("path"), p = a || {}, h = q.resolve(p.srcRootPath || "./").split("\\").join("/") + "/", e = {}, k = {}, f = {};
-  G = h;
-  return m.obj(function(d, g, n) {
-    if (d.isNull()) {
-      return n();
+;G.gulp = function(a) {
+  const c = require("plugin-error"), d = require("vinyl"), g = require("through2"), l = require("path"), r = a || {}, t = G.g.F(l.resolve(r.srcRootPath || "./")) + "/", p = {}, f = {}, u = {};
+  G.m = t;
+  return g.obj(function(e, k, h) {
+    if (e.isNull()) {
+      return h();
     }
-    if (d.isStream()) {
-      return this.emit("error", new c("gulp-nice-page-builder", "Streaming not supported")), n();
+    if (e.isStream()) {
+      return this.emit("error", new c("gulp-nice-page-builder", "Streaming not supported")), h();
     }
-    if (".json" !== d.extname) {
-      return this.push(d), n();
+    if (".json" !== e.extname) {
+      return this.push(e), h();
     }
-    if (0 !== d.path.indexOf(h)) {
-      return this.emit("error", new c("gulp-nice-page-builder", '"' + d.path + '" is outside of srcRootPath:"' + p.u + '"')), n();
+    if (0 !== e.path.indexOf(t)) {
+      return this.emit("error", new c("gulp-nice-page-builder", '"' + e.path + '" is outside of srcRootPath:"' + r.m + '"')), h();
     }
-    g = JSON.parse(d.contents.toString(g));
-    const t = parseInt(d.stat.birthtimeMs, 10), u = parseInt(d.stat.ctimeMs, 10);
-    d = H(d.path);
-    if (y(g)) {
-      var l = L(g);
-      if (l) {
-        const r = l[0];
-        l[1].splice(l[2], 1);
-        r && 3 === r.length && (l = eval("(" + r[2] + ");"), !y(l) && z(l) && g.unshift(l));
+    k = JSON.parse(e.contents.toString(k));
+    const q = parseInt(e.stat.birthtimeMs, 10), m = parseInt(e.stat.ctimeMs, 10);
+    e = G.g.I(e.path);
+    if (b(k)) {
+      var n = I(k);
+      if (n) {
+        const v = n[0];
+        n[1].splice(n[2], 1);
+        v && 3 === v.length && (n = eval("(" + v[2] + ");"), !b(n) && y(n) && k.unshift(n));
       }
-      e[d] = [g, t, u, u];
+      p[e] = [k, q, m];
     } else {
-      z(g) && (f[d] = [g, t, u, u]);
+      y(k) && (u[e] = [k, q, m]);
     }
-    n();
-  }, function(d) {
-    function g(l, r) {
-      if (l) {
-        for (let v = 0, w = l.length; v < w; ++v) {
-          const x = J(r, l[v]), B = f[x];
-          l[v] = x;
-          if (B && 3 === B.length) {
-            B.push(!0);
-          } else if (!B) {
-            throw r + " \u304c\u8981\u6c42\u3059\u308b " + x + " \u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093!";
+    h();
+  }, function(e) {
+    function k(n, v) {
+      if (n) {
+        for (let w = 0, x = n.length; w < x; ++w) {
+          const z = G.g.G(v, n[w]), C = u[z];
+          n[w] = z;
+          if (C && 3 === C.length) {
+            C.push(!0);
+          } else if (!C) {
+            throw v + " \u304c\u8981\u6c42\u3059\u308b " + z + " \u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093!";
           }
         }
       }
     }
-    for (var n in e) {
-      const l = e[n];
-      let r = l[0][0];
-      if (!r) {
+    for (var h in p) {
+      const n = p[h];
+      let v = G.g.o(n);
+      if (!v) {
         continue;
       }
-      let v = r.g;
-      for (g(r.h, n); v;) {
-        const w = J(n, v), x = e[w];
-        r.g = w;
-        if (x) {
-          delete e[w], k[w] = x, l.push(!0), n = w, (r = x[0][0]) ? (v = r.g, g(r.h, n)) : v = "";
-        } else if (!k[w]) {
-          throw n + " \u304c\u8981\u6c42\u3059\u308b " + w + " \u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093!";
+      let w = v.l;
+      for (k(v.u, h); w;) {
+        const x = G.g.G(h, w), z = p[x];
+        v.l = x;
+        if (z) {
+          delete p[x], f[x] = z, n.push(!0), h = x, (v = G.g.o(z)) ? (w = v.l, k(v.u, h)) : w = "";
+        } else if (!f[x]) {
+          throw h + " \u304c\u8981\u6c42\u3059\u308b " + x + " \u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093!";
         }
       }
     }
-    for (var t in f) {
-      (n = f[t]) && 4 !== n.length && delete e[t];
+    for (var q in u) {
+      (h = u[q]) && 3 === h.length && delete p[q];
     }
-    for (var u in e) {
-      t = e[u], n = t[0], 3 === t.length && -1 !== JSON.stringify(n).indexOf('"slot"') && E(n) && delete e[u];
+    for (var m in p) {
+      q = p[m], h = G.g.A(q), 3 === q.length && -1 !== JSON.stringify(h).indexOf('"slot"') && E(h) && delete p[m];
     }
-    for (const l in e) {
-      u = K(e[l], l, k, f), this.push(new b({base:"/", path:l, contents:Buffer.from(JSON.stringify(u))})), delete e[l];
+    for (const n in p) {
+      m = p[n], delete p[n], m = G(m[H], m[1], m[2], n, f, u), this.push(new d({base:"/", path:n, contents:Buffer.from(JSON.stringify(m))}));
     }
-    d();
+    e();
   });
 };
 

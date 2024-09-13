@@ -272,14 +272,23 @@ NicePageBuilder.util.rootRelativeURLToRelativeURL = function( basePath, rootRela
  * @return {!Array}
  */
 NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
-    return /** @type {!Array} */ (nicePageOrTemplete[ STAT_INDEXES.HTML_JSON ]);
+    var htmlJson = /** @type {!Array} */ (nicePageOrTemplete[ STAT_INDEXES.HTML_JSON ]);
+
+    if( NicePageBuilder.DEFINE.DEBUG ){
+        if( !m_isArray( htmlJson ) ){
+            throw 'NOT_HTML_JSON_ERROR!';
+        };
+    };
+    return htmlJson;
 };
 
 /**
  * 
  * @param {!NicePageOrTemplete} nicePageOrTemplete 
- * @return {!NicePageOptions}
+ * @return {NicePageOptions | null}
  */
 NicePageBuilder.util.getNiceOptions = function( nicePageOrTemplete ){
-    return /** @type {!NicePageOptions} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
+    var options = /** @type {!NicePageOptions} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
+
+    return !m_isArray( options ) && m_isObject( options ) ? options : null;
 };
