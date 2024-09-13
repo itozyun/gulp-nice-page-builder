@@ -1,160 +1,173 @@
 function b(a) {
   return !(!a || a.pop !== [].pop);
 }
-function y(a) {
+function C(a) {
   return !(!a || "object" !== typeof a);
 }
-function A(a) {
-  return !b(a) && y(a);
+function E(a) {
+  return !b(a) && C(a);
 }
-function C(a) {
+function G(a) {
   var c = a[0], d = c === +c ? 2 : 1;
   if ("" + a === a || a === +a) {
-    var f = 3;
+    var g = 3;
   } else {
-    b(a) ? (f = a[0], "" + f === f ? f = 1 : (f = a[0], f = f === +f ? a[0] : -1)) : f = -1;
+    b(a) ? (g = a[0], "" + g === g ? g = 1 : (g = a[0], g = g === +g ? a[0] : -1)) : g = -1;
   }
-  return 1 === f || 17 === c ? A(a[d]) ? d + 1 : d : 11 === c ? 1 : 9 === c || 13 === c || 16 === c ? 2 : Infinity;
+  return 1 === g || 17 === c ? E(a[d]) ? d + 1 : d : 11 === c ? 1 : 9 === c || 13 === c || 16 === c ? 2 : Infinity;
 }
-;F.h = {};
-F.g = {};
-F.h.i = !0;
-F.l = "";
-F.g.C = function(a) {
+;H.h = {};
+H.g = {};
+H.h.i = !0;
+H.l = "";
+H.g.A = function(a) {
   return a.split("\\").join("/");
 };
-F.g.v = function(a) {
-  return 0 === a.indexOf(F.l);
+H.g.v = function(a) {
+  return 0 === a.indexOf(H.l);
 };
-F.g.B = function(a) {
+H.g.C = function(a) {
   return "//" === a.substr(0, 2) || "http://" === a.substr(0, 7) || "https://" === a.substr(0, 8);
 };
-F.g.A = function(a) {
-  return F.g.v(a) || F.g.B(a);
+H.g.B = function(a) {
+  return H.g.v(a) || H.g.C(a);
 };
-F.g.j = function(a) {
+H.g.j = function(a) {
   return "/" === a.charAt(0) && "//" !== a.substr(0, 2);
 };
-F.g.G = function(a) {
-  if (F.h.i && !F.g.v(a)) {
+H.g.H = function(a) {
+  return !H.g.v(a) && !H.g.j(a);
+};
+H.g.F = function(a) {
+  if (H.h.i && !H.g.v(a)) {
     throw a + " is not a absolute path!";
   }
-  return F.g.C(a).substr(F.l.length - 1);
+  return H.g.A(a).substr(H.l.length - 1);
 };
-F.g.I = function(a) {
-  if (F.h.i && !F.g.j(a)) {
+H.g.K = function(a) {
+  if (H.h.i && !H.g.j(a)) {
     throw a + " is not a root relative path!";
   }
-  return F.l + a.substr(1);
+  return H.l + a.substr(1);
 };
-F.g.s = function(a) {
+H.g.s = function(a) {
   a = a.split("index.html");
   a[a.length - 1] || a.pop();
   return a.join("index.html");
 };
-F.g.o = function(a) {
-  if (F.h.i && F.g.B(a)) {
+H.g.o = function(a) {
+  if (H.h.i && H.g.C(a)) {
     throw a + " is not a root relative path or relative path!";
   }
   a = a.split("#")[0].split("/");
   a[a.length - 1] || (a[a.length - 1] = "index.html");
   return a.join("/");
 };
-F.g.D = function(a, c) {
-  if (F.h.i) {
-    if (!F.g.j(a)) {
+H.g.G = function(a) {
+  if (H.h.i && !H.g.j(a)) {
+    throw a + " is not a root relative path!";
+  }
+  a = a.split(".json");
+  a[a.length - 1] || a.pop();
+  return a.join(".json");
+};
+H.g.I = function(a, c) {
+  if (H.h.i) {
+    if (!H.g.j(a)) {
       throw a + " is not a root relative path!";
     }
-    if (F.g.j(c) || F.g.A(c)) {
+    if (H.g.j(c) || H.g.B(c)) {
       throw c + " is not a relative path!";
     }
   }
   a = a.split("/");
-  for ("" === a[0] && a.shift(); "../" === c.substr(0, 3);) {
+  a.pop();
+  "" === a[0] && a.shift();
+  for ("./" === c.substr(0, 2) && (c = c.substr(2)); "../" === c.substr(0, 3);) {
     c = c.substr(3), --a.length;
   }
-  return (a.length ? a.join("/") + "/" : "") + c;
+  return a.join("/") + "/" + c;
 };
-F.g.H = function(a, c) {
-  if (F.h.i) {
-    if (!F.g.j(a)) {
+H.g.J = function(a, c) {
+  if (H.h.i) {
+    if (!H.g.j(a)) {
       throw a + " is not a root relative path!";
     }
-    if (F.g.j(c) || F.g.A(c)) {
+    if (H.g.j(c) || H.g.B(c)) {
       throw c + " is not a relative path!";
     }
   }
   var d = c.substr(c.indexOf("#"));
-  a = F.g.s(F.g.F(F.g.o(a), F.g.o(c)));
+  a = H.g.s(H.g.D(H.g.o(a), H.g.o(c)));
   d && (a += d);
   return a;
 };
-F.g.F = function(a, c) {
-  if (F.h.i) {
-    if (!F.g.j(a)) {
+H.g.D = function(a, c) {
+  if (H.h.i) {
+    if (!H.g.j(a)) {
       throw a + " is not a root relative path!";
     }
-    if (!F.g.j(c)) {
+    if (!H.g.j(c)) {
       throw c + " is not a root relative path!";
     }
   }
-  var d = [], f = 0, n = !1, r;
+  var d = [], g = 0, l = !1, m;
   var t = a.split("/");
-  var x = t.pop();
+  var y = t.pop();
   if (a === c) {
-    return x;
+    return y;
   }
   a = c.split("/");
   c = a.pop();
   var e = t.length;
-  for (r = Math.max(a.length, e); f < r; ++f) {
-    if (n || a[f] !== t[f]) {
-      f < e && d.unshift(".."), a[f] && d.push(a[f]), n = !0;
+  for (m = Math.max(a.length, e); g < m; ++g) {
+    if (l || a[g] !== t[g]) {
+      g < e && d.unshift(".."), a[g] && d.push(a[g]), l = !0;
     }
   }
-  (n || x !== c) && d.push(c);
+  (l || y !== c) && d.push(c);
   return d.join("/");
 };
-F.g.J = function(a, c) {
-  if (F.h.i) {
-    if (!F.g.j(a)) {
+H.g.L = function(a, c) {
+  if (H.h.i) {
+    if (!H.g.j(a)) {
       throw a + " is not a root relative path!";
     }
-    if (!F.g.j(c)) {
+    if (!H.g.j(c)) {
       throw c + " is not a root relative path!";
     }
   }
   var d = c.substr(c.indexOf("#"));
-  a = F.g.s(F.g.F(F.g.o(a), F.g.o(c)));
+  a = H.g.s(H.g.D(H.g.o(a), H.g.o(c)));
   d && (a += d);
   return a ? a : "./";
 };
-F.g.u = function(a) {
-  a = a[G];
-  if (F.h.i && !b(a)) {
+H.g.u = function(a) {
+  a = a[I];
+  if (H.h.i && !b(a)) {
     throw "NOT_HTML_JSON_ERROR!";
   }
   return a;
 };
-F.g.m = function(a) {
-  a = F.g.u(a)[0];
-  return !b(a) && y(a) ? a : null;
+H.g.m = function(a) {
+  a = H.g.u(a)[0];
+  return !b(a) && C(a) ? a : null;
 };
-function H(a, c) {
-  function d(r) {
-    let t = C(r), x = r.length;
-    for (var e; t < x; ++t) {
-      var p = r[t], l;
-      if (l = !("" + p === p || p === +p)) {
-        if (l = b(p)) {
+function J(a, c) {
+  function d(m) {
+    let t = G(m), y = m.length;
+    for (var e; t < y; ++t) {
+      var v = m[t], f;
+      if (f = !("" + v === v || v === +v)) {
+        if (f = b(v)) {
           a: {
-            e = p;
-            p = r;
-            l = t;
-            var q = e[0];
-            const h = e[1];
-            let m = q, k = 1;
-            switch(q) {
+            e = v;
+            v = m;
+            f = t;
+            var r = e[0];
+            const p = e[1];
+            let h = r, n = 1;
+            switch(r) {
               case 9:
               case 11:
               case 13:
@@ -163,184 +176,198 @@ function H(a, c) {
                 break a;
               case 1:
               case 17:
-                m = h, k = 2;
+                h = p, n = 2;
               default:
-                if ("" + m === m) {
-                  q = e[k];
-                  e = c(m, A(q) ? q : null) ? [e, p, l] : d(e);
+                if ("" + h === h) {
+                  r = e[n];
+                  e = c(h, E(r) ? r : null) ? [e, v, f] : d(e);
                   break a;
                 }
             }
             e = void 0;
           }
-          l = e;
+          f = e;
         }
       }
-      if (l) {
+      if (f) {
         return e;
       }
     }
   }
-  let f, n;
-  return A(a[0]) ? (f = a.shift(), n = d(a), a.unshift(f), n && n[1] === a ? [n[0], a, ++n[2]] : n) : d(a);
+  let g, l;
+  return E(a[0]) ? (g = a.shift(), l = d(a), a.unshift(g), l && l[1] === a ? [l[0], a, ++l[2]] : l) : d(a);
 }
-;function I(a) {
-  return H(a, function(c) {
+;function K(a) {
+  return J(a, function(c) {
     return "slot" === c;
   });
 }
-;var G = 0;
-function F(a, c, d, f, n, r) {
-  function t(h) {
-    if (h) {
-      for (let m = 0; m < h.length; ++m) {
-        const k = r[h[m]];
-        x(k[0], k[2]);
+;var I = 0;
+function H(a, c, d, g, l, m) {
+  function t(p) {
+    if (p) {
+      for (let h = 0; h < p.length; ++h) {
+        const n = m[p[h]];
+        y(n[0], n[2]);
       }
     }
   }
-  function x(h, m) {
-    for (const k in h) {
-      void 0 === e[k] && (e[k] = h[k]);
+  function y(p, h) {
+    for (const n in p) {
+      void 0 === e[n] && (e[n] = p[n]);
     }
-    d < m && (d = m);
+    d < h && (d = h);
   }
-  const e = !b(a[0]) && y(a[0]) ? a[0] : null;
+  const e = !b(a[0]) && C(a[0]) ? a[0] : null;
   if (!e) {
     return a;
   }
-  const p = d;
+  const v = d;
   t(e.MIXINS);
-  for (var l = e.TEMPLETE; l;) {
-    l = n[l];
-    var q = F.g.m(l);
-    q ? (x(q, l[2]), t(q.MIXINS), l = q.TEMPLETE) : l = "";
+  for (var f = e.TEMPLETE; f;) {
+    f = l[f];
+    var r = H.g.m(f);
+    r ? (y(r, f[2]), t(r.MIXINS), f = r.TEMPLETE) : f = "";
   }
-  for (l = e.TEMPLETE; l;) {
-    q = n[l];
-    const h = F.g.m(q);
-    a = J(F.g.u(q), a);
-    h ? l = h.TEMPLETE : l = "";
+  for (f = e.TEMPLETE; f;) {
+    r = l[f];
+    const p = H.g.m(r);
+    a = L(H.g.u(r), a);
+    p ? f = p.TEMPLETE : f = "";
   }
-  n = f.split("/");
-  e.FILE_PATH = f;
-  e.FILE_NAME = n.pop();
-  e.FOLDER_PATH = n.join("/");
-  e.URL = F.g.s(f);
+  l = g.split("/");
+  delete e.TEMPLETE;
+  delete e.MIXINS;
+  e.FILE_PATH = g;
+  e.FILE_NAME = l.pop();
+  e.FOLDER_PATH = l.join("/");
+  e.URL = H.g.s(g);
   e.CREATED_AT = c;
-  e.MODIFIED_AT = p;
+  e.MODIFIED_AT = v;
   e.UPDATED_AT = d;
   return a;
 }
-function J(a, c) {
+function L(a, c) {
   a = JSON.parse(JSON.stringify(a));
-  var d = I(a);
+  var d = K(a);
   if (d) {
-    const f = d[1];
+    const g = d[1];
     d = d[2];
-    let n;
-    A(c[0]) && (n = c.shift());
-    let r = C(c), t = c.length;
-    f.splice(d, 1);
-    for (d -= r; r < t; ++r) {
-      f.splice(d + r, 0, c[r]);
+    let l;
+    E(c[0]) && (l = c.shift());
+    let m = G(c), t = c.length;
+    g.splice(d, 1);
+    for (d -= m; m < t; ++m) {
+      g.splice(d + m, 0, c[m]);
     }
-    n && a.unshift(n);
+    l && a.unshift(l);
   }
   return a;
 }
-;F.module = {};
-module.exports = F;
-F.DOCUMENT_NODE = 9;
-F.DOCUMENT_FRAGMENT_NODE = 11;
-F.ELEMENT_NODE = 1;
-F.TEXT_NODE = 3;
-F.CDATA_SECTION = 4;
-F.PROCESSING_INSTRUCTION = 7;
-F.COMMENT_NODE = 8;
-F.COND_CMT_HIDE_LOWER = 13;
-F.COND_CMT_SHOW_LOWER_START = 14;
-F.NETSCAPE4_COND_CMT_HIDE_LOWER = 16;
-F.ELEMENT_START_TAG = 17;
-F.ELEMENT_END_TAG = 18;
-function K(a) {
-  return H(a, function(c, d) {
+;H.module = {};
+module.exports = H;
+H.DOCUMENT_NODE = 9;
+H.DOCUMENT_FRAGMENT_NODE = 11;
+H.ELEMENT_NODE = 1;
+H.TEXT_NODE = 3;
+H.CDATA_SECTION = 4;
+H.PROCESSING_INSTRUCTION = 7;
+H.COMMENT_NODE = 8;
+H.COND_CMT_HIDE_LOWER = 13;
+H.COND_CMT_SHOW_LOWER_START = 14;
+H.NETSCAPE4_COND_CMT_HIDE_LOWER = 16;
+H.ELEMENT_START_TAG = 17;
+H.ELEMENT_END_TAG = 18;
+function M(a) {
+  return J(a, function(c, d) {
     return "script" === c && d && "application/json" === d.type || !1;
   });
 }
-;F.gulp = function(a) {
-  const c = require("plugin-error"), d = require("vinyl"), f = require("through2"), n = require("path"), r = a || {}, t = r.allMixinPath, x = r.allTempletePath, e = F.g.C(n.resolve(r.srcRootPath || "./")) + "/", p = {}, l = {}, q = {};
-  F.l = e;
-  return f.obj(function(h, m, k) {
+;H.gulp = function(a) {
+  const c = require("plugin-error"), d = require("vinyl"), g = require("through2"), l = require("path"), m = a || {}, t = m.allPagesPath, y = m.allMixinPath, e = m.allTempletePath, v = H.g.A(l.resolve(m.srcRootPath || "./")) + "/", f = {}, r = {}, p = {};
+  H.l = v;
+  return g.obj(function(h, n, A) {
+    var B = H.g.A(h.path);
     if (h.isNull()) {
-      return k();
+      return A();
     }
     if (h.isStream()) {
-      return this.emit("error", new c("gulp-nice-page-builder", "Streaming not supported")), k();
+      return this.emit("error", new c("gulp-nice-page-builder", "Streaming not supported")), A();
     }
     if (".json" !== h.extname) {
-      return this.push(h), k();
+      return this.push(h), A();
     }
-    if (0 !== h.path.indexOf(e)) {
-      return this.emit("error", new c("gulp-nice-page-builder", '"' + h.path + '" is outside of srcRootPath:"' + r.l + '"')), k();
+    if (0 !== B.indexOf(v)) {
+      return this.emit("error", new c("gulp-nice-page-builder", '"' + B + '" is outside of srcRootPath:"' + m.l + '"')), A();
     }
-    m = JSON.parse(h.contents.toString(m));
-    const z = parseInt(h.stat.birthtimeMs, 10), u = parseInt(h.stat.ctimeMs, 10);
-    h = F.g.G(h.path);
-    if (b(m)) {
-      var g = K(m);
-      if (g) {
-        const w = g[0];
-        g[1].splice(g[2], 1);
-        w && 3 === w.length && (g = eval("(" + w[2] + ");"), !b(g) && y(g) && m.unshift(g));
+    n = JSON.parse(h.contents.toString(n));
+    const z = parseInt(h.stat.birthtimeMs, 10);
+    h = parseInt(h.stat.ctimeMs, 10);
+    B = H.g.F(B);
+    if (b(n)) {
+      var w = M(n);
+      if (w) {
+        const x = w[0];
+        w[1].splice(w[2], 1);
+        x && 3 === x.length && (w = eval("(" + x[2] + ");"), !b(w) && C(w) && n.unshift(w));
       }
-      p[h] = [m, z, u];
+      f[H.g.G(B)] = [n, z, h];
     } else {
-      y(m) && (q[h] = [m, z, u]);
+      C(n) && (p[B] = [n, z, h]);
     }
-    k();
+    A();
   }, function(h) {
-    function m(g, w) {
-      if (g) {
-        for (let v = 0, B = g.length; v < B; ++v) {
-          const E = F.g.D(w, g[v]), D = q[E];
-          g[v] = E;
-          if (D && 3 === D.length) {
-            D.push(!0);
-          } else if (!D) {
-            throw w + " \u304c\u8981\u6c42\u3059\u308b " + E + " \u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093!";
+    function n(k, q) {
+      return H.g.H(q) ? H.g.I(k, q) : q;
+    }
+    function A(k, q) {
+      if (q) {
+        for (let D = 0, N = q.length; D < N; ++D) {
+          const F = n(k, q[D]);
+          var u = p[F];
+          q[D] = F;
+          if (u && 3 === u.length) {
+            u.push(!0), u = u[0], A(F, u.MIXINS), B(F, u.TEMPLETE, u);
+          } else if (!u) {
+            throw k + " \u304c\u8981\u6c42\u3059\u308b " + F + " \u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093!";
           }
         }
       }
     }
-    for (var k in p) {
-      var z = p[k];
-      let g = F.g.m(z);
-      if (!g) {
-        continue;
-      }
-      m(g.MIXINS, k);
-      let w = g.TEMPLETE;
-      for (; w;) {
-        const v = F.g.D(k, w), B = p[v];
-        if (B) {
-          delete p[v], g.TEMPLETE = v, l[v] = B, 3 === z.length && z.push(!0), k = v, (g = F.g.m(B)) ? (m(g.MIXINS, k), w = g.TEMPLETE) : w = "";
-        } else if (!l[v]) {
-          throw k + " \u304c\u8981\u6c42\u3059\u308b " + v + " \u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093!";
+    function B(k, q, u) {
+      for (; q;) {
+        q = n(k, q);
+        const D = f[q];
+        if (D) {
+          if (delete f[q], r[q] = D, u.TEMPLETE = k = q, u = H.g.m(D)) {
+            A(k, u.MIXINS), q = u.TEMPLETE;
+          } else {
+            break;
+          }
+        } else if (r[q]) {
+          break;
+        } else {
+          throw k + " \u304c\u8981\u6c42\u3059\u308b " + q + " \u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093!";
         }
       }
     }
-    for (const g in q) {
-      3 === q[g].length && (F.h.i && console.log("Unused mixin found! " + g), delete q[g]);
+    for (var z in f) {
+      var w = f[z];
+      let k = H.g.m(w);
+      k && (A(z, k.MIXINS), B(z, k.TEMPLETE, k), f[z] && w.push(!0));
     }
-    for (var u in p) {
-      k = p[u], z = F.g.u(k), 3 === k.length && I(z) && (F.h.i && console.log("Unused templete found! " + u), delete p[u]);
+    for (const k in p) {
+      3 === p[k].length && (H.h.i && console.log("Unused mixin found! " + k), delete p[k]);
     }
-    for (const g in p) {
-      u = p[g], delete p[g], u = F(u[G], u[1], u[2], g, l, q), this.push(new d({base:"/", path:g, contents:Buffer.from(JSON.stringify(u))}));
+    for (var x in f) {
+      z = f[x], w = H.g.u(z), 3 === z.length && K(w) && (H.h.i && console.log("Unused templete found! " + x), delete f[x]);
     }
-    t && this.push(new d({base:"/", path:t, contents:Buffer.from(JSON.stringify(q))}));
-    x && this.push(new d({base:"/", path:x, contents:Buffer.from(JSON.stringify(l))}));
+    t && this.push(new d({base:"/", path:t, contents:Buffer.from(JSON.stringify(f))}));
+    for (const k in f) {
+      x = f[k], delete f[k], x = H(x[I], x[1], x[2], k, r, p), this.push(new d({base:"/", path:k + ".json", contents:Buffer.from(JSON.stringify(x))}));
+    }
+    y && this.push(new d({base:"/", path:y, contents:Buffer.from(JSON.stringify(p))}));
+    e && this.push(new d({base:"/", path:e, contents:Buffer.from(JSON.stringify(r))}));
     h();
   });
 };

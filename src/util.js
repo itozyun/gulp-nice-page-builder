@@ -7,6 +7,7 @@ goog.provide( 'NicePageBuilder.util.isAbsoluteFilePath' );
 goog.provide( 'NicePageBuilder.util.isAbsoluteURL' );
 goog.provide( 'NicePageBuilder.util.isAbsolutePath' );
 goog.provide( 'NicePageBuilder.util.isRootRelativePath' );
+goog.provide( 'NicePageBuilder.util.isRelativePath' );
 goog.provide( 'NicePageBuilder.util.absolutePathToSrcRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.rootRelativePathToAbsolutePath' );
 goog.provide( 'NicePageBuilder.util.filePathToURL' );
@@ -65,6 +66,14 @@ NicePageBuilder.util.isAbsolutePath = function( filePathOrURL ){
  */
 NicePageBuilder.util.isRootRelativePath = function( filePathOrURL ){
     return filePathOrURL.charAt( 0 ) === '/' && filePathOrURL.substr( 0, 2 ) !== '//';
+};
+
+/**
+ * @param {string} filePath
+ * @return {boolean}
+ */
+NicePageBuilder.util.isRelativePath = function( filePath ){
+    return !NicePageBuilder.util.isAbsoluteFilePath( filePath ) && !NicePageBuilder.util.isRootRelativePath( filePath );
 };
 
 /**
@@ -136,6 +145,27 @@ NicePageBuilder.util.urlToFilePath = function( url ){
 };
 
 /**
+ * @param {string} filePath
+ * @return {string}
+ */
+NicePageBuilder.util.htmlJsonfilePathToHtmlFilePath = function( filePath ){
+    if( NicePageBuilder.DEFINE.DEBUG ){
+        if( !NicePageBuilder.util.isRootRelativePath( filePath ) ){
+            throw filePath + ' is not a root relative path!';
+        };
+    };
+
+    var rootRelativeURL = filePath.split( '.json' );
+
+    // "/home.html.json" => ["/home.html", ""] => "/"
+    // "/.json-store/products.html.json" => ["/", "-store/products.html", ""] => "/.json-store/products.html"
+    if( !rootRelativeURL[ rootRelativeURL.length - 1 ] ){
+        rootRelativeURL.pop();
+    };
+    return rootRelativeURL.join( '.json' );
+};
+
+/**
  * @param {string} basePath filePath!!
  * @param {string} relativePath
  * @return {string}
@@ -151,14 +181,19 @@ NicePageBuilder.util.relativePathToSrcRootRelativePath = function( basePath, rel
     };
 
     var basePathElements = basePath.split( '/' );
+    basePathElements.pop();
     basePathElements[ 0 ] === '' && basePathElements.shift();
+
+    if( relativePath.substr( 0, 2 ) === './' ){
+        relativePath = relativePath.substr( 2 );
+    };
 
     // 相対リンク
     while( relativePath.substr( 0, 3 ) === '../' ){
         relativePath = relativePath.substr( 3 );
         --basePathElements.length;
     };
-    return ( basePathElements.length ? basePathElements.join( '/' ) + '/' : '' ) + relativePath;
+    return basePathElements.join( '/' ) + '/' + relativePath;
 };
 
 /**

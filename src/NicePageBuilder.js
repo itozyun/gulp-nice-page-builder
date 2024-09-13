@@ -141,6 +141,9 @@ NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_L
 
     const pathElements = filePath.split( '/' );
 
+    delete pageOptions.TEMPLETE;
+    delete pageOptions.MIXINS;
+
     pageOptions.FILE_PATH   = filePath;
     pageOptions.FILE_NAME   = pathElements.pop();
     pageOptions.FOLDER_PATH = pathElements.join( '/' );
