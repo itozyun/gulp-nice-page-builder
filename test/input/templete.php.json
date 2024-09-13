@@ -1,0 +1,12 @@
+[
+    9,
+    "html",
+    [
+        "body",
+        "header",
+        [
+            "slot"
+        ],
+        "footer"
+    ]
+]

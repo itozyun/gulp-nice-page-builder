@@ -57,3 +57,29 @@ gulp.task(
         }
     )
 );
+
+gulp.task(
+    'test',
+    gulp.series(
+        function(){
+            let NicePageBuilder = require( './dist/index.js' );
+
+            return gulp.src(
+                    [
+                        './test/input/**/*.json'
+                    ]
+                ).pipe(
+                    NicePageBuilder.gulp(
+                        {
+                            srcRootPath     : 'test/input',
+                            allPagesPath    : '/all-pages.json',
+                            allMixinPath    : '/all-mixin.json',
+                            allTempletePath : '/all-templete.json'
+                        }
+                    )
+                ).pipe(
+                    gulp.dest( 'test/output' )
+                );
+        }
+    )
+);
