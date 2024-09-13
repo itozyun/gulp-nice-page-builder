@@ -16,7 +16,7 @@ var getElementByFilter = function( rootJSONNode, filter ){
         result  = walkChildNodes( rootJSONNode );
 
         rootJSONNode.unshift( options );
-        if( result ){            
+        if( result ){
             if( result[ 1 ] === rootJSONNode ){
                 return [ result[ 0 ], rootJSONNode, ++result[ 2 ] ];
             };

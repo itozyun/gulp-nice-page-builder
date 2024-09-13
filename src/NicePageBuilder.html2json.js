@@ -1,6 +1,7 @@
-goog.provide( 'NicePageBuilder.gulp' );
+goog.provide( 'NicePageBuilder.html2json' );
+goog.provide( 'NicePageBuilder.html2json.gulp' );
 
-goog.require( 'htmljson.base' );
+goog.require( 'html2json' );
 goog.require( 'NicePageBuilder.module' );
 goog.require( 'NicePageBuilder.srcRootPath' );
 goog.require( 'NicePageBuilder.util.normalizePath' );
@@ -10,21 +11,70 @@ goog.requireType( 'NicePageOptions' );
 goog.requireType( 'NicePageOrTemplete' );
 goog.requireType( 'Mixin' );
 goog.requireType( 'sourceRootRelativePath' );
+goog.require( 'STAT_INDEXES' );
 goog.require( 'getJsonScriptElement' );
 goog.require( 'getSLotElement' );
 
-NicePageBuilder.gulp = function( _options ){
+/**
+ * @param {string} htmlString
+ * @param {boolean} allowInvalidTree
+ * @param {!Object=} opt_options
+ * @return {!Array}
+ */
+NicePageBuilder.html2json = function( htmlString, allowInvalidTree, opt_options ){
+    const htmlJson = html2json( htmlString, allowInvalidTree, opt_options )
+
+    const result = getJsonScriptElement( /** @type {!Array} */ (htmlJson) );
+
+    if( result ){
+        const scriptJSONNode = /** @type {!Array} */ (result[ 0 ]);
+        const parentJSONNode = /** @type {!Array} */ (result[ 1 ]);
+
+        let myIndex = /** @type {number} */ (result[ 2 ]);
+
+        parentJSONNode.splice( myIndex, 1 );
+
+        // [ 11, [ 'script', {}, {...} ], [ 'p' ] ]
+        // ↓
+        // [ {...}, [ 'p' ] ]
+
+        // [ 9, 'xhtml', [ 'script', {}, {...} ], [ 'p' ] ]
+        // ↓
+        // [ {...}, 9, 'xhtml', [ 'p' ] ]
+        if( scriptJSONNode && scriptJSONNode.length === 3 ){
+            const options = eval( '(' + scriptJSONNode[ 2 ] + ');' ); // TODO JSON.parse()
+
+            if( !m_isArray( options ) && m_isObject( options ) ){
+                htmlJson.unshift( options );
+            };
+        };
+    };
+    return htmlJson;
+};
+
+NicePageBuilder.html2json.gulp = function( _options ){
+    function toAbsolutePath( filePath ){
+        return NicePageBuilder.util.normalizePath( filePath );
+    };
+
+    function toSrcRootRelativePath( filePath ){
+        return NicePageBuilder.util.absolutePathToSrcRootRelativePath( toAbsolutePath( filePath ) );
+    };
+
     const pluginName  = 'gulp-nice-page-builder',
           PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     ),
           Path        = require( 'path'         );
 
-    const options          = _options || {},
-          allPagesPath     = options[ 'allPagesPath' ],
-          allMixinsPath    = options[ 'allMixinsPath' ],
-          allTempletesPath = options[ 'allTempletesPath' ],
-          srcRootPath      = NicePageBuilder.util.normalizePath( Path.resolve( options[ 'srcRootPath' ] || './' ) ) + '/'; // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
+    const options     = _options || {},
+          srcRootPath = toAbsolutePath( options[ 'srcRootPath' ] || './' ) + '/'; // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
+
+    NicePageBuilder.srcRootPath = srcRootPath;
+
+    const allPagesPath     = toSrcRootRelativePath( options[ 'allPagesPath'     ] || ''                    ),
+          allMixinsPath    = toSrcRootRelativePath( options[ 'allMixinsPath'    ] || '/all.mixins.json'    ),
+          allTempletesPath = toSrcRootRelativePath( options[ 'allTempletesPath' ] || '/all.templetes.json' );
 
     /** @type {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} */
     const PAGES_OR_TEMPLETES = {};
@@ -34,8 +84,6 @@ NicePageBuilder.gulp = function( _options ){
 
     /** @type {!Object.<sourceRootRelativePath, !Mixin>} */
     const MIXIN_LIST = {};
-
-    NicePageBuilder.srcRootPath = srcRootPath;
 
     return through.obj(
         /**
@@ -62,42 +110,30 @@ NicePageBuilder.gulp = function( _options ){
                 return callback();
             };
     
-            const json             = JSON.parse( file.contents.toString( encoding ) ),
+            const contents         = file.contents.toString( encoding ),
                   createdTimeMs    = parseInt( file.stat.birthtimeMs, 10 ),
                   updatedTimeMs    = parseInt( file.stat.ctimeMs, 10 ),
                   rootRelativePath = NicePageBuilder.util.absolutePathToSrcRootRelativePath( filePath );
     
-            if( m_isArray( json ) ){
-                const result = getJsonScriptElement( /** @type {!Array} */ (json) );
+            switch( file.extname ){
+                case '.html'  :
+                case '.htm'   :
+                case '.xhtml' :
+                case '.php'   :
+                    const htmlJson = NicePageBuilder.html2json( contents, false, options );
 
-                if( result ){
-                    const scriptJSONNode = /** @type {!Array} */ (result[ 0 ]);
-                    const parentJSONNode = /** @type {!Array} */ (result[ 1 ]);
-            
-                    let myIndex = /** @type {number} */ (result[ 2 ]);
+                    PAGES_OR_TEMPLETES[ rootRelativePath ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
+                    break;
+                case '.json' :
+                    const mixinJson = JSON.parse( contents );
 
-                    parentJSONNode.splice( myIndex, 1 );
-
-                    // [ 11, [ 'script', {}, {...} ], [ 'p' ] ]
-                    // ↓
-                    // [ {...}, [ 'p' ] ]
-
-                    // [ 9, 'xhtml', [ 'script', {}, {...} ], [ 'p' ] ]
-                    // ↓
-                    // [ {...}, 9, 'xhtml', [ 'p' ] ]
-                    if( scriptJSONNode && scriptJSONNode.length === 3 ){
-                        const options = eval( '(' + scriptJSONNode[ 2 ] + ');' ); // TODO JSON.parse()
-
-                        if( !m_isArray( options ) && m_isObject( options ) ){
-                            json.unshift( options );
-                        };
+                    if( m_isObject( mixinJson ) ){
+                        MIXIN_LIST[ rootRelativePath ] = [ /** @type {!NicePageOptions} */ (mixinJson), createdTimeMs, updatedTimeMs ];
                     };
-                };
-                PAGES_OR_TEMPLETES[ NicePageBuilder.util.htmlJsonfilePathToHtmlFilePath( rootRelativePath ) ] = [ json, createdTimeMs, updatedTimeMs ];
-            } else if( m_isObject( /** @type {!NicePageOptions} */ (json) ) ){
-                MIXIN_LIST[ rootRelativePath ] = [ json, createdTimeMs, updatedTimeMs ];
-            } else {
-                // error
+                    break;
+                default :
+                    this.push( file );
+                    break;
             };
             callback();
         },
@@ -216,63 +252,54 @@ NicePageBuilder.gulp = function( _options ){
             };
 
         // 書出し
+            const self = this;
+
             if( allPagesPath ){
-                this.push(
-                    new _Vinyl(
-                        {
-                            base     : '/',
-                            path     : allPagesPath,
-                            contents : Buffer.from( JSON.stringify( PAGE_LIST ) )
-                        }
-                    )
-                );
+                writeFile( allPagesPath, PAGE_LIST );
             };
+            if( allMixinsPath ){
+                writeFile( allMixinsPath, MIXIN_LIST );
+            };
+            if( allTempletesPath ){
+                writeFile( allTempletesPath, TEMPLETE_LIST );
+            };
+
             for( const filePath in PAGE_LIST ){
                 const nicePage = PAGE_LIST[ filePath ];
-
                 delete PAGE_LIST[ filePath ];
 
-                const htmlJson = NicePageBuilder(
-                        /** @type {!Array} */ (nicePage[ STAT_INDEXES.HTML_JSON  ]),
-                        /** @type {number} */ (nicePage[ STAT_INDEXES.CREATED_AT ]),
-                        /** @type {number} */ (nicePage[ STAT_INDEXES.UPDATED_AT ]),
-                        filePath,
-                        TEMPLETE_LIST, MIXIN_LIST
-                    );
-                this.push(
+                const htmlJson     = nicePage[ STAT_INDEXES.HTML_JSON ];
+                const pathElements = filePath.split( '/' );
+
+                let pageOptions = htmlJson[ 0 ];
+                pageOptions = !m_isArray( pageOptions ) && m_isObject( pageOptions ) ? pageOptions : {};
+                pageOptions.FILE_PATH   = filePath;
+                pageOptions.FILE_NAME   = pathElements.pop();
+                pageOptions.FOLDER_PATH = pathElements.join( '/' );
+                pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
+                pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ STAT_INDEXES.CREATED_AT ]);
+                pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ STAT_INDEXES.UPDATED_AT ]);
+
+                if( pageOptions !== htmlJson[ 0 ] ){
+                    htmlJson.unshift( pageOptions );
+                };
+
+                writeFile( filePath + '.json', htmlJson );
+            };
+
+            callback();
+
+            function writeFile( filePath, json ){
+                self.push(
                     new _Vinyl(
                         {
                             base     : '/',
                             path     : filePath + '.json',
-                            contents : Buffer.from( JSON.stringify( htmlJson ) )
+                            contents : Buffer.from( JSON.stringify( json ) )
                         }
                     )
                 );
             };
-
-            if( allMixinsPath ){
-                this.push(
-                    new _Vinyl(
-                        {
-                            base     : '/',
-                            path     : allMixinsPath,
-                            contents : Buffer.from( JSON.stringify( MIXIN_LIST ) )
-                        }
-                    )
-                );
-            };
-            if( allTempletesPath ){
-                this.push(
-                    new _Vinyl(
-                        {
-                            base     : '/',
-                            path     : allTempletesPath,
-                            contents : Buffer.from( JSON.stringify( TEMPLETE_LIST ) )
-                        }
-                    )
-                );
-            };
-            callback();
         }
     );
 };

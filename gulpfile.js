@@ -14,6 +14,7 @@ gulp.task(
             return gulp.src(
                     [
                         './.submodules/html.json/src/closure-primitives/base.js',
+                        './.submodules/html.json/.submodules/htmlparser/src/js/**/*.js', 
                         './.submodules/html.json/src/js/**/*.js',
                         './src/**/*.js'
                     ]
@@ -21,7 +22,7 @@ gulp.task(
                     ClosureCompiler(
                         {
                             dependency_mode   : 'PRUNE',
-                            entry_point       : 'goog:NicePageBuilder.gulp',
+                            entry_point       : 'goog:NicePageBuilder.all',
                             externs           : [
                                // './src/js-externs/console.js',
                                // './node_modules/@externs/nodejs/v8/nodejs.js',
@@ -39,6 +40,14 @@ gulp.task(
                                 // './.submodules/html.json/src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
+                                'htmlparser.DEFINE.useXML=' + true,
+                                'htmlparser.DEFINE.useDocTypeNode=' + true,
+                                'htmlparser.DEFINE.useProcessingInstruction=' + true,
+                                'htmlparser.DEFINE.useLazy=' + false,
+                                'htmlparser.DEFINE.parsingStop=' + false,
+                                'htmlparser.DEFINE.useCDATASection=' + true,
+                                'htmlparser.DEFINE.attributePrefixSymbol=":"',
+
                                 'htmljson.DEFINE.DEBUG=' + isDebug,
                                 'NicePageBuilder.DEFINE.DEBUG=' + isDebug
                             ],
@@ -66,17 +75,18 @@ gulp.task(
 
             return gulp.src(
                     [
-                        './test/input/**/*.json'
+                        './test/input/**/*.html', './test/input/**/*.php', './test/input/**/*.json' // .xhtml, .htm
                     ]
                 ).pipe(
-                    NicePageBuilder.gulp(
+                    NicePageBuilder.html2json.gulp(
                         {
-                            srcRootPath      : 'test/input',
-                            allPagesPath     : '/all-pages.json',
-                            allMixinsPath    : '/all-mixin.json',
-                            allTempletesPath : '/all-templete.json'
+                            srcRootPath : 'test/input'
                         }
                     )
+                ).pipe(
+                    NicePageBuilder.generator.gulp()
+                ).pipe(
+                    NicePageBuilder.json2html.gulp()
                 ).pipe(
                     gulp.dest( 'test/output' )
                 );

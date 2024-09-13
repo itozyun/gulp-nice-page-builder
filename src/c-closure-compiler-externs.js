@@ -13,3 +13,11 @@ var nicePageOptions = {};
     nicePageOptions.CREATED_AT  = 0;
     nicePageOptions.MODIFIED_AT = 0;
     nicePageOptions.UPDATED_AT  = 0;
+
+var nicePageBuilder = {};
+    nicePageBuilder.html2json = {};
+    nicePageBuilder.html2json.gulp;
+    nicePageBuilder.generator = {};
+    nicePageBuilder.generator.gulp;
+    nicePageBuilder.json2html = {};
+    nicePageBuilder.json2html.gulp;

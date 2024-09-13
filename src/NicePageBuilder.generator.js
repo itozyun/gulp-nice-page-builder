@@ -1,83 +1,31 @@
-goog.provide( 'NicePageBuilder' );
-goog.provide( 'NicePageOptions' );
-goog.provide( 'NicePageOrTemplete' );
-goog.provide( 'Mixin' );
-goog.provide( 'sourceRootRelativePath' );
-goog.provide( 'STAT_INDEXES' );
+goog.provide( 'NicePageBuilder.generator' );
+goog.provide( 'NicePageBuilder.generator.gulp' );
 
+goog.requireType( 'NicePageOptions' );
+goog.requireType( 'NicePageOrTemplete' );
+goog.requireType( 'Mixin' );
+goog.requireType( 'sourceRootRelativePath' );
+goog.requireType( 'STAT_INDEXES' );
+goog.require( 'NicePageBuilder.module' );
+goog.require( 'htmljson.base' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.getNiceOptions' );
-goog.require( 'NicePageBuilder.util.filePathToURL' );
-goog.require( 'htmljson.base' );
 goog.require( 'getSLotElement' );
 
 /**
- * @typedef {string}
- */
-var sourceRootRelativePath;
-
-/**
- * @typedef {{
- *   TEMPLETE    : (sourceRootRelativePath | void),
- *   MIXINS      : (!Array.<sourceRootRelativePath> | void),
- *   FILE_PATH   : sourceRootRelativePath,
- *   FILE_NAME   : string,
- *   FOLDER_PATH : string,
- *   URL         : string,
- *   CREATED_AT  : number,
- *   MODIFIED_AT : number,
- *   UPDATED_AT  : number
- * }}
- */
-var NicePageOptions;
-
-/**
- * [0] {Array} HTML JSON
- * [1] {number} CREATED_AT
- * [2] {number} UPDATED_AT
- * [3] {boolean} isPage
- * 
- * @typedef {!Array.<(!Array | number | boolean)>}
- */
-var NicePageOrTemplete;
-
-/**
- * [0] {Object} NicePageOptions
- * [1] {number} CREATED_AT
- * [2] {number} UPDATED_AT
- * [3] {boolean} used
- * 
- * @typedef {!Array.<(!Object | number | boolean)>}
- */
-var Mixin;
-
-/**
- * @enum {number}
- */
-var STAT_INDEXES = {
-    HTML_JSON     : 0,
-    MIXIN_OPTIONS : 0,
-    CREATED_AT    : 1,
-    UPDATED_AT    : 2
-};
-
-/**
  * @param {!Array} htmlJson
- * @param {number} createdAt
- * @param {number} updatedAt
- * @param {sourceRootRelativePath} filePath
  * @param {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} TEMPLETE_LIST 
  * @param {!Object.<sourceRootRelativePath, !Mixin>} MIXIN_LIST 
  * @return {!Array}
  */
-NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_LIST, MIXIN_LIST ){
+NicePageBuilder.generator = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
     const pageOptions = !m_isArray( htmlJson[ 0 ] ) && m_isObject( htmlJson[ 0 ] ) ? htmlJson[ 0 ] : null;
 
     if( !pageOptions ){
         return htmlJson;
     };
 
-    const modifiedAt = updatedAt;
+    let updatedAt = pageOptions.MODIFIED_AT;
     let templetePath = pageOptions.TEMPLETE;
 
     mergeMinxins( pageOptions.MIXINS );
@@ -146,17 +94,8 @@ NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_L
         };
     };
 
-    const pathElements = filePath.split( '/' );
-
     delete pageOptions.TEMPLETE;
     delete pageOptions.MIXINS;
-
-    pageOptions.FILE_PATH   = filePath;
-    pageOptions.FILE_NAME   = pathElements.pop();
-    pageOptions.FOLDER_PATH = pathElements.join( '/' );
-    pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
-    pageOptions.CREATED_AT  = createdAt;
-    pageOptions.MODIFIED_AT = modifiedAt;
     pageOptions.UPDATED_AT  = updatedAt;
 
     return contentHtmlJson;
@@ -197,4 +136,91 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
         };
     };
     return templeteJSONNode;
+};
+
+NicePageBuilder.generator.gulp = function( _options ){
+    const pluginName  = 'NicePageBuilder.generator.gulp',
+          PluginError = require( 'plugin-error' ),
+          _Vinyl      = require( 'vinyl'        ),
+          through     = require( 'through2'     );
+
+    /** @type {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} */
+    const PAGE_LIST = {};
+
+    /** @type {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} */
+    let TEMPLETE_LIST;
+
+    /** @type {!Object.<sourceRootRelativePath, !Mixin>} */
+    let MIXIN_LIST;
+
+    return through.obj(
+        /**
+         * @this {stream.Writable}
+         * @param {!Vinyl} file
+         * @param {string} encoding
+         * @param {function()} callback
+         */
+        function( file, encoding, callback ){
+            if( file.isNull() ) return callback();
+    
+            if( file.isStream() ){
+                this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
+                return callback();
+            };
+            if( file.extname !== '.json' ){
+                this.push( file );
+                return callback();
+            };
+    
+            const json = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
+    
+            switch( file.stem.split( '/' ).pop() ){
+                case '.html'  :
+                case '.htm'   :
+                case '.xhtml' :
+                case '.php'   :
+                    PAGE_LIST[ /** @type {!NicePageOptions} */ (json[ 0 ]).FILE_PATH ] = json;
+                    break;
+                case '.templete' :
+                    if( !m_isArray( json ) && m_isObject( json ) ){
+                        /** @suppress {checkTypes} */
+                        TEMPLETE_LIST = json;
+                    };
+                    break;
+                case '.mixin' :
+                    if( !m_isArray( json ) && m_isObject( json ) ){
+                        /** @suppress {checkTypes} */
+                        MIXIN_LIST = json;
+                    };
+                    break;
+                default :
+                    this.push( file );
+                    break;
+            };
+            callback();
+        },
+        /**
+         * @this {stream.Writable}
+         * @param {function()} callback
+         */
+        function( callback ){
+        // 書出し
+            for( const filePath in PAGE_LIST ){
+                const htmlJson = NicePageBuilder.generator( /** @type {!Array} */ (PAGE_LIST[ filePath ]), TEMPLETE_LIST, MIXIN_LIST );
+                delete PAGE_LIST[ filePath ];
+
+                this.push(
+                    new _Vinyl(
+                        {
+                            base     : '/',
+                            path     : filePath + '.json',
+                            contents : Buffer.from( JSON.stringify( htmlJson ) )
+                        }
+                    )
+                );
+            };
+
+            callback();
+        }
+    );
 };
