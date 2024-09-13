@@ -5,10 +5,11 @@ goog.provide( 'Mixin' );
 goog.provide( 'sourceRootRelativePath' );
 goog.provide( 'STAT_INDEXES' );
 
-goog.require( 'insertContentToTemplete' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.getNiceOptions' );
 goog.require( 'NicePageBuilder.util.filePathToURL' );
+goog.require( 'htmljson.base' );
+goog.require( 'getSLotElement' );
 
 /**
  * @typedef {string}
@@ -34,7 +35,7 @@ var NicePageOptions;
  * [0] {Array} HTML JSON
  * [1] {number} CREATED_AT
  * [2] {number} UPDATED_AT
- * [3] {boolean} use templete
+ * [3] {boolean} isPage
  * 
  * @typedef {!Array.<(!Array | number | boolean)>}
  */
@@ -78,9 +79,9 @@ NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_L
 
     const modifiedAt = updatedAt;
 
-    let templetePath = pageOptions.TEMPLETE;
-
     mergeMinxins( pageOptions.MIXINS );
+
+    let templetePath = pageOptions.TEMPLETE; // templetePath の行進は mergeMinxins を呼んだ後!
 
     while( templetePath ){
         const templete = TEMPLETE_LIST[ templetePath ];
@@ -130,7 +131,7 @@ NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_L
         const templete  = TEMPLETE_LIST[ templetePath ];
         const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
 
-        contentHtmlJson = insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
+        contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
         if( templeteOptions ){
             templetePath = templeteOptions.TEMPLETE;
         } else {
@@ -149,4 +150,41 @@ NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_L
     pageOptions.UPDATED_AT  = updatedAt;
 
     return contentHtmlJson;
+};
+
+/**
+ * @private
+ * @param {!Array} templeteJSONNode 
+ * @param {!Array} contentJSONNode
+ * @return {!Array}
+ */
+function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
+    templeteJSONNode = /** @type {!Array} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
+
+    let result = getSLotElement( templeteJSONNode );
+
+    if( result ){
+        const parentJSONNode = /** @type {!Array} */ (result[ 1 ]);
+
+        let myIndex = /** @type {number} */ (result[ 2 ]),
+            options;
+
+        if( m_isAttributes( contentJSONNode[ 0 ] ) ){
+            options = contentJSONNode.shift();
+        };
+
+        let i = m_getChildNodeStartIndex( contentJSONNode ),
+            l = contentJSONNode.length;
+
+        parentJSONNode.splice( myIndex, 1 ); // remove <slot/>
+
+        for( myIndex -= i; i < l; ++i ){ // PROCESSING_INSTRUCTION で配列が変化する
+            parentJSONNode.splice( myIndex + i, 0, contentJSONNode[ i ] );
+        };
+
+        if( options ){
+            templeteJSONNode.unshift( options );
+        };
+    };
+    return templeteJSONNode;
 };

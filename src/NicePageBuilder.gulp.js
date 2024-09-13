@@ -113,24 +113,26 @@ NicePageBuilder.gulp = function( _options ){
                     continue;
                 };
 
-                let templetePath = pageOptions.TEMPLETE;
-        
                 checkMixins( pageOptions.MIXINS, pageOrTempletePath );
+
+                let templetePath = pageOptions.TEMPLETE;
 
                 while( templetePath ){
                     const path     = NicePageBuilder.util.relativePathToSrcRootRelativePath( pageOrTempletePath, templetePath );
                     const templete = PAGES_OR_TEMPLETES[ path ];
 
-                    pageOptions.TEMPLETE = path; // toSourceRootRelativePath
                     if( templete ){
                         delete PAGES_OR_TEMPLETES[ path ];
+                        pageOptions.TEMPLETE = path; // toSourceRootRelativePath
                         TEMPLETE_LIST[ path ] = templete;
-                        pageOrTemplete.push( true ); // use templete
+                        if( pageOrTemplete.length === STAT_INDEXES.UPDATED_AT + 1 ){
+                            pageOrTemplete.push( true ); // isPage
+                        };
                         pageOrTempletePath = path;
                         pageOptions = NicePageBuilder.util.getNiceOptions( templete );
                         if( pageOptions ){
-                            templetePath = pageOptions.TEMPLETE;
                             checkMixins( pageOptions.MIXINS, pageOrTempletePath );
+                            templetePath = pageOptions.TEMPLETE;
                         } else {
                             templetePath = '';
                         };
@@ -163,8 +165,11 @@ NicePageBuilder.gulp = function( _options ){
         // 使用していない TEMPLETE と MIXIN を削除
             for( const mixinPath in MIXIN_LIST ){
                 const mixin = MIXIN_LIST[ mixinPath ];
-                if( mixin && mixin.length === STAT_INDEXES.UPDATED_AT + 1 ){
-                    delete PAGES_OR_TEMPLETES[ mixinPath ];
+                if( mixin.length === STAT_INDEXES.UPDATED_AT + 1 ){
+                    if( NicePageBuilder.DEFINE.DEBUG ){
+                        console.log( 'Unused mixin found! ' + mixinPath );
+                    };
+                    delete MIXIN_LIST[ mixinPath ];
                 };
             };
 
@@ -172,12 +177,15 @@ NicePageBuilder.gulp = function( _options ){
                 const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempletePath ];
                 const htmlJson       = NicePageBuilder.util.getHTMLJson( pageOrTemplete );
 
-                if( pageOrTemplete.length === 3 ){ // NicePageOrTemplete[4] use templete == false
-                    if( JSON.stringify( htmlJson ).indexOf( '"slot"' ) !== -1 ){ // mybe contains <slot>
+                if( pageOrTemplete.length === STAT_INDEXES.UPDATED_AT + 1 ){ // NicePageOrTemplete[4] use templete == false
+                    // if( JSON.stringify( htmlJson ).indexOf( '"slot"' ) !== -1 ){ // mybe contains <slot>
                         if( getSLotElement( htmlJson ) ){
+                            if( NicePageBuilder.DEFINE.DEBUG ){
+                                console.log( 'Unused templete found! ' + pageOrTempletePath );
+                            };
                             delete PAGES_OR_TEMPLETES[ pageOrTempletePath ];
                         };
-                    };
+                    // };
                 };
             };
 
