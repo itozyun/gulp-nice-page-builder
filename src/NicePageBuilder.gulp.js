@@ -118,7 +118,7 @@ NicePageBuilder.gulp = function( _options ){
                     continue;
                 };
 
-                checkMixins( pageOrTempletePath, pageOptions.MIXINS );
+                checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
                 checkTemplete( pageOrTempletePath, pageOptions.TEMPLETE, pageOptions );
 
                 if( PAGES_OR_TEMPLETES[ pageOrTempletePath ] ){
@@ -133,8 +133,9 @@ NicePageBuilder.gulp = function( _options ){
             /**
              * @param {string} pageOrTempletePath
              * @param {!Array.<sourceRootRelativePath> | void} mixinPathList
+             * @param {boolean} skipTemplete
              */
-            function checkMixins( pageOrTempletePath, mixinPathList ){
+            function checkMixins( pageOrTempletePath, mixinPathList, skipTemplete ){
                 if( mixinPathList ){
                     for( let i = 0, l = mixinPathList.length; i < l; ++i ){
                         const mixinPath = mixinPathList[ i ];
@@ -145,8 +146,10 @@ NicePageBuilder.gulp = function( _options ){
                         if( mixin && mixin.length === STAT_INDEXES.UPDATED_AT + 1 ){
                             mixin.push( true ); // used
                             const mixinOptions = /** @type {!NicePageOptions} */ (mixin[ STAT_INDEXES.MIXIN_OPTIONS ]);
-                            checkMixins( path, mixinOptions.MIXINS );
-                            checkTemplete( path, mixinOptions.TEMPLETE, mixinOptions );
+                            checkMixins( path, mixinOptions.MIXINS, skipTemplete );
+                            if( !skipTemplete ){
+                                checkTemplete( path, mixinOptions.TEMPLETE, mixinOptions );
+                            };
                         } else if( !mixin ){
                             throw pageOrTempletePath + ' が要求する ' + path + ' が読み込まれていません!';
                         };
@@ -171,7 +174,7 @@ NicePageBuilder.gulp = function( _options ){
                         /** @suppress {checkTypes} */
                         pageOptions = NicePageBuilder.util.getNiceOptions( templete );
                         if( pageOptions ){
-                            checkMixins( pageOrTempletePath, pageOptions.MIXINS );
+                            checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
                             /** @suppress {checkTypes} */
                             templetePath = pageOptions.TEMPLETE;
                         } else {

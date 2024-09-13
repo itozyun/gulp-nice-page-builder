@@ -78,26 +78,23 @@ NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_L
     };
 
     const modifiedAt = updatedAt;
+    let templetePath = pageOptions.TEMPLETE;
 
     mergeMinxins( pageOptions.MIXINS );
-
-    let templetePath = pageOptions.TEMPLETE; // templetePath の行進は mergeMinxins を呼んだ後!
 
     while( templetePath ){
         const templete = TEMPLETE_LIST[ templetePath ];
         const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
 
+        templetePath = '';
         if( templeteOptions ){
             mix( templeteOptions, /** @type {number} */ (templete[ STAT_INDEXES.UPDATED_AT ]) );
             mergeMinxins( templeteOptions.MIXINS );
-            templetePath = templeteOptions.TEMPLETE;
-        } else {
-            templetePath = '';
         };
     };
 
     /**
-     * @param {!Array.<sourceRootRelativePath> | void} mixinPathList 
+     * @param {!Array.<sourceRootRelativePath> | void} mixinPathList
      */
     function mergeMinxins( mixinPathList ){
         if( mixinPathList ){
@@ -111,16 +108,26 @@ NicePageBuilder = function( htmlJson, createdAt, updatedAt, filePath, TEMPLETE_L
 
     /**
      * @param {!NicePageOptions} altPageOptions 
-     * @param {number} altUpdatedAt 
+     * @param {number} altUpdatedAt
      */
     function mix( altPageOptions, altUpdatedAt ){
+        let changed = 0;
+
         for( const k in altPageOptions ){
-            if( pageOptions[ k ] === undefined ){
+            if( k === 'TEMPLETE' ){
+                templetePath = templetePath || altPageOptions[ k ]; // page.html や templete.html にある TEMPLETE が顕性、mixin の中の TEMPLETE は潜性
+                if( templetePath === altPageOptions[ k ] ){
+                    ++changed;
+                };
+            } else if( pageOptions[ k ] === undefined ){
                 pageOptions[ k ] = altPageOptions[ k ];
+                ++changed;
             };
         };
-        if( updatedAt < altUpdatedAt ){
-            updatedAt = altUpdatedAt;
+        if( changed ){
+            if( updatedAt < altUpdatedAt ){
+                updatedAt = altUpdatedAt;
+            };
         };
     };
 
