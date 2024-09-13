@@ -10,7 +10,8 @@ goog.requireType( 'NicePageOptions' );
 goog.requireType( 'NicePageOrTemplete' );
 goog.requireType( 'Mixin' );
 goog.requireType( 'sourceRootRelativePath' );
-goog.require( 'getScriptElement' );
+goog.require( 'getJsonScriptElement' );
+goog.require( 'getSLotElement' );
 
 module.exports = function( _options ){
     const pluginName  = 'gulp-nice-page-builder',
@@ -62,17 +63,30 @@ module.exports = function( _options ){
                   rootRelativePath = NicePageBuilder.util.absolutePathToSrcRootRelativePath( file.path );
     
             if( m_isArray( json ) ){
-                const script = getScriptElement( /** @type {!Array} */ (json) );
+                const result = getJsonScriptElement( /** @type {!Array} */ (json) );
 
-                // [ 11, [ 'script', {}, {...} ], [ 'p' ] ]
-                // ↓
-                // [ {...}, [ 'p' ] ]
+                if( result ){
+                    const scriptJSONNode = /** @type {!Array} */ (result[ 0 ]);
+                    const parentJSONNode = /** @type {!Array} */ (result[ 1 ]);
+            
+                    let myIndex = /** @type {number} */ (result[ 2 ]);
 
-                // [ 9, 'xhtml', [ 'script', {}, {...} ], [ 'p' ] ]
-                // ↓
-                // [ {...}, 9, 'xhtml', [ 'p' ] ]
-                if( script ){
-                    json.unshift( eval( '(' + script[ 2 ] + ');' ) );
+                    parentJSONNode.splice( myIndex, 1 );
+
+                    // [ 11, [ 'script', {}, {...} ], [ 'p' ] ]
+                    // ↓
+                    // [ {...}, [ 'p' ] ]
+
+                    // [ 9, 'xhtml', [ 'script', {}, {...} ], [ 'p' ] ]
+                    // ↓
+                    // [ {...}, 9, 'xhtml', [ 'p' ] ]
+                    if( scriptJSONNode && scriptJSONNode.length === 3 ){
+                        const options = eval( '(' + scriptJSONNode[ 2 ] + ');' ); // TODO JSON.parse()
+
+                        if( !m_isArray( options ) && m_isObject( options ) ){
+                            json.unshift( options );
+                        };
+                    };
                 };
                 PAGES_OR_TEMPLETES[ rootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
             } else if( m_isObject( /** @type {!NicePageOptions} */ (json) ) ){
@@ -160,9 +174,9 @@ module.exports = function( _options ){
 
                 if( pageOrTemplete.length === 3 ){ // NicePageOrTemplete[4] use templete == false
                     if( JSON.stringify( htmlJson ).indexOf( '"slot"' ) !== -1 ){ // mybe contains <slot>
-                        // if( containsSlotElement( htmlJson ) ){
+                        if( getSLotElement( htmlJson ) ){
                             delete PAGES_OR_TEMPLETES[ pageOrTempletePath ];
-                        // };
+                        };
                     };
                 };
             };

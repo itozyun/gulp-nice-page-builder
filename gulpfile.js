@@ -2,7 +2,7 @@ const gulp = require( 'gulp' );
 
 let ClosureCompiler;
 
-let isDebug = false;
+let isDebug = true;
 let isPrettify = true;
 
 gulp.task(
@@ -39,10 +39,11 @@ gulp.task(
                                 // './.submodules/html.json/src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'htmljson.DEFINE.DEBUG=' + isDebug
+                                'htmljson.DEFINE.DEBUG=' + isDebug,
+                                'NicePageBuilder.DEFINE.DEBUG=' + isDebug
                             ],
                             // env               : 'CUSTOM',
-                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            compilation_level : false      ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
                             formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',

@@ -1,4 +1,4 @@
-goog.provide( 'getScriptElement' );
+goog.provide( 'getSLotElement' );
 
 goog.require( 'htmljson.base' );
 
@@ -7,7 +7,21 @@ goog.require( 'htmljson.base' );
  * @param {!Array} jsonNode
  * @return {!Array | void}
  */
-var getScriptElement = function( jsonNode ){
+var getSLotElement = function( jsonNode ){
+    let options, result;
+
+    if( m_isAttributes( jsonNode[ 0 ] ) ){
+        options = jsonNode.shift();
+        result  = walkChildNodes( jsonNode );
+
+        jsonNode.unshift( options );
+        if( result ){            
+            if( result[ 1 ] === jsonNode ){
+                return [ result[ 0 ], jsonNode, ++result[ 2 ] ];
+            };
+        };
+        return result;
+    };
     return walkChildNodes( jsonNode );
 
     /**
@@ -56,15 +70,8 @@ var getScriptElement = function( jsonNode ){
                 attrsIndex = 2;
             default :
                 if( m_isString( tagName ) ){
-                    if( tagName === 'script' ){
-                        const attrs = currentJSONNode[ attrsIndex ];
-
-                        if( m_isAttributes( attrs ) ){
-                            if( attrs.type === 'application/json' ){
-                                parentJSONNode.splice( myIndex, 1 );
-                                return currentJSONNode;
-                            };
-                        };
+                    if( tagName === 'slot' ){
+                        return [ currentJSONNode, parentJSONNode, myIndex ];
                     } else {
                         return walkChildNodes( currentJSONNode );
                     };
