@@ -10,7 +10,7 @@ goog.provide( 'NicePageBuilder.util.isRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.absolutePathToSrcRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.rootRelativePathToAbsolutePath' );
 goog.provide( 'NicePageBuilder.util.filePathToURL' );
-goog.provide( 'NicePageBuilder.util.urlTofilePath' );
+goog.provide( 'NicePageBuilder.util.urlToFilePath' );
 goog.provide( 'NicePageBuilder.util.relativePathToSrcRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.relativeURLToSrcRootRelativeURL' );
 goog.provide( 'NicePageBuilder.util.rootRelativePathToRelativePath' );
@@ -118,7 +118,7 @@ NicePageBuilder.util.filePathToURL = function( filePath ){
  * @param {string} url
  * @return {string}
  */
-NicePageBuilder.util.urlTofilePath = function( url ){
+NicePageBuilder.util.urlToFilePath = function( url ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( NicePageBuilder.util.isAbsoluteURL( url ) ){
             throw url + ' is not a root relative path or relative path!';
@@ -179,8 +179,8 @@ NicePageBuilder.util.relativeURLToSrcRootRelativeURL = function( basePath, relat
     var targetHash      = relativeURL.substr( relativeURL.indexOf( '#' ) );
     var rootRelativeURL = NicePageBuilder.util.filePathToURL(
                               NicePageBuilder.util.rootRelativePathToRelativePath(
-                                  NicePageBuilder.util.urlTofilePath( basePath ),
-                                  NicePageBuilder.util.urlTofilePath( relativeURL )
+                                  NicePageBuilder.util.urlToFilePath( basePath ),
+                                  NicePageBuilder.util.urlToFilePath( relativeURL )
                               )
                           );
 
@@ -255,8 +255,8 @@ NicePageBuilder.util.rootRelativeURLToRelativeURL = function( basePath, rootRela
     var targetHash  = rootRelativeURL.substr( rootRelativeURL.indexOf( '#' ) );
     var relativeURL = NicePageBuilder.util.filePathToURL(
                           NicePageBuilder.util.rootRelativePathToRelativePath(
-                              NicePageBuilder.util.urlTofilePath( basePath ),
-                              NicePageBuilder.util.urlTofilePath( rootRelativeURL )
+                              NicePageBuilder.util.urlToFilePath( basePath ),
+                              NicePageBuilder.util.urlToFilePath( rootRelativeURL )
                           )
                       );
 
