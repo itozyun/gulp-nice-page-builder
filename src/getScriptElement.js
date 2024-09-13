@@ -4,9 +4,8 @@ goog.require( 'htmljson.base' );
 
 /**
  * 
- * @param {!Array} templeteJSONNode 
- * @param {!Array} contentJSONNode
- * @return {!Array}
+ * @param {!Array} jsonNode
+ * @return {!Array | void}
  */
 var getScriptElement = function( jsonNode ){
     return walkChildNodes( jsonNode );
@@ -42,9 +41,8 @@ var getScriptElement = function( jsonNode ){
      */
     function walkNode( currentJSONNode, parentJSONNode, myIndex ){
         const arg0 = currentJSONNode[ 0 ],
-              arg1 = currentJSONNode[ 1 ],
-              tagName = arg0;
-        let attrsIndex = 1;
+              arg1 = currentJSONNode[ 1 ];
+        let tagName = arg0, attrsIndex = 1;
 
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :

@@ -3,6 +3,7 @@ goog.provide( 'NicePageOptions' );
 goog.provide( 'NicePageOrTemplete' );
 goog.provide( 'Mixin' );
 goog.provide( 'sourceRootRelativePath' );
+goog.provide( 'STAT_INDEXES' );
 
 goog.require( 'insertContentToTemplete' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
@@ -15,7 +16,7 @@ goog.require( 'NicePageBuilder.util.rootRelativePathToRootRelativeURL' );
 var sourceRootRelativePath;
 
 /**
- * @typedef {...{
+ * @typedef {{
 *   TEMPLETE    : (sourceRootRelativePath | void),
 *   MIXINS      : (!Array.<sourceRootRelativePath> | void),
 *   FILE_PATH   : sourceRootRelativePath,
@@ -36,7 +37,7 @@ var NicePageOptions;
  * [3] {number} UPDATED_AT
  * [4] {boolean} use templete
  * 
- * @typedef {{!Array.<(!Array | number | boolean)>}}
+ * @typedef {!Array.<(!Array | number | boolean)>}
  */
 var NicePageOrTemplete;
 
@@ -47,7 +48,7 @@ var NicePageOrTemplete;
  * [3] {number} UPDATED_AT
  * [4] {boolean} used
  * 
- * @typedef {{!Array.<(!Object | number | boolean)>}}
+ * @typedef {!Array.<(!Object | number | boolean)>}
  */
 var Mixin;
 
@@ -69,8 +70,8 @@ var STAT_INDEXES = {
  * @param {!Object.<sourceRootRelativePath, !Mixin>} MIXIN_LIST 
  * @return {!Array}
  */
-NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
-    const pageOptions = NicePageBuilder.util.getNiceOptions( page );
+NicePageBuilder = function( nicePage, filePath, TEMPLETE_LIST, MIXIN_LIST ){
+    const pageOptions = NicePageBuilder.util.getNiceOptions( nicePage );
     let templetePath = pageOptions.TEMPLETE;
 
     mergeMinxins( pageOptions.MIXINS );
@@ -80,21 +81,23 @@ NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
         const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
 
         if( templeteOptions ){
-            mix( templeteOptions, templete[ STAT_INDEXES.UPDATED_AT ] );
+            mix( templeteOptions, /** @type {number} */ (templete[ STAT_INDEXES.UPDATED_AT ]) );
             mergeMinxins( templeteOptions.MIXINS );
             templetePath = templeteOptions.TEMPLETE;
+        } else {
+            templetePath = '';
         };
     };
 
     /**
-     * @param {!Array.<sourceRootRelativePath>} mixinPathList 
+     * @param {!Array.<sourceRootRelativePath> | void} mixinPathList 
      */
     function mergeMinxins( mixinPathList ){
         if( mixinPathList ){
             for( let i = 0; i < mixinPathList.length; ++i ){
                 const mixin = MIXIN_LIST[ mixinPathList[ i ] ];
 
-                mix( mixin[ STAT_INDEXES.MIXIN_OPTIONS ], mixin[ STAT_INDEXES.UPDATED_AT ] );
+                mix( /** @type {!NicePageOptions} */ (mixin[ STAT_INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ STAT_INDEXES.UPDATED_AT ]) );
             };
         };
     };
@@ -109,12 +112,12 @@ NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
                 pageOptions[ k ] = altPageOptions[ k ];
             };
         };
-        if( page[ STAT_INDEXES.UPDATED_AT ] < altUpdatedAt ){
-            page[ STAT_INDEXES.UPDATED_AT ] = altUpdatedAt;
+        if( nicePage[ STAT_INDEXES.UPDATED_AT ] < altUpdatedAt ){
+            nicePage[ STAT_INDEXES.UPDATED_AT ] = altUpdatedAt;
         };
     };
 
-    let contentHtmlJson = NicePageBuilder.util.getHTMLJson( page );
+    let contentHtmlJson = NicePageBuilder.util.getHTMLJson( nicePage );
     templetePath = pageOptions.TEMPLETE;
 
     while( templetePath ){
@@ -124,6 +127,8 @@ NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
         contentHtmlJson = insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
         if( templeteOptions ){
             templetePath = templeteOptions.TEMPLETE;
+        } else {
+            templetePath = '';
         };
     };
 
@@ -133,9 +138,9 @@ NicePageBuilder = function( page, filePath, TEMPLETE_LIST, MIXIN_LIST ){
     pageOptions.FILE_NAME   = pathElements.pop();
     pageOptions.FOLDER_PATH = pathElements.join( '/' );
     pageOptions.URL         = NicePageBuilder.util.rootRelativePathToRootRelativeURL( filePath );
-    pageOptions.CREATED_AT  = page[ STAT_INDEXES.CREATED_AT  ];
-    pageOptions.MODIFIED_AT = page[ STAT_INDEXES.MODIFIED_AT ];
-    pageOptions.UPDATED_AT  = page[ STAT_INDEXES.UPDATED_AT  ];
+    pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ STAT_INDEXES.CREATED_AT  ]);
+    pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ STAT_INDEXES.MODIFIED_AT ]);
+    pageOptions.UPDATED_AT  = /** @type {number} */ (nicePage[ STAT_INDEXES.UPDATED_AT  ]);
 
     return contentHtmlJson;
 };

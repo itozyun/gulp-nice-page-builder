@@ -1,5 +1,7 @@
-goog.provide( 'NicePageBuilder.util' );
+goog.provide( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.provide( 'NicePageBuilder.srcRootPath' );
+
+goog.provide( 'NicePageBuilder.util' );
 goog.provide( 'NicePageBuilder.util.normalizePath' );
 goog.provide( 'NicePageBuilder.util.isAbsoluteFilePath' );
 goog.provide( 'NicePageBuilder.util.isAbsoluteURL' );
@@ -17,7 +19,9 @@ goog.provide( 'NicePageBuilder.util.getNiceOptions' );
 
 goog.requireType( 'NicePageOrTemplete' );
 goog.requireType( 'NicePageOptions' );
-goog.require( 'STAT_INDEXES' );
+
+/** @define {boolean} */
+NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , false );
 
 /** @type {string} */
 NicePageBuilder.srcRootPath = '';
@@ -130,15 +134,15 @@ NicePageBuilder.util.relativePathToSrcRootRelativePath = function( basePath, rel
         };
     };
 
-    basePath = basePath.split( '/' );
-    basePath[ 0 ] === '' && basePath.shift();
+    var basePathElements = basePath.split( '/' );
+    basePathElements[ 0 ] === '' && basePathElements.shift();
 
     // 相対リンク
     while( relativePath.substr( 0, 3 ) === '../' ){
         relativePath = relativePath.substr( 3 );
-        --basePath.length;
+        --basePathElements.length;
     };
-    return ( basePath.length ? basePath.join( '/' ) + '/' : '' ) + relativePath;
+    return ( basePathElements.length ? basePathElements.join( '/' ) + '/' : '' ) + relativePath;
 };
 
 /**
@@ -151,7 +155,7 @@ NicePageBuilder.util.relativeURLToSrcRootRelativeURL = function( basePath, relat
         if( !NicePageBuilder.util.isRootRelativePath( basePath ) ){
             throw basePath + ' is not a root relative path!';
         };
-        if( NicePageBuilder.util.isRootRelativePath( relativePath ) || NicePageBuilder.util.isAbsolutePath( relativePath ) ){
+        if( NicePageBuilder.util.isRootRelativePath( relativeURL ) || NicePageBuilder.util.isAbsolutePath( relativeURL ) ){
             throw relativeURL + ' is not a relative path!';
         };
     };
@@ -182,23 +186,26 @@ NicePageBuilder.util.rootRelativePathToRelativePath = function( basePath, rootRe
         };
     };
 
-    var link = [], i = 0, skipCompare = false, baseName, targetName, l, depth;
+    var link = [], i = 0, skipCompare = false,
+        basePathElements, baseName,
+        rootRelativePathElements, targetName,
+        depth, l;
 
-    basePath = basePath.split( '/' );
-    baseName = basePath.pop();
+    basePathElements = basePath.split( '/' );
+    baseName = basePathElements.pop();
     baseName = baseName === '' ? 'index.html' : baseName;
 
-    rootRelativePath = rootRelativePath.split( '/' );
-    targetName = rootRelativePath.pop();
+    rootRelativePathElements = rootRelativePath.split( '/' );
+    targetName = rootRelativePathElements.pop();
     targetName = targetName === '' ? 'index.html' : targetName;
 
-    for( depth = basePath.length, l = Math.max( rootRelativePath.length, depth ); i < l; ++i ){
-        if( skipCompare || rootRelativePath[ i ] !== basePath[ i ] ){
+    for( depth = basePathElements.length, l = Math.max( rootRelativePathElements.length, depth ); i < l; ++i ){
+        if( skipCompare || rootRelativePathElements[ i ] !== basePathElements[ i ] ){
             if( i < depth ){
                 link.unshift( '..' );
             };
-            if( rootRelativePath[ i ] ){
-                link.push( rootRelativePath[ i ] );
+            if( rootRelativePathElements[ i ] ){
+                link.push( rootRelativePathElements[ i ] );
             };
             skipCompare = true;
         };
@@ -224,7 +231,7 @@ NicePageBuilder.util.rootRelativeURLToRelativeURL = function( basePath, rootRela
         };
     };
 
-    var targetHash  = rootRelativePath.substr( rootRelativePath.indexOf( '#' ) );
+    var targetHash  = rootRelativeURL.substr( rootRelativeURL.indexOf( '#' ) );
     var relativeURL = NicePageBuilder.util.rootRelativePathToRelativePath( basePath, rootRelativeURL.split( '#' )[ 0 ] )
 
     relativeURL = relativeURL === 'index.html' ? './' : relativeURL;

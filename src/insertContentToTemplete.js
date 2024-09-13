@@ -11,7 +11,7 @@ goog.require( 'htmljson.base' );
 var insertContentToTemplete = function( templeteJSONNode, contentJSONNode ){
     let options;
 
-    templeteJSONNode = JSON.parse( JSON.stringify( templeteJSONNode ) ); // deep copy
+    templeteJSONNode = /** @type {!Array} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
 
     if( m_isAttributes( templeteJSONNode[ 0 ] ) ){
         options = templeteJSONNode.shift();
@@ -59,8 +59,8 @@ var insertContentToTemplete = function( templeteJSONNode, contentJSONNode ){
      */
     function walkNode( currentJSONNode, parentJSONNode, myIndex ){
         const arg0 = currentJSONNode[ 0 ],
-              arg1 = currentJSONNode[ 1 ],
-              tagName = arg0;
+              arg1 = currentJSONNode[ 1 ];
+        let tagName = arg0;
 
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :

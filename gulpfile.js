@@ -1,65 +1,58 @@
-const gulp            = require( 'gulp' ),
-      nicePageBuilder = require( './index.js' );
+const gulp = require( 'gulp' );
 
-gulp.task( 'tutorial_1', function(){
-    return gulp.src( [ './tutorial/1/source/**/*.html', '!./tutorial/1/source/templete.html' ]
-                ).pipe(
-                    nicePageBuilder( {
-                        srcRootPath : './tutorial/1/source'
-                    } )
-                ).pipe( gulp.dest( './tutorial/1/output' ) );
-    }
-);
+let ClosureCompiler;
 
-gulp.task( 'tutorial_2', function(){
-    return gulp.src( [ './tutorial/2/source/**/*.html', '!templete.html' ]
-                ).pipe(
-                    nicePageBuilder( {
-                        srcRootPath : './tutorial/2/source'
-                    } )
-                ).pipe( gulp.dest( './tutorial/2/output' ) );
-    }
-);
+let isDebug = false;
+let isPrettify = true;
 
-gulp.task( 'tutorial_3', function(){
-    return gulp.src( [ './tutorial/3/source/**/*.html', '!templete.html' ]
-                ).pipe(
-                    nicePageBuilder( {
-                        srcRootPath : './tutorial/3/source'
-                    } )
-                ).pipe( gulp.dest( './tutorial/3/output' ) );
-    }
-);
+gulp.task(
+    'dist',
+    gulp.series(
+        function(){
+            ClosureCompiler = ClosureCompiler || require( 'google-closure-compiler' ).gulp();
 
-gulp.task( 'tutorial_4', function(){
-    return gulp.src( [ './tutorial/4/source/**/*.html', '!templete.html' ]
+            return gulp.src(
+                    [
+                        './.submodules/html.json/src/closure-primitives/base.js',
+                        './.submodules/html.json/src/js/**/*.js',
+                        './src/**/*.js'
+                    ]
                 ).pipe(
-                    nicePageBuilder( {
-                        srcRootPath : './tutorial/4/source'
-                    } )
-                ).pipe( gulp.dest( './tutorial/4/output' ) );
-    }
-);
-
-gulp.task( 'tutorial_5', function(){
-    return gulp.src( [ './tutorial/5/source/**/*.html', '!templete.html' ]
-                ).pipe(
-                    nicePageBuilder( {
-                        srcRootPath : './tutorial/5/source'
-                    } )
-                ).pipe( gulp.dest( './tutorial/5/output' ) );
-    }
-);
-
-gulp.task( 'tutorial_6', function(){
-    return gulp.src( [ './tutorial/6/source/**/*.html', '!templete.html' ]
-                ).pipe(
-                    nicePageBuilder( {
-                        srcRootPath : './tutorial/6/source',
-                        json : {
-                            favorites : './tutorial/json/favorites.json'
+                    ClosureCompiler(
+                        {
+                            dependency_mode   : 'PRUNE',
+                            entry_point       : 'goog:NicePageBuilder.gulp',
+                            externs           : [
+                               // './src/js-externs/console.js',
+                               // './node_modules/@externs/nodejs/v8/nodejs.js',
+                               // './node_modules/@externs/nodejs/v8/global.js',
+                               // './node_modules/@externs/nodejs/v8/fs.js',
+                               // './node_modules/@externs/nodejs/v8/http.js',
+                               // './node_modules/@externs/nodejs/v8/https.js',
+                               // './node_modules/@externs/nodejs/v8/net.js',
+                               // './node_modules/@externs/nodejs/v8/events.js',
+                                './node_modules/@externs/nodejs/v8/global/buffer.js',
+                                './node_modules/@externs/nodejs/v8/stream.js',
+                               // './node_modules/@externs/nodejs/v8/zlib.js',
+                                './node_modules/@externs/nodejs/v8/path.js',
+                                './.submodules/html.json/src/js-externs/externs.js'
+                                // './.submodules/html.json/src/js-externs/tags-and-attributes.js'
+                            ],
+                            define            : [
+                                'htmljson.DEFINE.DEBUG=' + isDebug
+                            ],
+                            // env               : 'CUSTOM',
+                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
+                            warning_level     : 'VERBOSE',
+                            // language_in       : 'ECMASCRIPT3',
+                            // language_out      : 'ECMASCRIPT3',
+                            js_output_file    : 'index.js'
                         }
-                    } )
-                ).pipe( gulp.dest( './tutorial/6/output' ) );
-    }
+                    )
+                ).pipe(
+                    gulp.dest( 'dist' )
+                );
+        }
+    )
 );

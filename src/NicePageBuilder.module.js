@@ -15,7 +15,7 @@ goog.require( 'getScriptElement' );
 module.exports = function( _options ){
     const pluginName  = 'gulp-nice-page-builder',
           PluginError = require( 'plugin-error' ),
-          Vinyl       = require( 'vinyl'        ),
+          _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     ),
           Path        = require( 'path'         );
 
@@ -51,7 +51,7 @@ module.exports = function( _options ){
                 this.push( file );
                 return callback();
             };
-            if( !file.path.indexOf( srcRootPath ) === 0 ){
+            if( file.path.indexOf( srcRootPath ) !== 0 ){
                 this.emit( 'error', new PluginError( pluginName, '"' + file.path + '" is outside of srcRootPath:"' + options.srcRootPath + '"' ) );
                 return callback();
             };
@@ -62,7 +62,7 @@ module.exports = function( _options ){
                   rootRelativePath = NicePageBuilder.util.absolutePathToSrcRootRelativePath( file.path );
     
             if( m_isArray( json ) ){
-                const script = getScriptElement( json );
+                const script = getScriptElement( /** @type {!Array} */ (json) );
 
                 // [ 11, [ 'script', {}, {...} ], [ 'p' ] ]
                 // ↓
@@ -75,7 +75,7 @@ module.exports = function( _options ){
                     json.unshift( eval( '(' + script[ 2 ] + ');' ) );
                 };
                 PAGES_OR_TEMPLETES[ rootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
-            } else if( m_isObject( json ) ){
+            } else if( m_isObject( /** @type {!NicePageOptions} */ (json) ) ){
                 MIXIN_LIST[ rootRelativePath ] = [ json, createdTimeMs, updatedTimeMs, updatedTimeMs ];
             } else {
                 // error
@@ -95,10 +95,10 @@ module.exports = function( _options ){
                 let pageOptions = NicePageBuilder.util.getNiceOptions( pageOrTemplete );
                 let templetePath = pageOptions.TEMPLETE;
         
-                checkMixins( pageOptions.MIXINS );
+                checkMixins( pageOptions.MIXINS, pageOrTempletePath );
 
                 while( templetePath ){
-                    const path     = NicePageBuilder.util.absolutePathToSrcRootRelativePath( templetePath, pageOrTempletePath );
+                    const path     = NicePageBuilder.util.relativePathToSrcRootRelativePath( templetePath, pageOrTempletePath );
                     const templete = PAGES_OR_TEMPLETES[ path ];
 
                     pageOptions.TEMPLETE = path; // toSourceRootRelativePath
@@ -110,29 +110,31 @@ module.exports = function( _options ){
                         pageOptions = NicePageBuilder.util.getNiceOptions( templete );
                         if( pageOptions ){
                             templetePath = pageOptions.TEMPLETE;
+                        } else {
+                            templetePath = '';
                         };
-                        checkMixins( pageOptions.MIXINS );
+                        checkMixins( pageOptions.MIXINS, pageOrTempletePath );
                     } else if( !TEMPLETE_LIST[ path ] ){
-                        // error
+                        throw pageOrTempletePath + ' が要求する ' + path + ' が読み込まれていません!';
                     };
                 };
-
-                /**
-                 * @param {!Array.<sourceRootRelativePath>=} mixinPathList
-                 */
-                function checkMixins( mixinPathList ){
-                    if( mixinPathList ){
-                        for( let i = 0, l = mixinPathList.length; i < l; ++i ){
-                            const mixinPath = mixinPathList[ i ];
-                            const path      = NicePageBuilder.util.absolutePathToSrcRootRelativePath( mixinPath, pageOrTempletePath );
-                            const mixin     = MIXIN_LIST[ path ];
-                            
-                            mixinPathList[ i ] = path; // toSourceRootRelativePath
-                            if( mixin && mixin.length === 3 ){
-                                mixin.push( true ); // used
-                            } else if( !mixin ){
-                                // error
-                            };
+            };
+            /**
+             * @param {!Array.<sourceRootRelativePath> | void} mixinPathList
+             * @param {string} pageOrTempletePath
+             */
+            function checkMixins( mixinPathList, pageOrTempletePath ){
+                if( mixinPathList ){
+                    for( let i = 0, l = mixinPathList.length; i < l; ++i ){
+                        const mixinPath = mixinPathList[ i ];
+                        const path      = NicePageBuilder.util.relativePathToSrcRootRelativePath( mixinPath, pageOrTempletePath );
+                        const mixin     = MIXIN_LIST[ path ];
+                        
+                        mixinPathList[ i ] = path; // toSourceRootRelativePath
+                        if( mixin && mixin.length === 3 ){
+                            mixin.push( true ); // used
+                        } else if( !mixin ){
+                            throw pageOrTempletePath + ' が要求する ' + path + ' が読み込まれていません!';
                         };
                     };
                 };
@@ -152,9 +154,9 @@ module.exports = function( _options ){
 
                 if( pageOrTemplete.length === 3 ){ // NicePageOrTemplete[4] use templete == false
                     if( JSON.stringify( htmlJson ).indexOf( '"slot"' ) !== -1 ){ // mybe contains <slot>
-                        if( containsSlotElement( htmlJson ) ){
+                        // if( containsSlotElement( htmlJson ) ){
                             delete PAGES_OR_TEMPLETES[ pageOrTempletePath ];
-                        };
+                        // };
                     };
                 };
             };
@@ -164,7 +166,7 @@ module.exports = function( _options ){
                 const htmlJson = NicePageBuilder( PAGE_LIST[ filePath ], filePath, TEMPLETE_LIST, MIXIN_LIST );
 
                 this.push(
-                    new Vinyl(
+                    new _Vinyl(
                         {
                             base     : '/',
                             path     : filePath,
