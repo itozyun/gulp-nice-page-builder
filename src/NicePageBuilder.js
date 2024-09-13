@@ -18,17 +18,17 @@ var sourceRootRelativePath;
 
 /**
  * @typedef {{
-*   TEMPLETE    : (sourceRootRelativePath | void),
-*   MIXINS      : (!Array.<sourceRootRelativePath> | void),
-*   FILE_PATH   : sourceRootRelativePath,
-*   FILE_NAME   : string,
-*   FOLDER_PATH : string,
-*   URL         : string,
-*   CREATED_AT  : number,
-*   MODIFIED_AT : number,
-*   UPDATED_AT  : number
-* }}
-*/
+ *   TEMPLETE    : (sourceRootRelativePath | void),
+ *   MIXINS      : (!Array.<sourceRootRelativePath> | void),
+ *   FILE_PATH   : sourceRootRelativePath,
+ *   FILE_NAME   : string,
+ *   FOLDER_PATH : string,
+ *   URL         : string,
+ *   CREATED_AT  : number,
+ *   MODIFIED_AT : number,
+ *   UPDATED_AT  : number
+ * }}
+ */
 var NicePageOptions;
 
 /**

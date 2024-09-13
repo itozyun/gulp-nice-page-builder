@@ -20,8 +20,10 @@ NicePageBuilder.gulp = function( _options ){
           through     = require( 'through2'     ),
           Path        = require( 'path'         );
 
-    const options     = _options || {},
-          srcRootPath = NicePageBuilder.util.normalizePath( Path.resolve( options[ 'srcRootPath' ] || './' ) ) + '/'; // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
+    const options         = _options || {},
+          allMixinPath    = options[ 'allMixinPath' ],
+          allTempletePath = options[ 'allTempletePath' ],
+          srcRootPath     = NicePageBuilder.util.normalizePath( Path.resolve( options[ 'srcRootPath' ] || './' ) ) + '/'; // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
 
     /** @type {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} */
     const PAGES_OR_TEMPLETES = {};
@@ -208,6 +210,29 @@ NicePageBuilder.gulp = function( _options ){
                             base     : '/',
                             path     : filePath,
                             contents : Buffer.from( JSON.stringify( htmlJson ) )
+                        }
+                    )
+                );
+            };
+
+            if( allMixinPath ){
+                this.push(
+                    new _Vinyl(
+                        {
+                            base     : '/',
+                            path     : allMixinPath,
+                            contents : Buffer.from( JSON.stringify( MIXIN_LIST ) )
+                        }
+                    )
+                );
+            };
+            if( allTempletePath ){
+                this.push(
+                    new _Vinyl(
+                        {
+                            base     : '/',
+                            path     : allTempletePath,
+                            contents : Buffer.from( JSON.stringify( TEMPLETE_LIST ) )
                         }
                     )
                 );
