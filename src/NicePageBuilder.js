@@ -8,7 +8,7 @@ goog.provide( 'STAT_INDEXES' );
 goog.require( 'insertContentToTemplete' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.getNiceOptions' );
-goog.require( 'NicePageBuilder.util.rootRelativePathToRootRelativeURL' );
+goog.require( 'NicePageBuilder.util.filePathToURL' );
 
 /**
  * @typedef {string}
@@ -72,6 +72,11 @@ var STAT_INDEXES = {
  */
 NicePageBuilder = function( nicePage, filePath, TEMPLETE_LIST, MIXIN_LIST ){
     const pageOptions = NicePageBuilder.util.getNiceOptions( nicePage );
+
+    if( !pageOptions ){
+        return NicePageBuilder.util.getHTMLJson( nicePage );
+    };
+
     let templetePath = pageOptions.TEMPLETE;
 
     mergeMinxins( pageOptions.MIXINS );
@@ -137,7 +142,7 @@ NicePageBuilder = function( nicePage, filePath, TEMPLETE_LIST, MIXIN_LIST ){
     pageOptions.FILE_PATH   = filePath;
     pageOptions.FILE_NAME   = pathElements.pop();
     pageOptions.FOLDER_PATH = pathElements.join( '/' );
-    pageOptions.URL         = NicePageBuilder.util.rootRelativePathToRootRelativeURL( filePath );
+    pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
     pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ STAT_INDEXES.CREATED_AT  ]);
     pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ STAT_INDEXES.MODIFIED_AT ]);
     pageOptions.UPDATED_AT  = /** @type {number} */ (nicePage[ STAT_INDEXES.UPDATED_AT  ]);

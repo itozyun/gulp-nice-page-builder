@@ -92,13 +92,19 @@ module.exports = function( _options ){
         // 使用している TEMPLETE と MIXIN のチェック
             for( let pageOrTempletePath in PAGES_OR_TEMPLETES ){
                 const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempletePath ];
+
                 let pageOptions = NicePageBuilder.util.getNiceOptions( pageOrTemplete );
+
+                if( !pageOptions ){
+                    continue;
+                };
+
                 let templetePath = pageOptions.TEMPLETE;
         
                 checkMixins( pageOptions.MIXINS, pageOrTempletePath );
 
                 while( templetePath ){
-                    const path     = NicePageBuilder.util.relativePathToSrcRootRelativePath( templetePath, pageOrTempletePath );
+                    const path     = NicePageBuilder.util.relativePathToSrcRootRelativePath( pageOrTempletePath, templetePath );
                     const templete = PAGES_OR_TEMPLETES[ path ];
 
                     pageOptions.TEMPLETE = path; // toSourceRootRelativePath
@@ -110,10 +116,10 @@ module.exports = function( _options ){
                         pageOptions = NicePageBuilder.util.getNiceOptions( templete );
                         if( pageOptions ){
                             templetePath = pageOptions.TEMPLETE;
+                            checkMixins( pageOptions.MIXINS, pageOrTempletePath );
                         } else {
                             templetePath = '';
                         };
-                        checkMixins( pageOptions.MIXINS, pageOrTempletePath );
                     } else if( !TEMPLETE_LIST[ path ] ){
                         throw pageOrTempletePath + ' が要求する ' + path + ' が読み込まれていません!';
                     };
@@ -127,7 +133,7 @@ module.exports = function( _options ){
                 if( mixinPathList ){
                     for( let i = 0, l = mixinPathList.length; i < l; ++i ){
                         const mixinPath = mixinPathList[ i ];
-                        const path      = NicePageBuilder.util.relativePathToSrcRootRelativePath( mixinPath, pageOrTempletePath );
+                        const path      = NicePageBuilder.util.relativePathToSrcRootRelativePath( pageOrTempletePath, mixinPath );
                         const mixin     = MIXIN_LIST[ path ];
                         
                         mixinPathList[ i ] = path; // toSourceRootRelativePath

@@ -9,7 +9,8 @@ goog.provide( 'NicePageBuilder.util.isAbsolutePath' );
 goog.provide( 'NicePageBuilder.util.isRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.absolutePathToSrcRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.rootRelativePathToAbsolutePath' );
-goog.provide( 'NicePageBuilder.util.rootRelativePathToRootRelativeURL' );
+goog.provide( 'NicePageBuilder.util.filePathToURL' );
+goog.provide( 'NicePageBuilder.util.urlTofilePath' );
 goog.provide( 'NicePageBuilder.util.relativePathToSrcRootRelativePath' );
 goog.provide( 'NicePageBuilder.util.relativeURLToSrcRootRelativeURL' );
 goog.provide( 'NicePageBuilder.util.rootRelativePathToRelativePath' );
@@ -102,13 +103,7 @@ NicePageBuilder.util.rootRelativePathToAbsolutePath = function( filePath ){
  * @param {string} filePath
  * @return {string}
  */
-NicePageBuilder.util.rootRelativePathToRootRelativeURL = function( filePath ){
-    if( NicePageBuilder.DEFINE.DEBUG ){
-        if( !NicePageBuilder.util.isRootRelativePath( filePath ) ){
-            throw filePath + ' is not a root relative path!';
-        };
-    };
-
+NicePageBuilder.util.filePathToURL = function( filePath ){
     var rootRelativeURL = filePath.split( 'index.html' );
 
     // "/index.html" => ["/", ""] => "/"
@@ -117,6 +112,27 @@ NicePageBuilder.util.rootRelativePathToRootRelativeURL = function( filePath ){
         rootRelativeURL.pop();
     };
     return rootRelativeURL.join( 'index.html' );
+};
+
+/**
+ * @param {string} url
+ * @return {string}
+ */
+NicePageBuilder.util.urlTofilePath = function( url ){
+    if( NicePageBuilder.DEFINE.DEBUG ){
+        if( NicePageBuilder.util.isAbsoluteURL( url ) ){
+            throw url + ' is not a root relative path or  relative path!';
+        };
+    };
+
+    var urlElements = url.split( '#' )[ 0 ].split( '/' );
+
+    // "/index.html" => ["/", ""] => "/"
+    // "/index.html/index.html" => ["/", "/", ""] => "/index.html/"
+    if( !urlElements[ urlElements.length - 1 ] ){
+        urlElements[ urlElements.length - 1 ] = 'index.html';
+    };
+    return urlElements.join( '/' );
 };
 
 /**
@@ -161,9 +177,12 @@ NicePageBuilder.util.relativeURLToSrcRootRelativeURL = function( basePath, relat
     };
 
     var targetHash      = relativeURL.substr( relativeURL.indexOf( '#' ) );
-    var rootRelativeURL = NicePageBuilder.util.rootRelativePathToRelativePath( basePath, relativeURL.split( '#' )[ 0 ] )
-
-    rootRelativeURL = rootRelativeURL === '/index.html' ? '/' : rootRelativeURL;
+    var rootRelativeURL = NicePageBuilder.util.filePathToURL(
+                              NicePageBuilder.util.rootRelativePathToRelativePath(
+                                  NicePageBuilder.util.urlTofilePath( basePath ),
+                                  NicePageBuilder.util.urlTofilePath( relativeURL )
+                              )
+                          );
 
     if( targetHash ){
         rootRelativeURL += targetHash;
@@ -193,11 +212,13 @@ NicePageBuilder.util.rootRelativePathToRelativePath = function( basePath, rootRe
 
     basePathElements = basePath.split( '/' );
     baseName = basePathElements.pop();
-    baseName = baseName === '' ? 'index.html' : baseName;
+
+    if( basePath === rootRelativePath ){
+        return baseName;
+    };
 
     rootRelativePathElements = rootRelativePath.split( '/' );
     targetName = rootRelativePathElements.pop();
-    targetName = targetName === '' ? 'index.html' : targetName;
 
     for( depth = basePathElements.length, l = Math.max( rootRelativePathElements.length, depth ); i < l; ++i ){
         if( skipCompare || rootRelativePathElements[ i ] !== basePathElements[ i ] ){
@@ -232,14 +253,17 @@ NicePageBuilder.util.rootRelativeURLToRelativeURL = function( basePath, rootRela
     };
 
     var targetHash  = rootRelativeURL.substr( rootRelativeURL.indexOf( '#' ) );
-    var relativeURL = NicePageBuilder.util.rootRelativePathToRelativePath( basePath, rootRelativeURL.split( '#' )[ 0 ] )
-
-    relativeURL = relativeURL === 'index.html' ? './' : relativeURL;
+    var relativeURL = NicePageBuilder.util.filePathToURL(
+                          NicePageBuilder.util.rootRelativePathToRelativePath(
+                              NicePageBuilder.util.urlTofilePath( basePath ),
+                              NicePageBuilder.util.urlTofilePath( rootRelativeURL )
+                          )
+                      );
 
     if( targetHash ){
         relativeURL += targetHash;
     };
-    return relativeURL;
+    return relativeURL ? relativeURL : './';
 };
 
 /**
