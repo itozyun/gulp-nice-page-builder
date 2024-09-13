@@ -71,10 +71,10 @@ gulp.task(
                 ).pipe(
                     NicePageBuilder.gulp(
                         {
-                            srcRootPath     : 'test/input',
-                            allPagesPath    : '/all-pages.json',
-                            allMixinPath    : '/all-mixin.json',
-                            allTempletePath : '/all-templete.json'
+                            srcRootPath      : 'test/input',
+                            allPagesPath     : '/all-pages.json',
+                            allMixinsPath    : '/all-mixin.json',
+                            allTempletesPath : '/all-templete.json'
                         }
                     )
                 ).pipe(

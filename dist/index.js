@@ -284,7 +284,7 @@ function M(a) {
   });
 }
 ;H.gulp = function(a) {
-  const c = require("plugin-error"), d = require("vinyl"), g = require("through2"), l = require("path"), m = a || {}, t = m.allPagesPath, y = m.allMixinPath, e = m.allTempletePath, v = H.g.A(l.resolve(m.srcRootPath || "./")) + "/", f = {}, r = {}, p = {};
+  const c = require("plugin-error"), d = require("vinyl"), g = require("through2"), l = require("path"), m = a || {}, t = m.allPagesPath, y = m.allMixinsPath, e = m.allTempletesPath, v = H.g.A(l.resolve(m.srcRootPath || "./")) + "/", f = {}, r = {}, p = {};
   H.l = v;
   return g.obj(function(h, n, A) {
     var B = H.g.A(h.path);

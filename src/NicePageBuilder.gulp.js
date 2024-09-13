@@ -20,11 +20,11 @@ NicePageBuilder.gulp = function( _options ){
           through     = require( 'through2'     ),
           Path        = require( 'path'         );
 
-    const options         = _options || {},
-          allPagesPath    = options[ 'allPagesPath' ],
-          allMixinPath    = options[ 'allMixinPath' ],
-          allTempletePath = options[ 'allTempletePath' ],
-          srcRootPath     = NicePageBuilder.util.normalizePath( Path.resolve( options[ 'srcRootPath' ] || './' ) ) + '/'; // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
+    const options          = _options || {},
+          allPagesPath     = options[ 'allPagesPath' ],
+          allMixinsPath    = options[ 'allMixinsPath' ],
+          allTempletesPath = options[ 'allTempletesPath' ],
+          srcRootPath      = NicePageBuilder.util.normalizePath( Path.resolve( options[ 'srcRootPath' ] || './' ) ) + '/'; // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
 
     /** @type {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} */
     const PAGES_OR_TEMPLETES = {};
@@ -247,23 +247,23 @@ NicePageBuilder.gulp = function( _options ){
                 );
             };
 
-            if( allMixinPath ){
+            if( allMixinsPath ){
                 this.push(
                     new _Vinyl(
                         {
                             base     : '/',
-                            path     : allMixinPath,
+                            path     : allMixinsPath,
                             contents : Buffer.from( JSON.stringify( MIXIN_LIST ) )
                         }
                     )
                 );
             };
-            if( allTempletePath ){
+            if( allTempletesPath ){
                 this.push(
                     new _Vinyl(
                         {
                             base     : '/',
-                            path     : allTempletePath,
+                            path     : allTempletesPath,
                             contents : Buffer.from( JSON.stringify( TEMPLETE_LIST ) )
                         }
                     )
