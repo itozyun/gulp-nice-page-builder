@@ -121,14 +121,14 @@ NicePageBuilder.util.filePathToURL = function( filePath ){
 NicePageBuilder.util.urlTofilePath = function( url ){
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( NicePageBuilder.util.isAbsoluteURL( url ) ){
-            throw url + ' is not a root relative path or  relative path!';
+            throw url + ' is not a root relative path or relative path!';
         };
     };
 
     var urlElements = url.split( '#' )[ 0 ].split( '/' );
 
-    // "/index.html" => ["/", ""] => "/"
-    // "/index.html/index.html" => ["/", "/", ""] => "/index.html/"
+    // "/" => ["", ""] => "/index.html"
+    // "/index.html/" => ["", "index.html", ""] => "/index.html/index.html"
     if( !urlElements[ urlElements.length - 1 ] ){
         urlElements[ urlElements.length - 1 ] = 'index.html';
     };
