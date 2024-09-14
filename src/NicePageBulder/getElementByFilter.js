@@ -6,7 +6,7 @@ goog.require( 'htmljson.base' );
  * 
  * @param {!Array} rootJSONNode
  * @param {function(string, (Attrs | null)):boolean} filter
- * @return {!Array | void}
+ * @return {!Array | void} 0:target node, 1:parentnode, 3:index
  */
 var getElementByFilter = function( rootJSONNode, filter ){
     let options, result;
