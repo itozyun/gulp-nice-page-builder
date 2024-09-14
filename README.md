@@ -120,3 +120,9 @@ gulp.task('html', function(){
 0.1.x までは Visual Studio Code エクステンションでした．[Visual Studio Marketplace > Nice Page Builder](https://marketplace.visualstudio.com/items?itemName=itozyun.nice-page-builder)
 
 **Enjoy!**
+
+## License
+
+[gulp-nice-page-builder](https://github.com/itozyun/gulp-nice-page-builder) is licensed under MIT license.
+
+(C) 2024 [itozyun](https://github.com/itozyun)([blog](//outcloud.blogspot.com/))
