@@ -1,5 +1,8 @@
 .submodules
+node_modules
+src
 test
-gulpfile.js
-icon.png
 .gitignore
+.gitmodules
+.npmignore
+gulpfile.js
