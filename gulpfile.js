@@ -49,6 +49,7 @@ gulp.task(
                                 'htmlparser.DEFINE.useCDATASection=' + true,
                                 'htmlparser.DEFINE.attributePrefixSymbol=":"',
 
+                                'TinyPath.DEFINE.DEBUG=' + isDebug,
                                 'htmljson.DEFINE.DEBUG=' + isDebug,
                                 'NicePageBuilder.DEFINE.DEBUG=' + isDebug
                             ],
@@ -62,7 +63,7 @@ gulp.task(
                         }
                     )
                 ).pipe(
-                    gulp.dest( 'dist' )
+                    gulp.dest( './' )
                 );
         }
     )
@@ -72,7 +73,7 @@ gulp.task(
     'test',
     gulp.series(
         function(){
-            let NicePageBuilder = require( './dist/index.js' ).gulp( { srcRootPath : 'test/input' } );
+            let NicePageBuilder = require( './index.js' ).gulp( { srcRootPath : 'test/input' } );
 
             return gulp.src(
                     [

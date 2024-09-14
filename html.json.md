@@ -28,9 +28,3 @@
       * `rel="nofollow" target=_blank` 追加
       * table の IE6 以下対応
         * `table class=border-1`
-
-~~~sh
-git submodule update --init --force --recursive --depth=1
-
-git submodule foreach git pull origin master
-~~~

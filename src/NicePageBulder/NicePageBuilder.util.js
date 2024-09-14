@@ -74,16 +74,16 @@ NicePageBuilder.util.getSLotElement = function( rootJSONNode ){
  * @return {!Array | void} 0:target node, 1:parentnode, 3:index
  */
 function _getElementByFilter( rootJSONNode, filter ){
-    let options, result;
+    let options = rootJSONNode[ 0 ], result;
 
-    if( m_isAttributes( rootJSONNode[ 0 ] ) ){
-        options = rootJSONNode.shift();
-        result  = walkChildNodes( rootJSONNode );
+    if( !m_isArray( options ) && m_isObject( options ) ){
+        rootJSONNode.shift();
+        result = walkChildNodes( rootJSONNode );
 
         rootJSONNode.unshift( options );
         if( result ){
-            if( result[ 1 ] === rootJSONNode ){
-                return [ result[ 0 ], rootJSONNode, ++result[ 2 ] ];
+            if( result[ 1 ] === rootJSONNode ){ // if parentNode === rootNode
+                return [ result[ 0 ], rootJSONNode, ++result[ 2 ] /** increment index */ ];
             };
         };
         return result;

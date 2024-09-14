@@ -1,11 +1,11 @@
 {
   "name": "gulp-nice-page-builder",
-  "version": "0.4.3",
+  "version": "1.0.0",
   "description": "Gulp plugin of Static Site Generator",
   "keywords": ["gulpplugin", "ssg", "static-site", "static site generation", "website", "html", "html-json"],
   "main": "index.js",
   "author": "itozyun (https://outcloud.blogspot.com/)",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/itozyun/gulp-nice-page-builder.git"

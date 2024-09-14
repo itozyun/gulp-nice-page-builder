@@ -29,10 +29,19 @@
       * *.html.json を .html に変換する．この際に `<? ?>` 動的属性(`<a :href="">`) を置き換えて
       * `onEnterNode()` のコールバックで VDOM を使った文書ツリーの変更ができる
 
-## install
+## Install
 
 ~~~sh
 npm install gulp-nice-page-builder
+git submodule update --init --force --recursive --depth=2
+git submodule foreach git pull origin master
+~~~
+
+## Build and test
+
+~~~sh
+gulp dist
+gulp test
 ~~~
 
 ## gulp plugin の使用例
