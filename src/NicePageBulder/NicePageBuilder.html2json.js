@@ -54,11 +54,11 @@ NicePageBuilder.html2json = function( htmlString, allowInvalidTree, opt_options 
 
 NicePageBuilder.html2json.gulp = function( _options ){
     function toAbsolutePath( filePath ){
-        return NicePageBuilder.util.normalizePath( filePath );
+        return NicePageBuilder.util.normalizePath( Path.resolve( filePath ) );
     };
 
-    function toSrcRootRelativePath( filePath ){
-        return NicePageBuilder.util.absolutePathToSrcRootRelativePath( toAbsolutePath( filePath ) );
+    function toSourceRootRelativePath( basePath, filePath ){
+        return NicePageBuilder.util.isRelativePath( filePath ) ? NicePageBuilder.util.relativePathToSrcRootRelativePath( basePath, filePath ) : filePath;
     };
 
     const pluginName  = 'gulp-nice-page-builder',
@@ -72,9 +72,10 @@ NicePageBuilder.html2json.gulp = function( _options ){
 
     NicePageBuilder.srcRootPath = srcRootPath;
 
-    const allPagesPath     = toSrcRootRelativePath( options[ 'allPagesPath'     ] || ''                    ),
-          allMixinsPath    = toSrcRootRelativePath( options[ 'allMixinsPath'    ] || '/all.mixins.json'    ),
-          allTempletesPath = toSrcRootRelativePath( options[ 'allTempletesPath' ] || '/all.templetes.json' );
+    const allPagesPath     = options[ 'allPagesPath' ] &&
+                             toSourceRootRelativePath( '/', options[ 'allPagesPath'     ]                          ),
+          allMixinsPath    = toSourceRootRelativePath( '/', options[ 'allMixinsPath'    ] || 'all.mixins.json'    ),
+          allTempletesPath = toSourceRootRelativePath( '/', options[ 'allTempletesPath' ] || 'all.templetes.json' );
 
     /** @type {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} */
     const PAGES_OR_TEMPLETES = {};
@@ -101,10 +102,6 @@ NicePageBuilder.html2json.gulp = function( _options ){
                 this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
                 return callback();
             };
-            if( file.extname !== '.json' ){
-                this.push( file );
-                return callback();
-            };
             if( filePath.indexOf( srcRootPath ) !== 0 ){
                 this.emit( 'error', new PluginError( pluginName, '"' + filePath + '" is outside of srcRootPath:"' + options.srcRootPath + '"' ) );
                 return callback();
@@ -114,7 +111,7 @@ NicePageBuilder.html2json.gulp = function( _options ){
                   createdTimeMs    = parseInt( file.stat.birthtimeMs, 10 ),
                   updatedTimeMs    = parseInt( file.stat.ctimeMs, 10 ),
                   rootRelativePath = NicePageBuilder.util.absolutePathToSrcRootRelativePath( filePath );
-    
+
             switch( file.extname ){
                 case '.html'  :
                 case '.htm'   :
@@ -154,7 +151,7 @@ NicePageBuilder.html2json.gulp = function( _options ){
                     continue;
                 };
 
-                checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
+                checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE, false );
                 checkTemplete( pageOrTempletePath, pageOptions.TEMPLETE, pageOptions );
 
                 if( PAGES_OR_TEMPLETES[ pageOrTempletePath ] ){
@@ -162,16 +159,13 @@ NicePageBuilder.html2json.gulp = function( _options ){
                 };
             };
 
-            function toSourceRootRelativePath( basePath, filePath ){
-                return NicePageBuilder.util.isRelativePath( filePath ) ? NicePageBuilder.util.relativePathToSrcRootRelativePath( basePath, filePath ) : filePath;
-            };
-
             /**
              * @param {string} pageOrTempletePath
              * @param {!Array.<sourceRootRelativePath> | void} mixinPathList
              * @param {boolean} skipTemplete
+             * @param {boolean} skipMixins
              */
-            function checkMixins( pageOrTempletePath, mixinPathList, skipTemplete ){
+            function checkMixins( pageOrTempletePath, mixinPathList, skipTemplete, skipMixins ){
                 if( mixinPathList ){
                     for( let i = 0, l = mixinPathList.length; i < l; ++i ){
                         const mixinPath = mixinPathList[ i ];
@@ -182,12 +176,19 @@ NicePageBuilder.html2json.gulp = function( _options ){
                         if( mixin && mixin.length === STAT_INDEXES.UPDATED_AT + 1 ){
                             mixin.push( true ); // used
                             const mixinOptions = /** @type {!NicePageOptions} */ (mixin[ STAT_INDEXES.MIXIN_OPTIONS ]);
-                            checkMixins( path, mixinOptions.MIXINS, skipTemplete );
+                            if( !skipMixins ){
+                                checkMixins( path, mixinOptions.MIXINS, skipTemplete, true );
+                            } else {
+                                if( mixinOptions.MIXINS ){
+                                    console.log( 'Mixin:"' + path + '" cannot have MIXINS property!' );
+                                    delete mixinOptions.MIXINS;
+                                };
+                            };
                             if( !skipTemplete ){
                                 checkTemplete( path, mixinOptions.TEMPLETE, mixinOptions );
                             };
                         } else if( !mixin ){
-                            throw pageOrTempletePath + ' が要求する ' + path + ' が読み込まれていません!';
+                            throw 'Mixin:"' + path + '" required by "' + pageOrTempletePath + '" does not exist!';
                         };
                     };
                 };
@@ -210,14 +211,14 @@ NicePageBuilder.html2json.gulp = function( _options ){
                         /** @suppress {checkTypes} */
                         pageOptions = NicePageBuilder.util.getNiceOptions( templete );
                         if( pageOptions ){
-                            checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
+                            checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE, false );
                             /** @suppress {checkTypes} */
                             templetePath = pageOptions.TEMPLETE;
                         } else {
                             break;
                         };
                     } else if( !TEMPLETE_LIST[ path ] ){
-                        throw pageOrTempletePath + ' が要求する ' + path + ' が読み込まれていません!';
+                        throw 'Templete:"' + path + '" required by "' + pageOrTempletePath + '" does not exist!';
                     } else {
                         break;
                     };
@@ -240,14 +241,12 @@ NicePageBuilder.html2json.gulp = function( _options ){
                 const htmlJson       = NicePageBuilder.util.getHTMLJson( pageOrTemplete );
 
                 if( pageOrTemplete.length === STAT_INDEXES.UPDATED_AT + 1 ){ // NicePageOrTemplete[4] use templete == false
-                    // if( JSON.stringify( htmlJson ).indexOf( '"slot"' ) !== -1 ){ // mybe contains <slot>
-                        if( getSLotElement( htmlJson ) ){
-                            if( NicePageBuilder.DEFINE.DEBUG ){
-                                console.log( 'Unused templete found! ' + pageOrTempletePath );
-                            };
-                            delete PAGES_OR_TEMPLETES[ pageOrTempletePath ];
+                    if( getSLotElement( htmlJson ) ){
+                        if( NicePageBuilder.DEFINE.DEBUG ){
+                            console.log( 'Unused templete found! ' + pageOrTempletePath );
                         };
-                    // };
+                        delete PAGES_OR_TEMPLETES[ pageOrTempletePath ];
+                    };
                 };
             };
 
@@ -257,12 +256,8 @@ NicePageBuilder.html2json.gulp = function( _options ){
             if( allPagesPath ){
                 writeFile( allPagesPath, PAGE_LIST );
             };
-            if( allMixinsPath ){
-                writeFile( allMixinsPath, MIXIN_LIST );
-            };
-            if( allTempletesPath ){
-                writeFile( allTempletesPath, TEMPLETE_LIST );
-            };
+            writeFile( allMixinsPath, MIXIN_LIST );
+            writeFile( allTempletesPath, TEMPLETE_LIST );
 
             for( const filePath in PAGE_LIST ){
                 const nicePage = PAGE_LIST[ filePath ];
@@ -274,9 +269,9 @@ NicePageBuilder.html2json.gulp = function( _options ){
                 let pageOptions = htmlJson[ 0 ];
                 pageOptions = !m_isArray( pageOptions ) && m_isObject( pageOptions ) ? pageOptions : {};
                 pageOptions.FILE_PATH   = filePath;
-                pageOptions.FILE_NAME   = pathElements.pop();
-                pageOptions.FOLDER_PATH = pathElements.join( '/' );
-                pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
+                // pageOptions.FILE_NAME   = pathElements.pop();
+                // pageOptions.FOLDER_PATH = pathElements.join( '/' );
+                // pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
                 pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ STAT_INDEXES.CREATED_AT ]);
                 pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ STAT_INDEXES.UPDATED_AT ]);
 
@@ -290,15 +285,18 @@ NicePageBuilder.html2json.gulp = function( _options ){
             callback();
 
             function writeFile( filePath, json ){
-                self.push(
-                    new _Vinyl(
-                        {
-                            base     : '/',
-                            path     : filePath + '.json',
-                            contents : Buffer.from( JSON.stringify( json ) )
-                        }
-                    )
+                const pathElements = filePath.split( '/' );
+                pathElements.pop();
+
+                const file = new _Vinyl(
+                    {
+                        base     : pathElements.join( '/' ) || '/',
+                        path     : filePath,
+                        contents : Buffer.from( JSON.stringify( json ) )
+                    }
                 );
+                file.extname = '.json';
+                self.push( file );
             };
         }
     );

@@ -19,5 +19,7 @@ var nicePageBuilder = {};
     nicePageBuilder.html2json.gulp;
     nicePageBuilder.generator = {};
     nicePageBuilder.generator.gulp;
+    nicePageBuilder.json2json = {};
+    nicePageBuilder.json2json.gulp;
     nicePageBuilder.json2html = {};
     nicePageBuilder.json2html.gulp;

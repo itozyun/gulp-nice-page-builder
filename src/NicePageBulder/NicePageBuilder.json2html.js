@@ -17,7 +17,9 @@ NicePageBuilder.json2html = function( json, onInstruction, opt_onError, opt_opti
 
     // TODO onInstruction の 各コールバックの this コンテキストを options に
 
-    return json2html( json, onInstruction, opt_onError, opt_options );
+    const htmlString = json2html( json, onInstruction, opt_onError, opt_options );
+
+    return htmlString;
 };
 
 NicePageBuilder.json2html.gulp = function( onInstruction, opt_onError, opt_options ){
@@ -40,24 +42,25 @@ NicePageBuilder.json2html.gulp = function( onInstruction, opt_onError, opt_optio
                 this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
                 return callback();
             };
+
             if( file.extname !== '.json' ){
                 this.push( file );
                 return callback();
             };
 
-            switch( file.stem.split( '/' ).pop() ){
-                case '.html'  :
-                case '.htm'   :
-                case '.xhtml' :
-                case '.php'   :
+            switch( file.stem.split( '.' ).pop() ){
+                case 'html'  :
+                case 'htm'   :
+                case 'xhtml' :
+                case 'php'   :
                     const htmlJson = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
-
+                    const options  = /** @type {!NicePageOptions} */ (htmlJson[ 0 ]);
                     this.push(
                         new _Vinyl(
                             {
                                 base     : '/',
-                                path     : /** @type {!NicePageOptions} */ (htmlJson[ 0 ]).FILE_PATH,
-                                contents : NicePageBuilder.json2html( htmlJson, onInstruction, opt_onError, opt_options )
+                                path     : options.FILE_PATH,
+                                contents : Buffer.from( NicePageBuilder.json2html( htmlJson, onInstruction, opt_onError, opt_options ) )
                             }
                         )
                     );

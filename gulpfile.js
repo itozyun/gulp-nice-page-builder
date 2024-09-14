@@ -80,7 +80,7 @@ gulp.task(
                 ).pipe(
                     NicePageBuilder.html2json.gulp(
                         {
-                            srcRootPath : 'test/input'
+                            srcRootPath : 'test/input', trimWhitespaces: 'aggressive'
                         }
                     )
                 ).pipe(

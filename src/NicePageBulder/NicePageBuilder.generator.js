@@ -167,36 +167,35 @@ NicePageBuilder.generator.gulp = function( _options ){
                 this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
                 return callback();
             };
+
             if( file.extname !== '.json' ){
                 this.push( file );
                 return callback();
             };
     
             const json = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
-    
-            switch( file.stem.split( '/' ).pop() ){
-                case '.html'  :
-                case '.htm'   :
-                case '.xhtml' :
-                case '.php'   :
+
+            switch( file.stem.split( '.' ).pop() ){
+                case 'html'  :
+                case 'htm'   :
+                case 'xhtml' :
+                case 'php'   :
                     PAGE_LIST[ /** @type {!NicePageOptions} */ (json[ 0 ]).FILE_PATH ] = json;
-                    break;
-                case '.templete' :
+                    return callback();
+                case 'templetes' :
                     if( !m_isArray( json ) && m_isObject( json ) ){
                         /** @suppress {checkTypes} */
                         TEMPLETE_LIST = json;
                     };
                     break;
-                case '.mixin' :
+                case 'mixins' :
                     if( !m_isArray( json ) && m_isObject( json ) ){
                         /** @suppress {checkTypes} */
                         MIXIN_LIST = json;
                     };
                     break;
-                default :
-                    this.push( file );
-                    break;
             };
+            this.push( file );
             callback();
         },
         /**
