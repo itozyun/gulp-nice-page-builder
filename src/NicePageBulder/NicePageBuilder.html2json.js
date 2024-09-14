@@ -17,7 +17,7 @@ goog.require( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
 /** @private */
-NicePageBuilder.json2html = true;
+NicePageBuilder.html2json = true;
 
 /**
  * @package
