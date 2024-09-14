@@ -2,9 +2,7 @@
 
 ![](https://4.bp.blogspot.com/-_jS4oD7mDQ8/WJFq8Z7sZ-I/AAAAAAAARP0/SJJHoRWJ37cwdBuO2pvuHQ_rY3GI1nIHQCLcB/s800/NicePageBuilder_package.jpg '')
 
-html.json と併せて使用する Static Site Generator. 通常 gulp プラグイン版を使う．
-
-
+[html.json](https://github.com/itozyun/html.json) と併せて使用する Static Site Generator. 通常 gulp プラグイン版を使う．
 
 ---
 
@@ -21,7 +19,7 @@ html.json と併せて使用する Static Site Generator. 通常 gulp プラグ�
 1. テンプレートから HTML を生成します
    * テンプレートは入れ子にできます
 2. 複数ページで共通するデータを JSON ファイルに分離する(mixin)
-3. html.json と併せて使用する
+3. [html.json](https://github.com/itozyun/html.json) と併せて使用する
    1. nicePageBuilder.html2json
       * *.html ファイルを *.html.json ファイルに変換する．
       * 併せて参照されているテンプレートと Mixin をまとめたファイルを作成する．
@@ -37,20 +35,20 @@ html.json と併せて使用する Static Site Generator. 通常 gulp プラグ�
 npm install gulp-nice-page-builder
 ~~~
 
-## gulp plugin
+## gulp plugin の使用例
 
 ~~~js
 gulp.task('html', function(){
-    const nicePageBuilder = require('gulp-nice-page-builder')();
+    const builder = require('gulp-nice-page-builder').gulp({srcRootPath: 'src'});
 
     return gulp.src(
                    ['./src/**/*.html', './src/**/*.htm', './src/**/*.php', './src/**/*.json']
               ).pipe(
-                   nicePageBuilder.html2json.gulp({srcRootPath: 'src', trimWhitespaces: 'aggressive' })
+                   builder.html2json({trimWhitespaces: 'aggressive' })
               ).pipe(
-                   nicePageBuilder.generator.gulp()
+                   builder.generator()
               ).pipe(
-                   nicePageBuilder.json2html.gulp()
+                   builder.json2html()
               ).pipe(
                    gulp.dest('./public')
               );
@@ -63,12 +61,12 @@ gulp.task('html', function(){
 |:-------------------------|:-----------------------------------------------------------------------------------------------------|
 | メタ情報 *1              | `<script type="application/json">{...}</script>` に書いておく                                        |
 | コンテンツ(.html) *2     | コンテンツとメタ情報だけが書かれた HTML                                                              |
-| テンプレート(.html/.php) | コンテンツ HTML、ミックスインから参照される．必ず単一の `<slot></slot>` を持つこと                   |
+| テンプレート(.html/.php) | コンテンツ HTML、Mixin から参照される．必ず単一の `<slot></slot>` を持つこと                         |
 | Mixin(.json) *3          | 複数ページで共通のメタ情報を記述した json ファイル．コンテンツ HTML, テンプレート HTMLから参照される |
 
 1. メタ情報の各プロパティの優先度は、コンテンツ > コンテンツの MIXINS\[0] > コンテンツの MIXINS\[z] > テンプレート > テンプレートの MIXINS\[0] > テンプレートの MIXINS\[z] の順番です．
-2. テンプレート、メタ情報、Mixin を使用せず完全な コンテンツ HTML だけのプロジェクトも可能だが、その場合 html.json だけで事足りる．
-3. ミックスインは MIXINS プロパティを持つことが出来ません！
+2. テンプレート、メタ情報、Mixin を使用せず完全なドキュメントだけのプロジェクトも可能だが、その場合 [html.json](https://github.com/itozyun/html.json) だけで事足りる．
+3. Mixin は MIXINS プロパティを持つことが出来ません！
 
 ### コンテンツ(.html)の例
 
@@ -87,7 +85,7 @@ gulp.task('html', function(){
 
 ### テンプレートの例
 
-`src/Tmpl/main.html`
+`src/templete.html`
 
 `<slot>` 要素を持つファイルはテンプレートとして扱われます．テンプレートにひとつです．
 
@@ -104,6 +102,7 @@ gulp.task('html', function(){
 
 * [github](https://github.com/itozyun/gulp-nice-page-builder)
 * [npm](https://www.npmjs.com/package/gulp-nice-page-builder)
+* [html.json](https://github.com/itozyun/html.json)
 
 ## History
 

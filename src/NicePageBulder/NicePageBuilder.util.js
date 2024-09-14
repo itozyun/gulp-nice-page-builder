@@ -1,14 +1,79 @@
-goog.provide( 'getElementByFilter' );
+goog.provide( 'NicePageBuilder.DEFINE.DEBUG' );
+goog.provide( 'NicePageBuilder.util' );
+goog.provide( 'NicePageBuilder.util.getHTMLJson' );
+goog.provide( 'NicePageBuilder.util.getNiceOptions' );
+goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
+goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
 goog.require( 'htmljson.base' );
+goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
+goog.requireType( 'NicePageBuilder.NicePageOptions' );
+
+/** @define {boolean} */
+NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , false );
+
+/**
+ * 
+ * @param {!NicePageBuilder.NicePageOrTemplete} nicePageOrTemplete 
+ * @return {!Array}
+ */
+NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
+    var htmlJson = /** @type {!Array} */ (nicePageOrTemplete[ NicePageBuilder.INDEXES.HTML_JSON ]);
+
+    if( NicePageBuilder.DEFINE.DEBUG ){
+        if( !m_isArray( htmlJson ) ){
+            throw 'NOT_HTML_JSON_ERROR!';
+        };
+    };
+    return htmlJson;
+};
+
+/**
+ * 
+ * @param {!NicePageBuilder.NicePageOrTemplete} nicePageOrTemplete 
+ * @return {NicePageBuilder.NicePageOptions | null}
+ */
+NicePageBuilder.util.getNiceOptions = function( nicePageOrTemplete ){
+    var options = /** @type {!NicePageBuilder.NicePageOptions} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
+
+    return !m_isArray( options ) && m_isObject( options ) ? options : null;
+};
 
 /**
  * 
  * @param {!Array} rootJSONNode
+ * @return {!Array | void}
+ */
+NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
+    return _getElementByFilter(
+        rootJSONNode,
+        function( tagName, attrs ){
+            return tagName === 'script' && attrs && attrs.type === 'application/json' || false;
+        }
+    );
+};
+
+/**
+ * 
+ * @param {!Array} rootJSONNode
+ * @return {!Array | void}
+ */
+NicePageBuilder.util.getSLotElement = function( rootJSONNode ){
+    return _getElementByFilter(
+        rootJSONNode,
+        function( tagName, attrs ){
+            return tagName === 'slot';
+        }
+    );
+};
+
+/**
+ * @private
+ * @param {!Array} rootJSONNode
  * @param {function(string, (Attrs | null)):boolean} filter
  * @return {!Array | void} 0:target node, 1:parentnode, 3:index
  */
-var getElementByFilter = function( rootJSONNode, filter ){
+function _getElementByFilter( rootJSONNode, filter ){
     let options, result;
 
     if( m_isAttributes( rootJSONNode[ 0 ] ) ){

@@ -1,28 +1,46 @@
 goog.provide( 'NicePageBuilder.json2html' );
-goog.provide( 'NicePageBuilder.json2html.gulp' );
+goog.provide( '__NicePageBuilder_internal__.json2html' );
 
 goog.require( 'json2html' );
-goog.require( 'NicePageBuilder.module' );
-goog.requireType( 'NicePageOptions' );
+goog.require( '__NicePageBuilder_internal__' );
+goog.requireType( 'NicePageBuilder.Context' );
+goog.requireType( 'NicePageBuilder.NicePageOptions' );
+goog.requireType( 'NicePageBuilder.Context' );
+
+/** @private */
+NicePageBuilder.json2html = true;
 
 /**
+ * @package
+ * @this {NicePageBuilder.Context}
+ * 
  * @param {!Array} json
  * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
- * @return {string | void} html string
+ * @return {string} html string
  */
-NicePageBuilder.json2html = function( json, onInstruction, opt_onError, opt_options ){
+__NicePageBuilder_internal__.json2html = function( json, onInstruction, opt_onError, opt_options ){
     const options = json.shift();
 
     // TODO onInstruction の 各コールバックの this コンテキストを options に
 
     const htmlString = json2html( json, onInstruction, opt_onError, opt_options );
 
-    return htmlString;
+    return htmlString || '';
 };
 
-NicePageBuilder.json2html.gulp = function( onInstruction, opt_onError, opt_options ){
+/**
+ * @package
+ * @this {NicePageBuilder.Context}
+ * 
+ * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
+ * @param {!function(string)|!Object=} opt_onError
+ * @param {!Object=} opt_options
+ */
+function _json2htmlGulpPlugin( onInstruction, opt_onError, opt_options ){
+    const context = this;
+
     const pluginName  = 'NicePageBuilder.json2html.gulp',
           PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
@@ -54,13 +72,13 @@ NicePageBuilder.json2html.gulp = function( onInstruction, opt_onError, opt_optio
                 case 'xhtml' :
                 case 'php'   :
                     const htmlJson = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
-                    const options  = /** @type {!NicePageOptions} */ (htmlJson[ 0 ]);
+                    const options  = /** @type {!NicePageBuilder.NicePageOptions} */ (htmlJson[ 0 ]);
                     this.push(
                         new _Vinyl(
                             {
                                 base     : '/',
                                 path     : options.FILE_PATH,
-                                contents : Buffer.from( NicePageBuilder.json2html( htmlJson, onInstruction, opt_onError, opt_options ) )
+                                contents : Buffer.from( __NicePageBuilder_internal__.json2html.call( context, htmlJson, onInstruction, opt_onError, opt_options ) )
                             }
                         )
                     );

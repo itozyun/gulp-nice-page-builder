@@ -1,5 +1,6 @@
 goog.provide( 'NicePageBuilder.all' );
 
-goog.require( 'NicePageBuilder.html2json.gulp' );
-goog.require( 'NicePageBuilder.generator.gulp' );
-goog.require( 'NicePageBuilder.json2html.gulp' );
+goog.require( 'NicePageBuilder.gulp' );
+goog.require( 'NicePageBuilder.html2json' );
+goog.require( 'NicePageBuilder.generator' );
+goog.require( 'NicePageBuilder.json2html' );

@@ -14,7 +14,8 @@ gulp.task(
             return gulp.src(
                     [
                         './.submodules/html.json/src/closure-primitives/base.js',
-                        './.submodules/html.json/.submodules/htmlparser/src/js/**/*.js', 
+                        './.submodules/html.json/.submodules/htmlparser/src/js/**/*.js',
+                        './.submodules/tiny-path/src/js/**/*.js', 
                         './.submodules/html.json/src/js/**/*.js',
                         './src/**/*.js'
                     ]
@@ -71,22 +72,18 @@ gulp.task(
     'test',
     gulp.series(
         function(){
-            let NicePageBuilder = require( './dist/index.js' );
+            let NicePageBuilder = require( './dist/index.js' ).gulp( { srcRootPath : 'test/input' } );
 
             return gulp.src(
                     [
                         './test/input/**/*.html', './test/input/**/*.php', './test/input/**/*.json' // .xhtml, .htm
                     ]
                 ).pipe(
-                    NicePageBuilder.html2json.gulp(
-                        {
-                            srcRootPath : 'test/input', trimWhitespaces: 'aggressive'
-                        }
-                    )
+                    NicePageBuilder.html2json( { trimWhitespaces: 'aggressive' } )
                 ).pipe(
-                    NicePageBuilder.generator.gulp()
+                    NicePageBuilder.generator()
                 ).pipe(
-                    NicePageBuilder.json2html.gulp()
+                    NicePageBuilder.json2html()
                 ).pipe(
                     gulp.dest( 'test/output' )
                 );

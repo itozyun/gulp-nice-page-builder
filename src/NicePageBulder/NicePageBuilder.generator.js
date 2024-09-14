@@ -1,24 +1,31 @@
 goog.provide( 'NicePageBuilder.generator' );
-goog.provide( 'NicePageBuilder.generator.gulp' );
+goog.provide( '__NicePageBuilder_internal__.generator' );
 
-goog.requireType( 'NicePageOptions' );
-goog.requireType( 'NicePageOrTemplete' );
-goog.requireType( 'Mixin' );
-goog.requireType( 'sourceRootRelativePath' );
-goog.requireType( 'STAT_INDEXES' );
-goog.require( 'NicePageBuilder.module' );
 goog.require( 'htmljson.base' );
+goog.requireType( 'NicePageBuilder.NicePageOptions' );
+goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
+goog.requireType( 'NicePageBuilder.Mixin' );
+goog.requireType( 'NicePageBuilder.SourceRootRelativePath' );
+goog.requireType( 'NicePageBuilder.INDEXES' );
+goog.requireType( 'NicePageBuilder.Context' );
+goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.getNiceOptions' );
-goog.require( 'getSLotElement' );
+goog.require( 'NicePageBuilder.util.getSLotElement' );
+
+/** @private */
+NicePageBuilder.generator = true;
 
 /**
+ * @package
+ * @this {NicePageBuilder.Context}
+ * 
  * @param {!Array} htmlJson
- * @param {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} TEMPLETE_LIST 
- * @param {!Object.<sourceRootRelativePath, !Mixin>} MIXIN_LIST 
+ * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} TEMPLETE_LIST 
+ * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin>} MIXIN_LIST 
  * @return {!Array}
  */
-NicePageBuilder.generator = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
+__NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
     const pageOptions = !m_isArray( htmlJson[ 0 ] ) && m_isObject( htmlJson[ 0 ] ) ? htmlJson[ 0 ] : null;
 
     if( !pageOptions ){
@@ -36,26 +43,26 @@ NicePageBuilder.generator = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
 
         templetePath = '';
         if( templeteOptions ){
-            mix( templeteOptions, /** @type {number} */ (templete[ STAT_INDEXES.UPDATED_AT ]) );
+            mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
             mergeMinxins( templeteOptions.MIXINS );
         };
     };
 
     /**
-     * @param {!Array.<sourceRootRelativePath> | void} mixinPathList
+     * @param {!Array.<NicePageBuilder.SourceRootRelativePath> | void} mixinPathList
      */
     function mergeMinxins( mixinPathList ){
         if( mixinPathList ){
             for( let i = 0; i < mixinPathList.length; ++i ){
                 const mixin = MIXIN_LIST[ mixinPathList[ i ] ];
 
-                mix( /** @type {!NicePageOptions} */ (mixin[ STAT_INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ STAT_INDEXES.UPDATED_AT ]) );
+                mix( /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
             };
         };
     };
 
     /**
-     * @param {!NicePageOptions} altPageOptions 
+     * @param {!NicePageBuilder.NicePageOptions} altPageOptions 
      * @param {number} altUpdatedAt
      */
     function mix( altPageOptions, altUpdatedAt ){
@@ -110,7 +117,7 @@ NicePageBuilder.generator = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
 function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
     templeteJSONNode = /** @type {!Array} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
 
-    let result = getSLotElement( templeteJSONNode );
+    let result = NicePageBuilder.util.getSLotElement( templeteJSONNode );
 
     if( result ){
         const parentJSONNode = /** @type {!Array} */ (result[ 1 ]);
@@ -138,19 +145,27 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
     return templeteJSONNode;
 };
 
-NicePageBuilder.generator.gulp = function( _options ){
+/**
+ * @package
+ * @this {NicePageBuilder.Context}
+ * 
+ * @param {*} _options
+ */
+function _generatorGulpPlugin( _options ){
+    const context = this;
+
     const pluginName  = 'NicePageBuilder.generator.gulp',
           PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @type {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} */
+    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */
     const PAGE_LIST = {};
 
-    /** @type {!Object.<sourceRootRelativePath, !NicePageOrTemplete>} */
+    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */
     let TEMPLETE_LIST;
 
-    /** @type {!Object.<sourceRootRelativePath, !Mixin>} */
+    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin>} */
     let MIXIN_LIST;
 
     return through.obj(
@@ -180,7 +195,7 @@ NicePageBuilder.generator.gulp = function( _options ){
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    PAGE_LIST[ /** @type {!NicePageOptions} */ (json[ 0 ]).FILE_PATH ] = json;
+                    PAGE_LIST[ /** @type {!NicePageBuilder.NicePageOptions} */ (json[ 0 ]).FILE_PATH ] = json;
                     return callback();
                 case 'templetes' :
                     if( !m_isArray( json ) && m_isObject( json ) ){
@@ -205,7 +220,7 @@ NicePageBuilder.generator.gulp = function( _options ){
         function( callback ){
         // 書出し
             for( const filePath in PAGE_LIST ){
-                const htmlJson = NicePageBuilder.generator( /** @type {!Array} */ (PAGE_LIST[ filePath ]), TEMPLETE_LIST, MIXIN_LIST );
+                const htmlJson = __NicePageBuilder_internal__.generator.call( context, /** @type {!Array} */ (PAGE_LIST[ filePath ]), TEMPLETE_LIST, MIXIN_LIST );
                 delete PAGE_LIST[ filePath ];
 
                 this.push(
