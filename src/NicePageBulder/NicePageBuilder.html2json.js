@@ -65,7 +65,7 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
  * 
  * @param {!Object=} options
  */
-function _html2jsonGulpPlugin( options ){
+__NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
     const context = this;
 
     const pluginName  = 'gulp-nice-page-builder',
@@ -281,12 +281,9 @@ function _html2jsonGulpPlugin( options ){
             callback();
 
             function writeFile( filePath, json ){
-                const pathElements = filePath.split( '/' );
-                pathElements.pop();
-
                 const file = new _Vinyl(
                     {
-                        base     : pathElements.join( '/' ) || '/',
+                        base     : '/',
                         path     : filePath,
                         contents : Buffer.from( JSON.stringify( json ) )
                     }

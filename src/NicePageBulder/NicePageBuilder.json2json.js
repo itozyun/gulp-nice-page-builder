@@ -1,33 +1,34 @@
-goog.provide( 'NicePageBuilder.json2html' );
-goog.provide( '__NicePageBuilder_internal__.json2html' );
+goog.provide( 'NicePageBuilder.json2json' );
+goog.provide( '__NicePageBuilder_internal__.json2json' );
 
-goog.require( 'json2html' );
+goog.require( 'json2json' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.requireType( 'NicePageBuilder.Context' );
 
 /** @private */
-NicePageBuilder.json2html = true;
+NicePageBuilder.json2json = true;
 
 /**
  * @package
  * @this {NicePageBuilder.Context}
- * 
- * @param {!Array} json
+ *
  * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
- * @return {string} html string
+ * @return {boolean|void} isStaticWebPage
  */
-__NicePageBuilder_internal__.json2html = function( json, onInstruction, opt_onError, opt_options ){
+__NicePageBuilder_internal__.json2json = function( json, onInstruction, opt_onError, opt_options ){
     const options = json.shift();
 
     // TODO onInstruction の 各コールバックの this コンテキストを options に
 
-    const htmlString = json2html( json, onInstruction, opt_onError, opt_options );
+    const isStaticWebPage = json2json( json, onInstruction, opt_onError, opt_options );
 
-    return htmlString || '';
+    json.unshift( options );
+
+    return isStaticWebPage;
 };
 
 /**
@@ -38,10 +39,10 @@ __NicePageBuilder_internal__.json2html = function( json, onInstruction, opt_onEr
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  */
-__NicePageBuilder_internal__._json2htmlGulpPlugin = function( onInstruction, opt_onError, opt_options ){
+__NicePageBuilder_internal__._json2jsonGulpPlugin = function( onInstruction, opt_onError, opt_options ){
     const context = this;
 
-    const pluginName  = 'NicePageBuilder.json2html.gulp',
+    const pluginName  = 'NicePageBuilder.json2json.gulp',
           PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     );
 
@@ -75,8 +76,10 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( onInstruction, opt
                     const htmlJson = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
                     const options  = /** @type {!NicePageBuilder.NicePageOptions} */ (htmlJson[ 0 ]);
 
+                    const isStaticWebPage = __NicePageBuilder_internal__.json2json.call( context, htmlJson, onInstruction, opt_onError, opt_options )
+
                     file.path     = options.FILE_PATH;
-                    file.contents = Buffer.from( __NicePageBuilder_internal__.json2html.call( context, htmlJson, onInstruction, opt_onError, opt_options ) );
+                    file.contents = Buffer.from( JSON.stringify( htmlJson ) );
                     file.extname  = '.' + originalExtname;
                     break;
             };

@@ -151,7 +151,7 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
  * 
  * @param {*} _options
  */
-function _generatorGulpPlugin( _options ){
+__NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
     const context = this;
 
     const pluginName  = 'NicePageBuilder.generator.gulp',
