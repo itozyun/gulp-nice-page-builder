@@ -41,11 +41,11 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
 
         parentJSONNode.splice( myIndex, 1 );
 
-        // [ 11, [ 'script', {}, {...} ], [ 'p' ] ]
+        // [ 11, [ 'SCRIPT', {}, {...} ], [ 'p' ] ]
         // ↓
         // [ {...}, [ 'p' ] ]
 
-        // [ 9, 'xhtml', [ 'script', {}, {...} ], [ 'p' ] ]
+        // [ 9, 'xhtml', [ 'SCRIPT', {}, {...} ], [ 'p' ] ]
         // ↓
         // [ {...}, 9, 'xhtml', [ 'p' ] ]
         if( scriptJSONNode && scriptJSONNode.length === 3 ){

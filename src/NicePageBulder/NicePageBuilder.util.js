@@ -48,7 +48,7 @@ NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
     return _getElementByFilter(
         rootJSONNode,
         function( tagName, attrs ){
-            return tagName === 'script' && attrs && attrs.type === 'application/json' || false;
+            return tagName === 'SCRIPT' && attrs && attrs.type === 'application/json' || false;
         }
     );
 };
@@ -62,7 +62,7 @@ NicePageBuilder.util.getSLotElement = function( rootJSONNode ){
     return _getElementByFilter(
         rootJSONNode,
         function( tagName, attrs ){
-            return tagName === 'slot';
+            return tagName === 'SLOT';
         }
     );
 };
