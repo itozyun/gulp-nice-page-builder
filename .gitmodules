@@ -1,3 +1,6 @@
 [submodule ".submodules/tiny-path"]
 	path = .submodules/tiny-path
 	url = https://github.com/ECMAScript2/es2-tiny-path
+[submodule ".submodules/html.json"]
+	path = .submodules/html.json
+	url = https://github.com/itozyun/html.json
