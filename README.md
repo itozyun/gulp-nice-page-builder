@@ -66,7 +66,7 @@ gulp.task('html', function(){
 
 ## 名称
 
-| 名称                     |　説明                                                                                                |
+| 名称                     | 説明                                                                                                 |
 |:-------------------------|:-----------------------------------------------------------------------------------------------------|
 | メタ情報 *1              | `<script type="application/json">{...}</script>` に書いておく                                        |
 | コンテンツ(.html) *2     | コンテンツとメタ情報だけが書かれた HTML                                                              |
@@ -76,6 +76,20 @@ gulp.task('html', function(){
 1. メタ情報の各プロパティの優先度は、コンテンツ > コンテンツの MIXINS\[0] > コンテンツの MIXINS\[z] > テンプレート > テンプレートの MIXINS\[0] > テンプレートの MIXINS\[z] の順番です．
 2. テンプレート、メタ情報、Mixin を使用せず完全なドキュメントだけのプロジェクトも可能だが、その場合 [html.json](https://github.com/itozyun/html.json) だけで事足りる．
 3. Mixin は MIXINS プロパティを持つことが出来ません！
+
+## メタ情報の定義積みプロパティ
+
+| 名称        | 型               | 説明                                      |
+|:------------|:-----------------|:------------------------------------------|
+| TEMPLETE    | `string`         | テンプレート(.html) へのパス              |
+| MIXINS      | `Array.<string>` | Mixin(.json) はこのプロパティを持てません |
+| FILE_PATH   | `string`         | `"/contact/index.html"`                   |
+| FILE_NAME   | `string`         | `"index.html"`                            |
+| FOLDER_PATH | `string`         | `"/contact"`                              |
+| URL         | `string`         | `"/contact/"`                             |
+| CREATED_AT  | `number`         |  `file.stat.birthtimeMs`                  |
+| MODIFIED_AT | `number`         |  `file.stat.ctimeMs`                      |
+| UPDATED_AT  | `number`         | コンテンツとそれが参照する Mixin, テンプレートの MODIFIED_AT の内の最大の値、但しメタ情報が上書きされなかった場合は除外される |
 
 ### コンテンツ(.html)の例
 
@@ -97,6 +111,8 @@ gulp.task('html', function(){
 `src/templete.html`
 
 `<slot>` 要素を持つファイルはテンプレートとして扱われます．テンプレートにひとつです．
+
+`<? ?>` PROCESSING_INSTRUCTION を使う場合、コードハイライトの効く .php などの適当なファイル拡張子にするのが良い、その場合 `gulp.src()` に `"src/**/*.php"` を加えること．
 
 ~~~html
 <!DOCTYPE html>
