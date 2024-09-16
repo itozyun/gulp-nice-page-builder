@@ -38,6 +38,7 @@ NicePageBuilder.INDEXES = {
 /**
  * @typedef {{
  *   srcRootPath      : string,
+ *   dynamicPagesPath : string,
  *   allPagesPath     : string,
  *   allMixinsPath    : string,
  *   allTempletesPath : string,
