@@ -70,7 +70,7 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
 
         for( const k in altPageOptions ){
             if( k === 'TEMPLETE' ){
-                templetePath = templetePath || altPageOptions[ k ]; // page.html や templete.html にある TEMPLETE が顕性、mixin の中の TEMPLETE は潜性
+                templetePath = templetePath || altPageOptions[ k ]; // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
                 if( templetePath === altPageOptions[ k ] ){
                     ++changed;
                 };
@@ -90,7 +90,7 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
     templetePath = pageOptions.TEMPLETE;
 
     while( templetePath ){
-        const templete  = TEMPLETE_LIST[ templetePath ];
+        const templete        = TEMPLETE_LIST[ templetePath ];
         const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
 
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
@@ -103,7 +103,7 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
 
     delete pageOptions.TEMPLETE;
     delete pageOptions.MIXINS;
-    pageOptions.UPDATED_AT  = updatedAt;
+    pageOptions.UPDATED_AT = updatedAt;
 
     return contentHtmlJson;
 };
@@ -125,7 +125,7 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
         let myIndex = /** @type {number} */ (result[ 2 ]),
             options;
 
-        if( m_isAttributes( contentJSONNode[ 0 ] ) ){
+        if( !m_isArray( contentJSONNode[ 0 ] ) && m_isObject( contentJSONNode[ 0 ] ) ){
             options = contentJSONNode.shift();
         };
 
@@ -134,7 +134,7 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
 
         parentJSONNode.splice( myIndex, 1 ); // remove <slot/>
 
-        for( myIndex -= i; i < l; ++i ){ // PROCESSING_INSTRUCTION で配列が変化する
+        for( myIndex -= i; i < l; ++i ){
             parentJSONNode.splice( myIndex + i, 0, contentJSONNode[ i ] );
         };
 
@@ -159,7 +159,7 @@ __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */
+    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !Array>} */
     const PAGE_LIST = {};
 
     /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */

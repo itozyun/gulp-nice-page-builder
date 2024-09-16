@@ -113,7 +113,7 @@ function _getElementByFilter( rootJSONNode, filter ){
         let i = m_getChildNodeStartIndex( currentJSONNode ),
             l = currentJSONNode.length, result;
 
-        for( ; i < l; ++i ){ // PROCESSING_INSTRUCTION で配列が変化する
+        for( ; i < l; ++i ){
             const childNode = currentJSONNode[ i ];
 
             if( m_isArray( childNode ) ){
