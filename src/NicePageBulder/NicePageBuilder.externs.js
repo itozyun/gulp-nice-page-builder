@@ -2,17 +2,17 @@
  * @externs
  */
 
-var nicePageOptions = {};
+var BuiltinOptions = {};
 
-    nicePageOptions.TEMPLETE    = '';
-    nicePageOptions.MIXINS      = [ '' ];
-    nicePageOptions.FILE_PATH   = '';
-    nicePageOptions.FILE_NAME   = '';
-    nicePageOptions.FOLDER_PATH = '';
-    nicePageOptions.URL         = '';
-    nicePageOptions.CREATED_AT  = 0;
-    nicePageOptions.MODIFIED_AT = 0;
-    nicePageOptions.UPDATED_AT  = 0;
+    BuiltinOptions.TEMPLETE    = '';
+    BuiltinOptions.MIXINS      = [ '' ];
+    BuiltinOptions.FILE_PATH   = '';
+    BuiltinOptions.FILE_NAME   = '';
+    BuiltinOptions.FOLDER_PATH = '';
+    BuiltinOptions.URL         = '';
+    BuiltinOptions.CREATED_AT  = 0;
+    BuiltinOptions.MODIFIED_AT = 0;
+    BuiltinOptions.UPDATED_AT  = 0;
 
 var nicePageBuilder = function(){};
     nicePageBuilder.html2json = function(){};
