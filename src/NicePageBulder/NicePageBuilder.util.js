@@ -22,7 +22,7 @@ NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
 
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !m_isArray( htmlJson ) ){
-            throw 'NOT_HTML_JSON_ERROR!';
+            throw 'Not html.json! ' + JSON.stringify( htmlJson );
         };
     };
     return htmlJson;
@@ -37,6 +37,18 @@ NicePageBuilder.util.getNiceOptions = function( nicePageOrTemplete ){
     var options = /** @type {!NicePageBuilder.NicePageOptions} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
 
     return !m_isArray( options ) && m_isObject( options ) ? options : null;
+};
+
+/**
+ * 
+ * @param {!NicePageBuilder.NicePageOptions} pageOptions 
+ */
+NicePageBuilder.util.completeBuiltinOptions = function( pageOptions, filePath ){
+    const pathElements = filePath.split( '/' );
+
+    pageOptions.FILE_NAME   = pathElements.pop();
+    pageOptions.FOLDER_PATH = pathElements.join( '/' );
+    pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
 };
 
 /**
@@ -104,9 +116,7 @@ function _getElementByFilter( rootJSONNode, filter ){
         for( ; i < l; ++i ){ // PROCESSING_INSTRUCTION で配列が変化する
             const childNode = currentJSONNode[ i ];
 
-            if( m_isStringOrNumber( childNode ) ){
-                // TEXT_NODE
-            } else if( m_isArray( childNode ) ){
+            if( m_isArray( childNode ) ){
                 if( result = walkNode( childNode, currentJSONNode, i ) ){
                     return result;
                 };

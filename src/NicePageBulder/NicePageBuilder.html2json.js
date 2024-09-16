@@ -262,14 +262,10 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                 delete PAGE_LIST[ filePath ];
 
                 const htmlJson     = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];
-                // const pathElements = filePath.split( '/' );
 
                 let pageOptions = htmlJson[ 0 ];
                 pageOptions = !m_isArray( pageOptions ) && m_isObject( pageOptions ) ? pageOptions : {};
                 pageOptions.FILE_PATH   = filePath;
-                // pageOptions.FILE_NAME   = pathElements.pop();
-                // pageOptions.FOLDER_PATH = pathElements.join( '/' );
-                // pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
                 pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.CREATED_AT ]);
                 pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.UPDATED_AT ]);
 

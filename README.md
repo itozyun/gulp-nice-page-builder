@@ -25,8 +25,10 @@
       * 併せて参照されているテンプレートと Mixin をまとめたファイルを作成する．
    2. nicePageBuilder.generator
       * *.html.json をテンプレートに埋め込んで、Mixin をコピーする
-   3. nicePageBuilder.json2html
-      * *.html.json を .html に変換する．この際に `<? ?>` 動的属性(`<a :href="">`) を置き換えて
+   3. nicePageBuilder.json2json
+      * 動的ページのリストを出力する
+   4. nicePageBuilder.json2html
+      * *.html.json を .html に変換する．この際に `<? ?>` 動的属性(`<a :href="">`) を置き換える
       * `onEnterNode()` のコールバックで VDOM を使った文書ツリーの変更ができる
 
 ## Install
