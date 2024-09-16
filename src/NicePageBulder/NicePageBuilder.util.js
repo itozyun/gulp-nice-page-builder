@@ -41,14 +41,16 @@ NicePageBuilder.util.getNiceOptions = function( nicePageOrTemplete ){
 
 /**
  * 
- * @param {!NicePageBuilder.NicePageOptions} pageOptions 
+ * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {string} filePath
+ * @param {!TinyPath} path
  */
-NicePageBuilder.util.completeBuiltinOptions = function( pageOptions, filePath ){
+NicePageBuilder.util.completeBuiltinOptions = function( pageOptions, filePath, path ){
     const pathElements = filePath.split( '/' );
 
     pageOptions.FILE_NAME   = pathElements.pop();
     pageOptions.FOLDER_PATH = pathElements.join( '/' );
-    pageOptions.URL         = NicePageBuilder.util.filePathToURL( filePath );
+    pageOptions.URL         = path.filePathToURL( filePath );
 };
 
 /**

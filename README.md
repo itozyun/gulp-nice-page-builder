@@ -2,7 +2,7 @@
 
 ![](https://4.bp.blogspot.com/-_jS4oD7mDQ8/WJFq8Z7sZ-I/AAAAAAAARP0/SJJHoRWJ37cwdBuO2pvuHQ_rY3GI1nIHQCLcB/s800/NicePageBuilder_package.jpg '')
 
-[html.json](https://github.com/itozyun/html.json) と併せて使用する Static Site Generator. 通常 gulp プラグイン版を使う．
+[html.json](https://github.com/itozyun/html.json) をラップして使用する Static Site Generator. 通常 gulp プラグイン版を使う．
 
 ---
 
@@ -50,16 +50,16 @@ gulp test
 
 ~~~js
 gulp.task('html', function(){
-    const builder = require('gulp-nice-page-builder').gulp({srcRootPath: 'src'});
+    const nicePageBuilder = require('gulp-nice-page-builder').gulp({srcRootPath: 'src'});
 
     return gulp.src(
                    ['./src/**/*.html', './src/**/*.htm', './src/**/*.php', './src/**/*.json']
               ).pipe(
-                   builder.html2json({trimWhitespaces: 'aggressive' })
+                   nicePageBuilder.html2json({trimWhitespaces: 'aggressive' })
               ).pipe(
-                   builder.generator()
+                   nicePageBuilder.generator()
               ).pipe(
-                   builder.json2html()
+                   nicePageBuilder.json2html()
               ).pipe(
                    gulp.dest('./public')
               );
@@ -124,6 +124,25 @@ gulp.task('html', function(){
      <slot></slot>
 </main>
 ~~~
+
+## html.json と nice-page-builder の .json データの比較
+
+### html.json のドキュメント
+
+先頭が数値(9: DOCUMENT または 11: DOCUMENT_FRAGMENT)で始まります．
+
+~~~json
+[9, "<!DOCTYPE html>", ["HTML"]]
+~~~
+
+### nice-page-builder のメタ情報付き
+
+先頭にメタ情報 `{}` のある配列です．nicePageBuilder.generator() を通すと html.json 形式になります．
+
+~~~json
+[{"FILE_PATH":"/contact/index.html"}, 9, "<!DOCTYPE html>", ["HTML"]]
+~~~
+
 
 ## Links
 

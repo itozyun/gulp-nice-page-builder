@@ -40,7 +40,7 @@ __NicePageBuilder_internal__.json2html = function( json, opt_onInstruction, opt_
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  */
-__NicePageBuilder_internal__._json2htmlGulpPlugin = function( onInstruction, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
+__NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.json2html',
