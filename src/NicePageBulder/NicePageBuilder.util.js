@@ -48,7 +48,9 @@ NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
     return _getElementByFilter(
         rootJSONNode,
         function( tagName, attrs ){
-            return ( tagName === 'SCRIPT' || tagName === 'script' ) && attrs && attrs.type === 'application/json' || false;
+            return ( tagName === 'SCRIPT' || tagName === 'script' ) &&
+                   attrs &&
+                   ( attrs.type === 'application/json' || attrs.type === 'nice-page-builder/object' ) || false;
         }
     );
 };

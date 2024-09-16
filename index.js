@@ -754,7 +754,7 @@ Z.ba.ia = function(a) {
 };
 Z.ba.ua = function(a) {
   return Ya(a, function(b, c) {
-    return ("SCRIPT" === b || "script" === b) && c && "application/json" === c.type || !1;
+    return ("SCRIPT" === b || "script" === b) && c && ("application/json" === c.type || "nice-page-builder/object" === c.type) || !1;
   });
 };
 Z.ba.pa = function(a) {
