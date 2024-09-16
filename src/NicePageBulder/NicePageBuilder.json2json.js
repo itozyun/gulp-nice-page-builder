@@ -14,17 +14,19 @@ NicePageBuilder.json2json = true;
  * @package
  * @this {NicePageBuilder.Context}
  *
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
- * @param {!function(string)|!Object=} opt_onError
+ * @param {!InstructionHandler=} opt_onInstruction
+ * @param {!EnterNodeHandler=} opt_onEnterNode
+ * @param {!function(string)=} opt_onError
+ * @param {!function(!VNode)=} opt_onDocumentReady
  * @param {!Object=} opt_options
  * @return {boolean|void} isStaticWebPage
  */
-__NicePageBuilder_internal__.json2json = function( json, onInstruction, opt_onError, opt_options ){
+__NicePageBuilder_internal__.json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
     const options = json.shift();
 
     // TODO onInstruction の 各コールバックの this コンテキストを options に
 
-    const isStaticWebPage = json2json( json, onInstruction, opt_onError, opt_options );
+    const isStaticWebPage = json2json( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
     json.unshift( options );
 
@@ -35,11 +37,13 @@ __NicePageBuilder_internal__.json2json = function( json, onInstruction, opt_onEr
  * @package
  * @this {NicePageBuilder.Context}
  * 
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
- * @param {!function(string)|!Object=} opt_onError
+ * @param {!InstructionHandler=} opt_onInstruction
+ * @param {!EnterNodeHandler=} opt_onEnterNode
+ * @param {!function(string)=} opt_onError
+ * @param {!function(!VNode)=} opt_onDocumentReady
  * @param {!Object=} opt_options
  */
-__NicePageBuilder_internal__._json2jsonGulpPlugin = function( onInstruction, opt_onError, opt_options ){
+__NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
     const context          = this,
           dynamicPagesPath = context.dynamicPagesPath;
 
@@ -82,7 +86,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( onInstruction, opt
                     const options  = /** @type {!NicePageBuilder.NicePageOptions} */ (htmlJson[ 0 ]);
                     const filePath = options.FILE_PATH;
 
-                    const isStaticWebPage = __NicePageBuilder_internal__.json2json.call( context, htmlJson, onInstruction, opt_onError, opt_options )
+                    const isStaticWebPage = __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options )
 
                     if( dynamicPageList && !isStaticWebPage ){
                         dynamicPageList.push( filePath );

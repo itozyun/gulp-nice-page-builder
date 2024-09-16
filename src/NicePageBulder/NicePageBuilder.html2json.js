@@ -176,7 +176,9 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                                 checkMixins( path, mixinOptions.MIXINS, skipTemplete, true );
                             } else {
                                 if( mixinOptions.MIXINS ){
-                                    console.log( 'Mixin:"' + path + '" cannot have MIXINS property!' );
+                                    if( NicePageBuilder.DEFINE.DEBUG ){
+                                        console.log( 'Mixin:"' + path + '" cannot have MIXINS property!' );
+                                    };
                                     delete mixinOptions.MIXINS;
                                 };
                             };
