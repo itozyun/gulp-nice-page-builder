@@ -41,7 +41,7 @@ __NicePageBuilder_internal__.json2html = function( json, onInstruction, opt_onEr
 __NicePageBuilder_internal__._json2htmlGulpPlugin = function( onInstruction, opt_onError, opt_options ){
     const context = this;
 
-    const pluginName  = 'NicePageBuilder.json2html.gulp',
+    const pluginName  = 'NicePageBuilder.gulp.json2html',
           PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     );
 

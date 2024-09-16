@@ -126,12 +126,15 @@ NicePageBuilder._createContext = function( opt_options ){
 
     const allPagesPath     = options[ 'allPagesPath' ] &&
                              path.toSrcRootRelativeFilePath( '/', options[ 'allPagesPath'     ]                         ),
+          dynamicPagesPath = options[ 'dynamicPagesPath' ] &&
+                             path.toSrcRootRelativeFilePath( '/', options[ 'dynamicPagesPath' ]                         ),
           allMixinsPath    = path.toSrcRootRelativeFilePath( '/', options[ 'allMixinsPath'    ] || 'all.mixins.json'    ),
           allTempletesPath = path.toSrcRootRelativeFilePath( '/', options[ 'allTempletesPath' ] || 'all.templetes.json' );
 
     return {
-        srcRootPath  : path.normalizeFilePath( srcRootPath ),
-        allPagesPath : allPagesPath || '',
+        srcRootPath      : path.normalizeFilePath( srcRootPath ),
+        allPagesPath     : allPagesPath || '',
+        dynamicPagesPath : dynamicPagesPath || '',
         allMixinsPath,
         allTempletesPath,
         path

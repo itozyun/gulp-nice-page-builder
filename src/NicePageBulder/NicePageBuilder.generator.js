@@ -154,7 +154,7 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
 __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
     const context = this;
 
-    const pluginName  = 'NicePageBuilder.generator.gulp',
+    const pluginName  = 'NicePageBuilder.gulp.generator',
           PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );

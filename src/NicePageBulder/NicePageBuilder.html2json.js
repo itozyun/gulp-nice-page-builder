@@ -68,7 +68,7 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
 __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
     const context = this;
 
-    const pluginName  = 'gulp-nice-page-builder',
+    const pluginName  = 'NicePageBuilder.gulp.html2json',
           PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
@@ -260,7 +260,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                 delete PAGE_LIST[ filePath ];
 
                 const htmlJson     = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];
-                const pathElements = filePath.split( '/' );
+                // const pathElements = filePath.split( '/' );
 
                 let pageOptions = htmlJson[ 0 ];
                 pageOptions = !m_isArray( pageOptions ) && m_isObject( pageOptions ) ? pageOptions : {};

@@ -40,11 +40,16 @@ __NicePageBuilder_internal__.json2json = function( json, onInstruction, opt_onEr
  * @param {!Object=} opt_options
  */
 __NicePageBuilder_internal__._json2jsonGulpPlugin = function( onInstruction, opt_onError, opt_options ){
-    const context = this;
+    const context          = this,
+          dynamicPagesPath = context.dynamicPagesPath;
 
-    const pluginName  = 'NicePageBuilder.json2json.gulp',
+    const pluginName  = 'NicePageBuilder.gulp.json2json',
           PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     );
+
+    if( dynamicPagesPath ){
+        var dynamicPageList = [];
+    };
 
     return through.obj(
         /**
@@ -75,16 +80,36 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( onInstruction, opt
                 case 'php'   :
                     const htmlJson = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
                     const options  = /** @type {!NicePageBuilder.NicePageOptions} */ (htmlJson[ 0 ]);
+                    const filePath = options.FILE_PATH;
 
                     const isStaticWebPage = __NicePageBuilder_internal__.json2json.call( context, htmlJson, onInstruction, opt_onError, opt_options )
 
-                    file.path     = options.FILE_PATH;
+                    if( dynamicPageList && !isStaticWebPage ){
+                        dynamicPageList.push( filePath );
+                    };
+
+                    file.path     = filePath;
                     file.contents = Buffer.from( JSON.stringify( htmlJson ) );
                     file.extname  = '.' + originalExtname;
                     break;
             };
             this.push( file );
             callback();
-        }
+        },
+        dynamicPageList
+            ? function( callback ){
+                  const _Vinyl = require( 'vinyl' );
+                  const file = new _Vinyl(
+                            {
+                                base     : '/',
+                                path     : dynamicPagesPath,
+                                contents : Buffer.from( JSON.stringify( dynamicPageList ) )
+                            }
+                        );
+                  file.extname = '.json';
+                  this.push( file );
+                  callback();
+              }
+            : null
     );
 };
