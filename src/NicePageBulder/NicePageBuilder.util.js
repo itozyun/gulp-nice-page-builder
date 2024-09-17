@@ -2,6 +2,8 @@ goog.provide( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.provide( 'NicePageBuilder.util' );
 goog.provide( 'NicePageBuilder.util.getHTMLJson' );
 goog.provide( 'NicePageBuilder.util.getNiceOptions' );
+goog.provide( 'NicePageBuilder.util.completeBuiltinOptions' );
+goog.provide( 'NicePageBuilder.util.jsonFilePathToOriginalExtname' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
@@ -54,6 +56,26 @@ NicePageBuilder.util.completeBuiltinOptions = function( pageOptions, filePath, p
 };
 
 /**
+ * `"/.json/xxx.AAA.json" => "AAA"`
+ * @param {string} filePath
+ * @param {!TinyPath} path
+ */
+NicePageBuilder.util.jsonFilePathToOriginalExtname = function( filePath, path ){
+    let filePathElements = path.normalizeFilePath( filePath ).split( '.json' );
+ 
+    if( NicePageBuilder.DEFINE.DEBUG ){
+        if( filePathElements[ filePathElements.length - 1 ] ){
+            throw filePath + ' is not .json file path!';
+        };
+    };
+
+    filePathElements.pop();
+    filePathElements = filePathElements.join( '.json' ).split( '/' );
+
+    return filePathElements.pop().split( '.' ).pop();
+};
+
+/**
  * 
  * @param {!Array} rootJSONNode
  * @return {!Array | void}
@@ -72,14 +94,16 @@ NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
 /**
  * 
  * @param {!Array} rootJSONNode
+ * @param {boolean} dropOptions
  * @return {!Array | void}
  */
-NicePageBuilder.util.getSLotElement = function( rootJSONNode ){
+NicePageBuilder.util.getSLotElement = function( rootJSONNode, dropOptions ){
     return _getElementByFilter(
         rootJSONNode,
         function( tagName, attrs ){
             return tagName === 'SLOT' || tagName === 'slot';
-        }
+        },
+        dropOptions
     );
 };
 
@@ -87,19 +111,22 @@ NicePageBuilder.util.getSLotElement = function( rootJSONNode ){
  * @private
  * @param {!Array} rootJSONNode
  * @param {function(string, (Attrs | null)):boolean} filter
+ * @param {boolean=} opt_optionsdropOptions
  * @return {!Array | void} 0:target node, 1:parentnode, 3:index
  */
-function _getElementByFilter( rootJSONNode, filter ){
+function _getElementByFilter( rootJSONNode, filter, opt_optionsdropOptions ){
     let options = rootJSONNode[ 0 ], result;
 
     if( !m_isArray( options ) && m_isObject( options ) ){
         rootJSONNode.shift();
         result = walkChildNodes( rootJSONNode );
 
-        rootJSONNode.unshift( options );
-        if( result ){
-            if( result[ 1 ] === rootJSONNode ){ // if parentNode === rootNode
-                return [ result[ 0 ], rootJSONNode, ++result[ 2 ] /** increment index */ ];
+        if( !opt_optionsdropOptions ){
+            rootJSONNode.unshift( options );
+            if( result ){
+                if( result[ 1 ] === rootJSONNode ){ // if parentNode === rootNode
+                    return [ result[ 0 ], rootJSONNode, ++result[ 2 ] /** increment index */ ];
+                };
             };
         };
         return result;

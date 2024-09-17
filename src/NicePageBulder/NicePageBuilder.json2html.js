@@ -14,19 +14,25 @@ NicePageBuilder.json2html = true;
  * @package
  * @this {NicePageBuilder.Context}
  * 
- * @param {!Array} json
+ * @param {!Array} htmlJson 破壊
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {string} html string
  */
-__NicePageBuilder_internal__.json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
-    const options = json.shift();
+__NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
+    const context = this;
 
-    // TODO onInstruction の 各コールバックの this コンテキストを options に
+    const pageOptions = !m_isArray( htmlJson[ 0 ] ) && m_isObject( htmlJson[ 0 ] ) ? htmlJson[ 0 ] : null;
 
-    const htmlString = json2html( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
+    if( pageOptions ){
+        htmlJson.shift();
+        // TODO options が 存在する場合、opt_onInstruction, opt_onEnterNode, opt_onError の 各コールバックの this コンテキストに this.getOptions() 等を追加
+        // bindNicePageBuilderContextToCallback( context, opt_onInstruction, opt_onEnterNode, opt_onError );
+    };
+    
+    const htmlString = json2html( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
 
     return htmlString || '';
 };
@@ -75,9 +81,11 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                 case 'xhtml' :
                 case 'php'   :
                     const htmlJson = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
-                    const options  = /** @type {!NicePageBuilder.NicePageOptions} */ (htmlJson[ 0 ]);
+                    const filePathElements = file.path.split( '.json' );
 
-                    file.path     = options.FILE_PATH;
+                    filePathElements.pop();
+
+                    file.path     = filePathElements.join( '.json' );
                     file.contents = Buffer.from( __NicePageBuilder_internal__.json2html.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ) );
                     file.extname  = '.' + originalExtname;
                     break;

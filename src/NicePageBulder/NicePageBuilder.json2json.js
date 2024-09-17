@@ -14,6 +14,7 @@ NicePageBuilder.json2json = true;
  * @package
  * @this {NicePageBuilder.Context}
  *
+ * @param {!Array} htmlJson
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(string)=} opt_onError
@@ -21,14 +22,20 @@ NicePageBuilder.json2json = true;
  * @param {!Object=} opt_options
  * @return {boolean|void} isStaticWebPage
  */
-__NicePageBuilder_internal__.json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
-    const options = json.shift();
+__NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
+    const pageOptions = !m_isArray( htmlJson[ 0 ] ) && m_isObject( htmlJson[ 0 ] ) ? htmlJson[ 0 ] : null;
 
-    // TODO onInstruction の 各コールバックの this コンテキストを options に
+    if( pageOptions ){
+        htmlJson.shift();
+        // TODO options が 存在する場合、opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError の 各コールバックの this コンテキストに this.getOptions() に
+        // bindNicePageBuilderContextToCallback( context, opt_onInstruction, opt_onEnterNode, opt_onError );
+    };
 
-    const isStaticWebPage = json2json( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
+    const isStaticWebPage = json2json( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
-    json.unshift( options );
+    if( pageOptions ){
+        htmlJson.unshift( pageOptions );
+    };
 
     return isStaticWebPage;
 };

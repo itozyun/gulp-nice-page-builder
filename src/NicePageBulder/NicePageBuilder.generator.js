@@ -32,10 +32,14 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
         return htmlJson;
     };
 
+    const templeteStack = [];
+
     let updatedAt = pageOptions.MODIFIED_AT;
     let templetePath = pageOptions.TEMPLETE;
 
     mergeMinxins( pageOptions.MIXINS );
+
+    templeteStack[ 0 ] = templetePath;
 
     while( templetePath ){
         const templete = TEMPLETE_LIST[ templetePath ];
@@ -45,6 +49,7 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
         if( templeteOptions ){
             mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
             mergeMinxins( templeteOptions.MIXINS );
+            templeteStack.push( templetePath );
         };
     };
 
@@ -87,18 +92,11 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
     };
 
     let contentHtmlJson = htmlJson;
-    templetePath = pageOptions.TEMPLETE;
 
-    while( templetePath ){
-        const templete        = TEMPLETE_LIST[ templetePath ];
-        const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
+    while( templeteStack.length ){
+        const templete = TEMPLETE_LIST[ templeteStack.shift() ];
 
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
-        if( templeteOptions ){
-            templetePath = templeteOptions.TEMPLETE;
-        } else {
-            templetePath = '';
-        };
     };
 
     delete pageOptions.TEMPLETE;
@@ -117,7 +115,7 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
 function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
     templeteJSONNode = /** @type {!Array} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
 
-    let result = NicePageBuilder.util.getSLotElement( templeteJSONNode );
+    let result = NicePageBuilder.util.getSLotElement( templeteJSONNode, true );
 
     if( result ){
         const parentJSONNode = /** @type {!Array} */ (result[ 1 ]);
@@ -197,13 +195,13 @@ __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
                 case 'php'   :
                     PAGE_LIST[ /** @type {!NicePageBuilder.NicePageOptions} */ (json[ 0 ]).FILE_PATH ] = json;
                     return callback();
-                case 'templetes' :
+                case context.keywordTempletes :
                     if( !m_isArray( json ) && m_isObject( json ) ){
                         /** @suppress {checkTypes} */
                         TEMPLETE_LIST = json;
                     };
                     break;
-                case 'mixins' :
+                case context.keywordMixins :
                     if( !m_isArray( json ) && m_isObject( json ) ){
                         /** @suppress {checkTypes} */
                         MIXIN_LIST = json;

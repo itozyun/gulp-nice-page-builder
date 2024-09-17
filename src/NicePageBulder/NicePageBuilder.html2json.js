@@ -239,7 +239,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                 const htmlJson       = NicePageBuilder.util.getHTMLJson( pageOrTemplete );
 
                 if( pageOrTemplete.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){ // NicePageBuilder.NicePageOrTemplete[4] use templete == false
-                    if( NicePageBuilder.util.getSLotElement( htmlJson ) ){
+                    if( NicePageBuilder.util.getSLotElement( htmlJson, false ) ){
                         if( NicePageBuilder.DEFINE.DEBUG ){
                             console.log( 'Unused templete found! ' + pageOrTempletePath );
                         };
