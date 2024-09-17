@@ -20,10 +20,10 @@ NicePageBuilder.generator = true;
  * @package
  * @this {NicePageBuilder.Context}
  * 
- * @param {!Array} htmlJson
+ * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson
  * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} TEMPLETE_LIST 
  * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin>} MIXIN_LIST 
- * @return {!Array}
+ * @return {!HTMLJson | !HTMLJsonWithOptions}
  */
 __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
     const pageOptions = !m_isArray( htmlJson[ 0 ] ) && m_isObject( htmlJson[ 0 ] ) ? htmlJson[ 0 ] : null;
@@ -110,17 +110,17 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
 
 /**
  * @private
- * @param {!Array} templeteJSONNode 
- * @param {!Array} contentJSONNode
- * @return {!Array}
+ * @param {!HTMLJson} templeteJSONNode 
+ * @param {!HTMLJson} contentJSONNode
+ * @return {!HTMLJson}
  */
 function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
-    templeteJSONNode = /** @type {!Array} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
+    templeteJSONNode = /** @type {!HTMLJson} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
 
     let result = NicePageBuilder.util.getSLotElement( templeteJSONNode, true );
 
     if( result ){
-        const parentJSONNode = /** @type {!Array} */ (result[ 1 ]);
+        const parentJSONNode = /** @type {!HTMLJson} */ (result[ 1 ]);
 
         let myIndex = /** @type {number} */ (result[ 2 ]),
             options;
@@ -188,7 +188,7 @@ __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
                 return callback();
             };
     
-            const json = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
+            const json = /** @type {!HTMLJson} */ (JSON.parse( file.contents.toString( encoding ) ));
 
             switch( file.stem.split( '.' ).pop() ){
                 case 'html'  :
@@ -220,7 +220,7 @@ __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
         function( callback ){
         // 書出し
             for( const filePath in PAGE_LIST ){
-                const htmlJson = __NicePageBuilder_internal__.generator.call( context, /** @type {!Array} */ (PAGE_LIST[ filePath ]), TEMPLETE_LIST, MIXIN_LIST );
+                const htmlJson = __NicePageBuilder_internal__.generator.call( context, /** @type {!HTMLJson} */ (PAGE_LIST[ filePath ]), TEMPLETE_LIST, MIXIN_LIST );
                 delete PAGE_LIST[ filePath ];
 
                 this.push(

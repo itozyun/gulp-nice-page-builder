@@ -17,10 +17,10 @@ NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , fal
 /**
  * 
  * @param {!NicePageBuilder.NicePageOrTemplete} nicePageOrTemplete 
- * @return {!Array}
+ * @return {!HTMLJson | !HTMLJsonWithOptions}
  */
 NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
-    var htmlJson = /** @type {!Array} */ (nicePageOrTemplete[ NicePageBuilder.INDEXES.HTML_JSON ]);
+    var htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (nicePageOrTemplete[ NicePageBuilder.INDEXES.HTML_JSON ]);
 
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !m_isArray( htmlJson ) ){
@@ -77,7 +77,7 @@ NicePageBuilder.util.jsonFilePathToOriginalExtname = function( filePath, path ){
 
 /**
  * 
- * @param {!Array} rootJSONNode
+ * @param {!HTMLJson | !HTMLJsonWithOptions} rootJSONNode
  * @return {!Array | void}
  */
 NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
@@ -93,7 +93,7 @@ NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
 
 /**
  * 
- * @param {!Array} rootJSONNode
+ * @param {!HTMLJson | !HTMLJsonWithOptions} rootJSONNode
  * @param {boolean} dropOptions
  * @return {!Array | void}
  */
@@ -109,7 +109,7 @@ NicePageBuilder.util.getSLotElement = function( rootJSONNode, dropOptions ){
 
 /**
  * @private
- * @param {!Array} rootJSONNode
+ * @param {!HTMLJson | !HTMLJsonWithOptions} rootJSONNode
  * @param {function(string, (Attrs | null)):boolean} filter
  * @param {boolean=} opt_optionsdropOptions
  * @return {!Array | void} 0:target node, 1:parentnode, 3:index
@@ -119,7 +119,7 @@ function _getElementByFilter( rootJSONNode, filter, opt_optionsdropOptions ){
 
     if( !m_isArray( options ) && m_isObject( options ) ){
         rootJSONNode.shift();
-        result = walkChildNodes( rootJSONNode );
+        result = walkChildNodes( /** @type {!HTMLJson} */ (rootJSONNode) );
 
         if( !opt_optionsdropOptions ){
             rootJSONNode.unshift( options );
@@ -131,11 +131,11 @@ function _getElementByFilter( rootJSONNode, filter, opt_optionsdropOptions ){
         };
         return result;
     };
-    return walkChildNodes( rootJSONNode );
+    return walkChildNodes( /** @type {!HTMLJson} */ (rootJSONNode) );
 
     /**
      * 
-     * @param {!Array} currentJSONNode
+     * @param {!HTMLJson} currentJSONNode
      * @return {!Array | void}
      */
     function walkChildNodes( currentJSONNode ){
@@ -146,7 +146,7 @@ function _getElementByFilter( rootJSONNode, filter, opt_optionsdropOptions ){
             const childNode = currentJSONNode[ i ];
 
             if( m_isArray( childNode ) ){
-                if( result = walkNode( childNode, currentJSONNode, i ) ){
+                if( result = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i ) ){
                     return result;
                 };
             };
@@ -155,8 +155,8 @@ function _getElementByFilter( rootJSONNode, filter, opt_optionsdropOptions ){
 
     /**
      * 
-     * @param {!Array} currentJSONNode 
-     * @param {!Array} parentJSONNode 
+     * @param {!HTMLJson} currentJSONNode 
+     * @param {!HTMLJson} parentJSONNode 
      * @param {number} myIndex
      * @return {!Array | void}
      */
@@ -179,7 +179,7 @@ function _getElementByFilter( rootJSONNode, filter, opt_optionsdropOptions ){
                 if( m_isString( tagName ) ){
                     const attrs = currentJSONNode[ attrsIndex ];
 
-                    if( filter( tagName, m_isAttributes( attrs ) ? /** @type {!Attrs} */ (attrs) : null ) ){
+                    if( filter( /** @type {string} */ (tagName), m_isAttributes( attrs ) ? /** @type {!Attrs} */ (attrs) : null ) ){
                         return [ currentJSONNode, parentJSONNode, myIndex ];
                     } else {
                         return walkChildNodes( currentJSONNode );

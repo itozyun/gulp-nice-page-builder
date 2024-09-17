@@ -26,16 +26,16 @@ NicePageBuilder.html2json = true;
  * @param {string} htmlString
  * @param {boolean} allowInvalidTree
  * @param {!Object=} opt_options
- * @return {!Array}
+ * @return {!HTMLJson | !HTMLJsonWithOptions}
  */
 __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree, opt_options ){
-    const htmlJson = html2json( htmlString, allowInvalidTree, opt_options )
+    const htmlJson = /** @type {!HTMLJson} */ (html2json( htmlString, allowInvalidTree, opt_options ));
 
-    const result = NicePageBuilder.util.getJsonScriptElement( /** @type {!Array} */ (htmlJson) );
+    const result = NicePageBuilder.util.getJsonScriptElement( htmlJson );
 
     if( result ){
-        const scriptJSONNode = /** @type {!Array} */ (result[ 0 ]);
-        const parentJSONNode = /** @type {!Array} */ (result[ 1 ]);
+        const scriptJSONNode = /** @type {!HTMLJson} */ (result[ 0 ]);
+        const parentJSONNode = /** @type {!HTMLJson} */ (result[ 1 ]);
 
         let myIndex = /** @type {number} */ (result[ 2 ]);
 

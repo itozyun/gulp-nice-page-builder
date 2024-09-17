@@ -24,7 +24,6 @@ __NicePageBuilder_internal__.json2json = false;
 /** @suppress {checkTypes} */
 __NicePageBuilder_internal__.json2html = false;
 
-
 /**
  * @enum {number}
  */
@@ -74,12 +73,17 @@ NicePageBuilder.SourceRootRelativePath;
 NicePageBuilder.NicePageOptions;
 
 /**
+ * @typedef {Array.<NicePageBuilder.NicePageOptions | number | string | Attrs | InstructionArgs | Array.<number | string | Attrs | InstructionArgs | Array>>}
+ */
+var HTMLJsonWithOptions;
+
+/**
  * [0] {Array} HTML JSON
  * [1] {number} CREATED_AT
  * [2] {number} UPDATED_AT
  * [3] {boolean} isPage
  * 
- * @typedef {!Array.<(!Array | number | boolean)>}
+ * @typedef {!Array.<(!HTMLJson | !HTMLJsonWithOptions | number | boolean)>}
  */
 NicePageBuilder.NicePageOrTemplete;
 

@@ -14,7 +14,7 @@ NicePageBuilder.json2html = true;
  * @package
  * @this {NicePageBuilder.Context}
  * 
- * @param {!Array} htmlJson 破壊
+ * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson 破壊
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(string)|!Object=} opt_onError
@@ -80,7 +80,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    const htmlJson = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
+                    const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (JSON.parse( file.contents.toString( encoding ) ));
                     const filePathElements = file.path.split( '.json' );
 
                     filePathElements.pop();

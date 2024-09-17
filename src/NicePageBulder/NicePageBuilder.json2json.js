@@ -15,7 +15,7 @@ NicePageBuilder.json2json = true;
  * @package
  * @this {NicePageBuilder.Context}
  *
- * @param {!Array} htmlJson
+ * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(string)=} opt_onError
@@ -28,11 +28,12 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
 
     if( pageOptions ){
         htmlJson.shift();
+        // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
         // TODO options が 存在する場合、opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError の 各コールバックの this コンテキストに this.getOptions() に
         // bindNicePageBuilderContextToCallback( context, pageOptions, opt_onInstruction, opt_onEnterNode, opt_onError );
     };
 
-    const isStaticWebPage = json2json( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
+    const isStaticWebPage = json2json( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
     if( pageOptions ){
         htmlJson.unshift( pageOptions );
@@ -91,7 +92,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    const htmlJson = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ));
+                    const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (JSON.parse( file.contents.toString( encoding ) ));
                     const options  = /** @type {!NicePageBuilder.NicePageOptions} */ (htmlJson[ 0 ]);
                     const filePath = options.FILE_PATH;
 
@@ -114,7 +115,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
                     for( const filePath in allTempletes ){
                         const isStaticWebPage = __NicePageBuilder_internal__.json2json.call(
                                                     context,
-                                                    /** @type {!Array} */ (NicePageBuilder.util.getHTMLJson( allTempletes[ filePath ] )),
+                                                    /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (NicePageBuilder.util.getHTMLJson( allTempletes[ filePath ] )),
                                                     opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options
                                                 );
 
