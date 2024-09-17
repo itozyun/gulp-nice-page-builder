@@ -16,20 +16,26 @@
 
 ---
 
-1. テンプレートから HTML を生成します
+1. テンプレートから完全な HTML 文書を生成します
    * テンプレートは入れ子にできます
-2. 複数ページで共通するデータを JSON ファイルに分離する(mixin)
-3. [html.json](https://github.com/itozyun/html.json) と併せて使用する
+2. 複数ページで共通するデータを JSON ファイルに分離する(Mixin)
+3. [html.json](https://github.com/itozyun/html.json) をラップしています
    1. nicePageBuilder.html2json
-      * *.html ファイルを *.html.json ファイルに変換する．
-      * 併せて参照されているテンプレートと Mixin をまとめたファイルを作成する．
+      * *.html ファイルを *.html.json ファイルに変換する
+        * メタ情報を配列の先頭に追加した HTMLJsonWithOptions 形式の .json ファイルです
+      * 参照されているテンプレートと Mixin をまとめたファイルを作成する
    2. nicePageBuilder.generator
-      * *.html.json をテンプレートに埋め込んで、Mixin をコピーする
+      * 参照する Mixin とテンプレートのメタ情報をコンテンツページのメタ情報にコピーする
+      * *.html.json をテンプレートに埋め込んで完全な HTML を作成する
    3. nicePageBuilder.json2json
       * 動的ページのリストを出力する
+      * `<? ?>` と動的属性(`<a :href="">`) を置き換える
+      * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
+      * `onDocumentReady(rootVNode)` で VDOM を使った文書ツリーの変更ができる
    4. nicePageBuilder.json2html
-      * *.html.json を .html に変換する．この際に `<? ?>` 動的属性(`<a :href="">`) を置き換える
-      * `onEnterNode()` のコールバックで VDOM を使った文書ツリーの変更ができる
+      * *.html.json(HTMLJsonWithOptions 形式) を *.html に変換する
+      * `<? ?>` と動的属性(`<a :href="">`) を置き換える
+      * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
 
 ## Install
 

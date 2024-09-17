@@ -39,7 +39,9 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
 
     mergeMinxins( pageOptions.MIXINS );
 
-    templeteStack[ 0 ] = templetePath;
+    if( templetePath ){
+        templeteStack[ 0 ] = templetePath;
+    };
 
     while( templetePath ){
         const templete = TEMPLETE_LIST[ templetePath ];

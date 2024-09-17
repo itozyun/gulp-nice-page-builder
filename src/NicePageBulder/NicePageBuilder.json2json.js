@@ -6,6 +6,7 @@ goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.requireType( 'NicePageBuilder.Context' );
+goog.require( 'NicePageBuilder.util.getHTMLJson' );
 
 /** @private */
 NicePageBuilder.json2json = true;
@@ -28,7 +29,7 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
     if( pageOptions ){
         htmlJson.shift();
         // TODO options が 存在する場合、opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError の 各コールバックの this コンテキストに this.getOptions() に
-        // bindNicePageBuilderContextToCallback( context, opt_onInstruction, opt_onEnterNode, opt_onError );
+        // bindNicePageBuilderContextToCallback( context, pageOptions, opt_onInstruction, opt_onEnterNode, opt_onError );
     };
 
     const isStaticWebPage = json2json( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
@@ -60,6 +61,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
 
     if( dynamicPagesPath ){
         var dynamicPageList = [];
+        var dynamicTempleteList = [];
     };
 
     return through.obj(
@@ -95,13 +97,32 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
 
                     const isStaticWebPage = __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options )
 
-                    if( dynamicPageList && !isStaticWebPage ){
-                        dynamicPageList.push( filePath );
+                    if( dynamicPageList ){
+                        if( !isStaticWebPage ){
+                            dynamicPageList.push( filePath );
+                        } else {
+                            if( options.TEMPLETE || options.MIXINS ){
+                                // 不明のページリスト
+                            };
+                        };
                     };
-
-                    file.path     = filePath;
                     file.contents = Buffer.from( JSON.stringify( htmlJson ) );
-                    file.extname  = '.' + originalExtname;
+                    break;
+                case context.keywordTempletes :
+                    const allTempletes = /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */ (JSON.parse( file.contents.toString( encoding ) ));
+
+                    for( const filePath in allTempletes ){
+                        const isStaticWebPage = __NicePageBuilder_internal__.json2json.call(
+                                                    context,
+                                                    /** @type {!Array} */ (NicePageBuilder.util.getHTMLJson( allTempletes[ filePath ] )),
+                                                    opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options
+                                                );
+
+                        if( dynamicTempleteList && !isStaticWebPage ){
+                            dynamicTempleteList.push( filePath );
+                        };
+                    };
+                    file.contents = Buffer.from( JSON.stringify( allTempletes ) );
                     break;
             };
             this.push( file );

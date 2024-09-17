@@ -89,7 +89,7 @@ NicePageBuilder.NicePageOrTemplete;
  * [2] {number} UPDATED_AT
  * [3] {boolean} used
  * 
- * @typedef {!Array.<(!Object | number | boolean)>}
+ * @typedef {!Array.<(!NicePageBuilder.NicePageOptions | number | boolean)>}
  */
 NicePageBuilder.Mixin;
 
@@ -125,7 +125,7 @@ NicePageBuilder._createContext = function( opt_options ){
     const options     = opt_options || {},
           srcRootPath = require( 'path' ).resolve( options[ 'srcRootPath' ] || './' ) + '/'; // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
 
-    const path = new TinyPath( '', srcRootPath );
+    const path = new TinyPath( options[ 'urlOrigin' ] || '', srcRootPath );
 
     const allPagesPath     = options[ 'allPagesPath' ] &&
                              path.toSrcRootRelativeFilePath( '/', options[ 'allPagesPath'     ]                         ),

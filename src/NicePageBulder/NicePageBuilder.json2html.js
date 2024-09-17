@@ -29,7 +29,7 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
     if( pageOptions ){
         htmlJson.shift();
         // TODO options が 存在する場合、opt_onInstruction, opt_onEnterNode, opt_onError の 各コールバックの this コンテキストに this.getOptions() 等を追加
-        // bindNicePageBuilderContextToCallback( context, opt_onInstruction, opt_onEnterNode, opt_onError );
+        // bindNicePageBuilderContextToCallback( context, pageOptions, opt_onInstruction, opt_onEnterNode, opt_onError );
     };
     
     const htmlString = json2html( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
