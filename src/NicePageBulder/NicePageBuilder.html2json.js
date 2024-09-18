@@ -77,10 +77,10 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
     const PAGES_OR_TEMPLETES = {};
 
     /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */
-    const TEMPLETE_LIST = {};
+    const TEMPLETE_LIST = context.templetes = context.templetes || {};
 
     /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin>} */
-    const MIXIN_LIST = {};
+    const MIXIN_LIST = context.mixins = context.mixins || {};
 
     return through.obj(
         /**
@@ -231,6 +231,8 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                         console.log( 'Unused mixin found! ' + mixinPath );
                     };
                     delete MIXIN_LIST[ mixinPath ];
+                } else {
+                    mixin.pop(); // delete used flag
                 };
             };
 

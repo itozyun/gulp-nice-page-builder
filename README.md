@@ -8,6 +8,10 @@
 
 ## Overview 概要
 
+![](nice-page-builder.drawio.png)
+
+[Edit on draw.io](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=%E5%90%8D%E7%A7%B0%E6%9C%AA%E8%A8%AD%E5%AE%9A%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB.drawio#R%3Cmxfile%3E%3Cdiagram%20name%3D%22%E3%83%9A%E3%83%BC%E3%82%B81%22%20id%3D%22hWPulbVjfiungVMZC6j8%22%3E7VvBdps4FP2WWXhZHxAg42USZ9pFO%2FY56Wmb2RFQbBKMXCzH9nz9SCDZSCgxuMZyaDeJ9ABZuvfy9PQkes7NfPMxCxazLzhCSQ9Y0abnjHoA%2BPaA%2FmWGbWEYQLcwTLM4Kkz23nAX%2F4e40eLWVRyhpXQjwTgh8UI2hjhNUUgkW5BleC3f9ogT%2BVcXwRRVDHdhkFSt3%2BOIzPiwLGtv%2F4Ti6YwoF%2BaBuJcblrMgwuuSybntOTcZxqQozTc3KGHQCViK5%2F5%2B5equXxlKSZ0Hvvnf5h%2FtOb7%2BN%2FJ%2FPkVj92kIPvBWXoJkxcfLO0u2AgDa7wUrppjQf9frWUzQ3SIImW1NKae2GZkntGbT4kMQPk8zvEqj8YokcYq4PQqy5zF9KiZMB1bf8nLjcoYifgfvCcoI2rw6RHsHHNUbwnNEsi29hT%2Fg%2BF7xyFbW0LpMXGGalTizBWcB18p01%2FIeT1rgkDaAF3QL3oEMLzANr9MteKEMr2MaXrdT8Hr%2BhakXHoY3xyoHwTqM7q9gJBym51VAAQMNKrAtUIYaUGBCmB7iF1qcsiJB80WCCOrno%2BfX6c%2BVbqlASUEhMl5BEk9TWg4pOCijBgZdTGf%2BK35hHkdR8pqsZWoecUp47AKs0%2BgVKnqFVWp22ixT47RFja0LFircXDEMk25TA9xLo6ZBoBEGWXTYmZx%2BcrNk72t8drMbRA%2BGMBsomLnGMWsQEhjCzFcw84xj5tVxm8Fv4DYdS3abA40PsL2z%2Bs0aMZhZPXuqns37gGqI9k8cokkwRderOIlQlosYPC1x%2Bo41KyLiQRVvbUTcmkbFOqVBSNwvsO%2BmF4GO%2FEY4mjfivF4EmM2inQBTdyhjCjWqP3PmrEFEe6GYKp4b%2BsYxNZsvOwWmSkQMh8YxrRERnzuL42iUdt4sDqgV86phw0Pxv3MTl6BlWDO51t5EdYEpR2gZF%2BvgGLGyEAt0crUmiLGNy9WvP1%2FVW521MAW55kMlXc7cOExK9OMaj36ETC8LJiXwdo0HNI42yx%2FM2dhzP7dMMGE%2FIYyX4O7a3ivUJPh1rLTmCR3daqhMykKm4xNtE%2FfAjZibHjKJHfhzxU6d5DB%2BWOY4XtEbbH%2BxyfET18Vk9h1nSfSXOY5tv5UdCZnjmg6qPY5rrCRQGl2xM009tkBjqy0ZFSUPOQkIZSHNLcBy2LtLMvy8O8cEKpijTUx%2B8BZY%2BZ7Z%2Bx6vjTal20ZbXik6iaLKMSqFCDoQvMpC9AYERWqxyliJEl1iR9gylAQkfpH7oeOJ%2F8IEx7SHe0F4ii%2F2FKqL%2FvOn9mxXGhooc58tvIloiATZFJFKQ7lsdsP%2BBSXpVl8HlVQSjyKKlHbnx14JrHovRMIqe13ktW25NkFZTMfDnEFDtRQgvaUW16RaPKCoxT5SLa6lNKRO7W2rpcaisAtqgX%2FUcgq11FiTldQSJsFyGYdvCaYux%2B%2BeukpDakajbepqrBPfc4BhSiBAORbrWsO%2Bd5xEBv7BploWidhM%2ByOSdkUCwclEommqbZHUOglYPtLS6R3p3XcG4oyGrzkPeNYdaVebL%2FhtCXIUgjxgnKAaW7EdC6PsnZcSLAxPFEjBMwdSbrNMTQfIc4ZDCXFbfTGOXb7svsI4F3XNUiMdoA4CV3nvjiYPAuULGrWhtsnTZCq8Urr67vP4ayl57Y3MzVytZKwrZ0E1ccZZU9auZue8TMjkQthoZY%2BoctLcOBua1Ix3Pcy3gSxpU6e0cTQaN90kgq9sEn29n9yyoRZHIsp7g42oT9AjOd1rCNt4DWtEk%2FA0xNPq%2FgPxwo3uP7J3bv8H%3C%2Fdiagram%3E%3C%2Fmxfile%3E)
+
 1. Generate HTML from template
 2. Separate common data shared by multiple pages into external files
 3. Site developers can freely add and call functions that return HTML strings
@@ -24,14 +28,14 @@
       * *.html ファイルを *.html.json ファイルに変換する
         * メタ情報を配列の先頭に追加した HTMLJsonWithOptions 形式の .json ファイルです
       * 参照されているテンプレートと Mixin をまとめたファイルを作成する
-   2. nicePageBuilder.generator
-      * 参照する Mixin とテンプレートのメタ情報をコンテンツページのメタ情報にコピーする
-      * *.html.json をテンプレートに埋め込んで完全な HTML を作成する
-   3. nicePageBuilder.json2json
+   2. nicePageBuilder.json2json
       * 動的ページのリストを出力する
       * `<? ?>` と動的属性(`<a :href="">`) を置き換える
       * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
       * `onDocumentReady(rootVNode)` で VDOM を使った文書ツリーの変更ができる
+   3. nicePageBuilder.generator
+      * 参照する Mixin とテンプレートのメタ情報をコンテンツページのメタ情報にコピーする
+      * *.html.json をテンプレートに埋め込んで完全な HTML を作成する
    4. nicePageBuilder.json2html
       * *.html.json(HTMLJsonWithOptions 形式) を *.html に変換する
       * `<? ?>` と動的属性(`<a :href="">`) を置き換える

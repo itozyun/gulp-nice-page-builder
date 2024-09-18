@@ -7,8 +7,13 @@ goog.provide( 'NicePageBuilder.NicePageOptions' );
 goog.provide( 'NicePageBuilder.NicePageOrTemplete' );
 goog.provide( 'NicePageBuilder.Mixin' );
 goog.provide( 'NicePageBuilder._createContext' );
+goog.provide( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
+goog.provide( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
+goog.provide( 'NicePageBuilder.bindNicePageContextToDocumentReadyHandler' );
+goog.provide( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
 
 goog.require( 'TinyPath' );
+goog.require( 'VNode' );
 
 /**
  * @package
@@ -37,13 +42,15 @@ NicePageBuilder.INDEXES = {
 /**
  * @typedef {{
  *   srcRootPath      : string,
- *   dynamicPagesPath : string,
  *   allPagesPath     : string,
  *   allMixinsPath    : string,
  *   allTempletesPath : string,
+ *   mixins           : (Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null),
+ *   templetes        : (Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null),
  *   keywordTempletes : string,
  *   keywordMixins    : string,
  *   path             : !TinyPath,
+ *   _jsonList        : !Object.<NicePageBuilder.SourceRootRelativePath, !Object>,
  *   html2json        : *,
  *   generator        : *,
  *   json2json        : *,
@@ -51,6 +58,17 @@ NicePageBuilder.INDEXES = {
  * }}
  */
 NicePageBuilder.Context;
+
+/**
+ * @typedef {{
+ *   getOptions        : function():NicePageBuilder.NicePageOptions,
+ *   getJSON           : function(string):Object,
+ *   toRootRelativeURL : function(string):string,
+ *   toRelativeURL     : function(string):string,
+ *   toAbsoluteURL     : function(string):string
+ * }}
+ */
+NicePageBuilder.NicePageContext;
 
 /**
  * @typedef {string}
@@ -133,19 +151,147 @@ NicePageBuilder._createContext = function( opt_options ){
 
     const allPagesPath     = options[ 'allPagesPath' ] &&
                              path.toSrcRootRelativeFilePath( '/', options[ 'allPagesPath'     ]                         ),
-          dynamicPagesPath = options[ 'dynamicPagesPath' ] &&
-                             path.toSrcRootRelativeFilePath( '/', options[ 'dynamicPagesPath' ]                         ),
           allMixinsPath    = path.toSrcRootRelativeFilePath( '/', options[ 'allMixinsPath'    ] || 'all-mixins.json'    ),
           allTempletesPath = path.toSrcRootRelativeFilePath( '/', options[ 'allTempletesPath' ] || 'all-templetes.json' );
 
     return {
         srcRootPath      : path.normalizeFilePath( srcRootPath ),
         allPagesPath     : allPagesPath     || '',
-        dynamicPagesPath : dynamicPagesPath || '',
         allMixinsPath,
         allTempletesPath,
         keywordTempletes : NicePageBuilder.util.jsonFilePathToOriginalExtname( allTempletesPath, path ),
         keywordMixins    : NicePageBuilder.util.jsonFilePathToOriginalExtname( allMixinsPath   , path ),
+        mixins           : null,
+        templetes        : null,
+        _jsonList        : {},
         path
     };
+};
+
+/**
+ * @param {!NicePageBuilder.Context} context
+ * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!InstructionHandler | void} onInstruction
+ * @return {!InstructionHandler | void}
+ */
+NicePageBuilder.bindNicePageContextToInstructuionHandler = function( context, pageOptions, onInstruction ){
+    if( onInstruction ){
+        var nicePageContext = new NicePageContext( context, pageOptions.FILE_PATH ), funcName, _onInstruction;
+
+        nicePageContext.getOptions = function(){ return pageOptions };
+
+        if( typeof onInstruction === 'function' ){
+            return onInstruction.bind( nicePageContext );
+        } else {
+            _onInstruction = {};
+
+            for( funcName in onInstruction ){
+                /**
+                 * @param {string} funcName
+                 * @param {...InstructionArgs} ___args */
+                _onInstruction[ funcName ] = function( funcName, ___args ){
+                    return onInstruction[ funcName ].apply( nicePageContext, arguments );
+                };
+            };
+            return _onInstruction;
+        };
+    };
+};
+
+/**
+ * @param {!NicePageBuilder.Context} context
+ * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!EnterNodeHandler | void} onEnterNode
+ * @return {!EnterNodeHandler | void}
+ */
+NicePageBuilder.bindNicePageContextToEnterNodeHandler = function( context, pageOptions, onEnterNode ){
+    if( onEnterNode ){
+        var nicePageContext = new NicePageContext( context, pageOptions.FILE_PATH ), i, l, _onEnterNode;
+
+        nicePageContext.getOptions = function(){ return pageOptions };
+
+        if( typeof onEnterNode === 'function' ){
+            return onEnterNode.bind( nicePageContext );
+        } else {
+            _onEnterNode = [];
+
+            for( i = 0, l = onEnterNode.length; i < l; i += 2 ){
+                _onEnterNode[ i     ] = onEnterNode[ i     ];
+                _onEnterNode[ i + 1 ] = onEnterNode[ i + 1 ].bind( nicePageContext );
+            };
+            return _onEnterNode;
+        };
+    };
+};
+
+/**
+ * @param {!NicePageBuilder.Context} context
+ * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!function(!VNode) | void} onDocumentReady
+ * @return {!function(!VNode) | void}
+ */
+NicePageBuilder.bindNicePageContextToDocumentReadyHandler = function( context, pageOptions, onDocumentReady ){
+    if( onDocumentReady ){
+        var nicePageContext = new NicePageContext( context, pageOptions.FILE_PATH );
+
+        nicePageContext.getOptions = function(){ return pageOptions };
+
+        return onDocumentReady.bind( nicePageContext );
+    };
+};
+
+
+/**
+ * @param {!NicePageBuilder.Context} context
+ * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!function(string) | void} onError
+ * @return {!function(string) | void}
+ */
+NicePageBuilder.bindNicePageContextToErrorHandler = function( context, pageOptions, onError ){
+    if( onError ){
+        var nicePageContext = new NicePageContext( context, pageOptions.FILE_PATH );
+
+        nicePageContext.getOptions = function(){ return pageOptions };
+
+        return onError.bind( nicePageContext );
+    };
+};
+
+/**
+ * @constructor
+ * @private
+ * @param {!NicePageBuilder.Context} context
+ * @param {string} filePath
+ */
+function NicePageContext( context, filePath ){
+    this._context = context;
+    this._baseURL = context.path.filePathToURL( filePath );
+};
+/**
+ * 
+ * @param {string} rootRelativePath 
+ * @return {!Object} */
+NicePageContext.prototype.getJSON = function( rootRelativePath ){
+    return this._context._jsonList[ rootRelativePath ] = this._context._jsonList[ rootRelativePath ] || {};
+};
+
+/**
+ * @param {string} url 
+ * @return {string} */
+NicePageContext.prototype.toRelativeURL = function( url ){
+    return this._context.path.toRelativeURL( this._baseURL, url );
+};
+
+/**
+ * @param {string} url 
+ * @return {string} */
+NicePageContext.prototype.toRootRelativeURL = function( url ){
+    return this._context.path.toRootRelativeURL( this._baseURL, url );
+};
+
+/**
+ * @param {string} url 
+ * @return {string} */
+NicePageContext.prototype.toAbsoluteURL = function( url ){
+    return this._context.path.rootRelativeURLToAbsoluteURL( this.toRootRelativeURL( url ) );
 };

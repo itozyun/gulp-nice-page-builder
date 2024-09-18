@@ -2,6 +2,10 @@ goog.provide( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.provide( 'NicePageBuilder.util' );
 goog.provide( 'NicePageBuilder.util.getHTMLJson' );
 goog.provide( 'NicePageBuilder.util.getNiceOptions' );
+goog.provide( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
+goog.provide( 'NicePageBuilder.util.hasTEMPLETEProperty' );
+goog.provide( 'NicePageBuilder.util.hasMIXINSProperty' );
+goog.provide( 'NicePageBuilder.util.mergeOptions' );
 goog.provide( 'NicePageBuilder.util.completeBuiltinOptions' );
 goog.provide( 'NicePageBuilder.util.jsonFilePathToOriginalExtname' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
@@ -39,6 +43,131 @@ NicePageBuilder.util.getNiceOptions = function( nicePageOrTemplete ){
     var options = /** @type {!NicePageBuilder.NicePageOptions} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
 
     return !m_isArray( options ) && m_isObject( options ) ? options : null;
+};
+
+/**
+ * 
+ * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson 
+ * @return {boolean}
+ */
+NicePageBuilder.util.isHTMLJsonWithOptions = function( htmlJson ){
+    var options = htmlJson[ 0 ];
+
+    return m_isArray( htmlJson ) && !m_isArray( options ) && m_isObject( options );
+};
+
+/**
+ * 
+ * @param {!HTMLJson | !HTMLJsonWithOptions | !NicePageBuilder.NicePageOptions} htmlJsonOrOptions
+ * @return {boolean}
+ */
+NicePageBuilder.util.hasTEMPLETEProperty = function( htmlJsonOrOptions ){
+    if( !m_isArray( htmlJsonOrOptions ) && m_isObject( htmlJsonOrOptions ) ){
+        return !!htmlJsonOrOptions.TEMPLETE;
+    };
+
+    if( NicePageBuilder.util.isHTMLJsonWithOptions( /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (htmlJsonOrOptions) ) ){
+        return htmlJsonOrOptions[ 0 ].TEMPLETE || false;
+    };
+
+    return false;
+};
+
+/**
+ * 
+ * @param {!HTMLJson | !HTMLJsonWithOptions | !NicePageBuilder.NicePageOptions} htmlJsonOrOptions
+ * @return {boolean}
+ */
+NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrOptions ){
+    if( !m_isArray( htmlJsonOrOptions ) && m_isObject( htmlJsonOrOptions ) ){
+        return !!htmlJsonOrOptions.MIXINS;
+    };
+
+    if( NicePageBuilder.util.isHTMLJsonWithOptions( /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (htmlJsonOrOptions) ) ){
+        return htmlJsonOrOptions[ 0 ].MIXINS || false;
+    };
+
+    return false;
+};
+
+
+/**
+ * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!Array.<NicePageBuilder.SourceRootRelativePath>} templeteStack
+ * @param {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
+ * @param {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null=} MIXIN_LIST
+ */
+NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST ){
+    if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) && !TEMPLETE_LIST ){
+        throw 'No templets!';
+    };
+    if( NicePageBuilder.util.hasMIXINSProperty( pageOptions ) && !MIXIN_LIST ){
+        throw 'No mixins!';
+    };
+
+    let templetePath = pageOptions.TEMPLETE;
+    let updatedAt = pageOptions.MODIFIED_AT;
+
+    mergeMinxins( pageOptions.MIXINS );
+
+    if( templetePath ){
+        templeteStack[ 0 ] = templetePath;
+    };
+
+    while( templetePath ){
+        const templete = TEMPLETE_LIST[ templetePath ];
+        const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
+
+        templetePath = '';
+        if( templeteOptions ){
+            if( NicePageBuilder.util.hasMIXINSProperty( templeteOptions ) && !MIXIN_LIST ){
+                throw 'No mixins!';
+            };
+            mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
+            mergeMinxins( templeteOptions.MIXINS );
+            templeteStack.push( templetePath );
+        };
+    };
+
+    pageOptions.UPDATED_AT = updatedAt;
+
+    /**
+     * @param {!Array.<NicePageBuilder.SourceRootRelativePath> | void} mixinPathList
+     */
+    function mergeMinxins( mixinPathList ){
+        if( mixinPathList ){
+            for( let i = 0; i < mixinPathList.length; ++i ){
+                const mixin = MIXIN_LIST[ mixinPathList[ i ] ];
+
+                mix( /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
+            };
+        };
+    };
+
+    /**
+     * @param {!NicePageBuilder.NicePageOptions} altPageOptions 
+     * @param {number} altUpdatedAt
+     */
+    function mix( altPageOptions, altUpdatedAt ){
+        let changed = 0;
+
+        for( const k in altPageOptions ){
+            if( k === 'TEMPLETE' ){
+                templetePath = templetePath || altPageOptions[ k ]; // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
+                if( templetePath === altPageOptions[ k ] ){
+                    ++changed;
+                };
+            } else if( pageOptions[ k ] === undefined ){
+                pageOptions[ k ] = altPageOptions[ k ];
+                ++changed;
+            };
+        };
+        if( changed ){
+            if( updatedAt < altUpdatedAt ){
+                updatedAt = altUpdatedAt;
+            };
+        };
+    };
 };
 
 /**

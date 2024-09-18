@@ -5,7 +5,14 @@ goog.require( 'json2html' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
-goog.requireType( 'NicePageBuilder.Context' );
+goog.require( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
+goog.require( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
+goog.require( 'NicePageBuilder.bindNicePageContextToDocumentReadyHandler' );
+goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
+goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
+goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
+goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
+goog.require( 'NicePageBuilder.util.mergeOptions' );
 
 /** @private */
 NicePageBuilder.json2html = true;
@@ -17,19 +24,21 @@ NicePageBuilder.json2html = true;
  * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson 破壊
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
- * @param {!function(string)|!Object=} opt_onError
+ * @param {!function(string)=} opt_onError
  * @param {!Object=} opt_options
  * @return {string} html string
  */
 __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
-    const context = this;
+    if( NicePageBuilder.util.isHTMLJsonWithOptions( htmlJson ) ){
+        const context     = this;
+        const pageOptions = htmlJson.shift();
 
-    const pageOptions = !m_isArray( htmlJson[ 0 ] ) && m_isObject( htmlJson[ 0 ] ) ? htmlJson[ 0 ] : null;
-
-    if( pageOptions ){
-        htmlJson.shift();
-        // TODO options が 存在する場合、opt_onInstruction, opt_onEnterNode, opt_onError の 各コールバックの this コンテキストに this.getOptions() 等を追加
-        // bindNicePageBuilderContextToCallback( context, pageOptions, opt_onInstruction, opt_onEnterNode, opt_onError );
+        if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
+            throw pageOptions.FILE_PATH + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
+        };        
+        opt_onInstruction = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction );
+        opt_onEnterNode   = NicePageBuilder.bindNicePageContextToEnterNodeHandler( context, pageOptions, opt_onEnterNode );
+        opt_onError       = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );
     };
     
     const htmlString = json2html( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
@@ -43,7 +52,7 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
  * 
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
- * @param {!function(string)|!Object=} opt_onError
+ * @param {!function(string)=} opt_onError
  * @param {!Object=} opt_options
  */
 __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){

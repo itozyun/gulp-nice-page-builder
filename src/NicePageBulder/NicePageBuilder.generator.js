@@ -11,6 +11,7 @@ goog.requireType( 'NicePageBuilder.Context' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.getNiceOptions' );
+goog.require( 'NicePageBuilder.util.mergeOptions' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
 /** @private */
@@ -21,77 +22,19 @@ NicePageBuilder.generator = true;
  * @this {NicePageBuilder.Context}
  * 
  * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson
- * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} TEMPLETE_LIST 
- * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin>} MIXIN_LIST 
+ * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
+ * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null=} MIXIN_LIST 
  * @return {!HTMLJson | !HTMLJsonWithOptions}
  */
 __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
-    const pageOptions = !m_isArray( htmlJson[ 0 ] ) && m_isObject( htmlJson[ 0 ] ) ? htmlJson[ 0 ] : null;
-
-    if( !pageOptions ){
+    if( !NicePageBuilder.util.isHTMLJsonWithOptions( htmlJson ) ){
         return htmlJson;
     };
 
+    const pageOptions   = htmlJson[ 0 ];
     const templeteStack = [];
 
-    let updatedAt = pageOptions.MODIFIED_AT;
-    let templetePath = pageOptions.TEMPLETE;
-
-    mergeMinxins( pageOptions.MIXINS );
-
-    if( templetePath ){
-        templeteStack[ 0 ] = templetePath;
-    };
-
-    while( templetePath ){
-        const templete = TEMPLETE_LIST[ templetePath ];
-        const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
-
-        templetePath = '';
-        if( templeteOptions ){
-            mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
-            mergeMinxins( templeteOptions.MIXINS );
-            templeteStack.push( templetePath );
-        };
-    };
-
-    /**
-     * @param {!Array.<NicePageBuilder.SourceRootRelativePath> | void} mixinPathList
-     */
-    function mergeMinxins( mixinPathList ){
-        if( mixinPathList ){
-            for( let i = 0; i < mixinPathList.length; ++i ){
-                const mixin = MIXIN_LIST[ mixinPathList[ i ] ];
-
-                mix( /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
-            };
-        };
-    };
-
-    /**
-     * @param {!NicePageBuilder.NicePageOptions} altPageOptions 
-     * @param {number} altUpdatedAt
-     */
-    function mix( altPageOptions, altUpdatedAt ){
-        let changed = 0;
-
-        for( const k in altPageOptions ){
-            if( k === 'TEMPLETE' ){
-                templetePath = templetePath || altPageOptions[ k ]; // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
-                if( templetePath === altPageOptions[ k ] ){
-                    ++changed;
-                };
-            } else if( pageOptions[ k ] === undefined ){
-                pageOptions[ k ] = altPageOptions[ k ];
-                ++changed;
-            };
-        };
-        if( changed ){
-            if( updatedAt < altUpdatedAt ){
-                updatedAt = altUpdatedAt;
-            };
-        };
-    };
+    NicePageBuilder.util.mergeOptions( pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST );
 
     let contentHtmlJson = htmlJson;
 
@@ -103,7 +46,6 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
 
     delete pageOptions.TEMPLETE;
     delete pageOptions.MIXINS;
-    pageOptions.UPDATED_AT = updatedAt;
 
     return contentHtmlJson;
 };
@@ -159,14 +101,14 @@ __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !Array>} */
+    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, (!HTMLJsonWithOptions)>} */
     const PAGE_LIST = {};
 
-    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */
-    let TEMPLETE_LIST;
+    /** @type {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null} */
+    let TEMPLETE_LIST = context.templetes;
 
-    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin>} */
-    let MIXIN_LIST;
+    /** @type {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null} */
+    let MIXIN_LIST = context.mixins;
 
     return through.obj(
         /**
@@ -188,7 +130,8 @@ __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
                 return callback();
             };
     
-            const json = /** @type {!HTMLJson} */ (JSON.parse( file.contents.toString( encoding ) ));
+            const text = file.contents.toString( encoding );
+            const json = /** @type {!HTMLJson} */ (JSON.parse( text ));
 
             switch( file.stem.split( '.' ).pop() ){
                 case 'html'  :
@@ -199,14 +142,20 @@ __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
                     return callback();
                 case context.keywordTempletes :
                     if( !m_isArray( json ) && m_isObject( json ) ){
+                        if( context.templetes && JSON.stringify( context.templetes ) !== JSON.stringify( json ) ){
+                            console.log( pluginName + ' templete list changed!' );
+                        };
                         /** @suppress {checkTypes} */
-                        TEMPLETE_LIST = json;
+                        TEMPLETE_LIST = context.templetes = json;
                     };
                     break;
                 case context.keywordMixins :
                     if( !m_isArray( json ) && m_isObject( json ) ){
+                        if( context.mixins && JSON.stringify( context.mixins ) !== JSON.stringify( json ) ){
+                            console.log( pluginName + ' templete list changed!' );
+                        };
                         /** @suppress {checkTypes} */
-                        MIXIN_LIST = json;
+                        MIXIN_LIST = context.mixins = json;
                     };
                     break;
             };
