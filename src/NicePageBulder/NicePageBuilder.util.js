@@ -96,13 +96,24 @@ NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrOptions ){
  * @param {!Array.<NicePageBuilder.SourceRootRelativePath>} templeteStack
  * @param {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
  * @param {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null=} MIXIN_LIST
+ * @param {!function(string)=} opt_onError
  */
-NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST ){
+NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST, opt_onError ){
     if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) && !TEMPLETE_LIST ){
-        throw 'No templets!';
+        if( opt_onError ){
+            opt_onError( pageOptions.FILE_PATH + ' has TEMPLETE property, and no templetes found!' );
+        } else {
+            throw pageOptions.FILE_PATH + ' has TEMPLETE property, and no templetes found!';
+        };
+        return;
     };
     if( NicePageBuilder.util.hasMIXINSProperty( pageOptions ) && !MIXIN_LIST ){
-        throw 'No mixins!';
+        if( opt_onError ){
+            opt_onError( pageOptions.FILE_PATH + ' has MIXINS property, and no mixins found!' );
+        } else {
+            throw pageOptions.FILE_PATH + ' has MIXINS property, and no mixins found!';
+        };
+        return;
     };
 
     let templetePath = pageOptions.TEMPLETE;
@@ -118,14 +129,23 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
         const templete = TEMPLETE_LIST[ templetePath ];
         const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
 
-        templetePath = '';
         if( templeteOptions ){
             if( NicePageBuilder.util.hasMIXINSProperty( templeteOptions ) && !MIXIN_LIST ){
-                throw 'No mixins!';
+                if( opt_onError ){
+                    opt_onError( templetePath + ' has MIXINS property, and no mixins found!' );
+                } else {
+                    throw templetePath + ' has MIXINS property, and no mixins found!';
+                };
+                return;
             };
+            templetePath = '';
             mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
             mergeMinxins( templeteOptions.MIXINS );
-            templeteStack.push( templetePath );
+            if( templetePath ){
+                templeteStack.push( templetePath );
+            };
+        } else {
+            templetePath = '';
         };
     };
 

@@ -37,16 +37,16 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
     if( NicePageBuilder.util.isHTMLJsonWithOptions( htmlJson ) ){
         const context = this;
 
-        pageOptions = htmlJson.shift();
-        // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
-        if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
-            NicePageBuilder.util.mergeOptions( pageOptions, [], context.templetes, context.mixins );
-        };
-
+        pageOptions         = htmlJson.shift();
         opt_onInstruction   = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction );
         opt_onEnterNode     = NicePageBuilder.bindNicePageContextToEnterNodeHandler( context, pageOptions, opt_onEnterNode );
         opt_onDocumentReady = NicePageBuilder.bindNicePageContextToDocumentReadyHandler( context, pageOptions, opt_onDocumentReady );
         opt_onError         = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );
+
+        // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
+        if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
+            NicePageBuilder.util.mergeOptions( pageOptions, [], context.templetes, context.mixins, opt_onError );
+        };
     };
 
     const isStaticWebPage = json2json( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
