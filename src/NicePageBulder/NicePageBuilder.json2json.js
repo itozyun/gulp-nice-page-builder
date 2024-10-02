@@ -73,6 +73,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
 
     const pluginName  = 'NicePageBuilder.gulp.json2json',
           PluginError = require( 'plugin-error' ),
+          _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
     return through.obj(
@@ -136,16 +137,17 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
             callback();
         },
         function( callback ){
-            /* const _Vinyl = require( 'vinyl' );
-            const file = new _Vinyl(
-                    {
-                        base     : '/',
-                        path     : dynamicPagesPath,
-                        contents : Buffer.from( JSON.stringify( dynamicPageList ) )
-                    }
+            for( const filePath in context._jsonList ){
+                this.push(
+                    new _Vinyl(
+                        {
+                            base     : '/',
+                            path     : filePath,
+                            contents : Buffer.from( JSON.stringify( context._jsonList[ filePath ] ) )
+                        }
+                    )
                 );
-            file.extname = '.json';
-            this.push( file ); */
+            };
             callback();
         }
     );
