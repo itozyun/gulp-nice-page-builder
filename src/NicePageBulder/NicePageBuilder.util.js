@@ -235,7 +235,7 @@ NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
         function( tagName, attrs ){
             return ( tagName === 'SCRIPT' || tagName === 'script' ) &&
                    attrs &&
-                   ( attrs.type === 'application/json' || attrs.type === 'nice-page-builder/object' ) || false;
+                   ( attrs.type === 'application/ld+json' || attrs.type === 'application/json' || attrs.type === 'nice-page-builder/object' ) || false;
         }
     );
 };
