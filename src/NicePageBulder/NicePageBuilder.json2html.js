@@ -12,7 +12,6 @@ goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
-goog.require( 'NicePageBuilder.util.mergeOptions' );
 
 /** @private */
 NicePageBuilder.json2html = true;

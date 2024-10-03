@@ -42,6 +42,7 @@ gulp.task(
                             ],
                             define            : [
                                 'htmlparser.DEFINE.useXML=' + true,
+                                'htmlparser.DEFINE.useVML=' + true,
                                 'htmlparser.DEFINE.useDocTypeNode=' + true,
                                 'htmlparser.DEFINE.useProcessingInstruction=' + true,
                                 'htmlparser.DEFINE.useLazy=' + false,
