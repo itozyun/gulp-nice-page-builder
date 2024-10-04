@@ -173,7 +173,9 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
         let changed = 0;
 
         for( const k in altPageOptions ){
-            if( k === 'TEMPLETE' ){
+            if( NicePageBuilder.DEFINE.DEBUG && !isTemplete && k === 'MIXINS' ){
+                throw 'Mixin has MIXINS property!';
+            } else if( k === 'TEMPLETE' ){
                 templetePath = templetePath || altPageOptions[ k ]; // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
                 if( templetePath === altPageOptions[ k ] ){
                     ++changed;

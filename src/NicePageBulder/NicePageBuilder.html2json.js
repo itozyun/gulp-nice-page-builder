@@ -147,7 +147,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                     continue;
                 };
 
-                checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE, false );
+                checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
                 checkTemplete( pageOrTempletePath, pageOptions.TEMPLETE, pageOptions );
 
                 if( PAGES_OR_TEMPLETES[ pageOrTempletePath ] ){
@@ -159,9 +159,8 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
              * @param {string} pageOrTempletePath
              * @param {!Array.<NicePageBuilder.SourceRootRelativePath> | void} mixinPathList
              * @param {boolean} skipTemplete
-             * @param {boolean} skipMixins
              */
-            function checkMixins( pageOrTempletePath, mixinPathList, skipTemplete, skipMixins ){
+            function checkMixins( pageOrTempletePath, mixinPathList, skipTemplete ){
                 if( mixinPathList ){
                     for( let i = 0, l = mixinPathList.length; i < l; ++i ){
                         const mixinPath = mixinPathList[ i ];
@@ -172,15 +171,12 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                         if( mixin && mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
                             mixin.push( true ); // used
                             const mixinOptions = /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]);
-                            if( !skipMixins ){
-                                checkMixins( path, mixinOptions.MIXINS, skipTemplete, true );
-                            } else {
-                                if( mixinOptions.MIXINS ){
-                                    if( NicePageBuilder.DEFINE.DEBUG ){
-                                        console.log( 'Mixin:"' + path + '" cannot have MIXINS property!' );
-                                    };
-                                    delete mixinOptions.MIXINS;
+
+                            if( mixinOptions.MIXINS ){
+                                if( NicePageBuilder.DEFINE.DEBUG ){
+                                    console.log( 'Mixin:"' + path + '" cannot have MIXINS property!' );
                                 };
+                                delete mixinOptions.MIXINS;
                             };
                             if( !skipTemplete ){
                                 checkTemplete( path, mixinOptions.TEMPLETE, mixinOptions );
@@ -209,7 +205,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                         /** @suppress {checkTypes} */
                         pageOptions = NicePageBuilder.util.getNiceOptions( templete );
                         if( pageOptions ){
-                            checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE, false );
+                            checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
                             /** @suppress {checkTypes} */
                             templetePath = pageOptions.TEMPLETE;
                         } else {

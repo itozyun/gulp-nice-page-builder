@@ -1,3 +1,4 @@
 {
-    "TEMPLETE" : "/main.php"
+    "TEMPLETE" : "/main.php",
+    "MIXINS" : ["/m.json"]
 }
