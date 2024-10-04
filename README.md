@@ -21,12 +21,11 @@
 ---
 
 1. テンプレートから完全な HTML 文書を生成します
-   * テンプレートは入れ子にできます
 2. 複数ページで共通するデータを JSON ファイルに分離する(Mixin)
 3. [html.json](https://github.com/itozyun/html.json) をラップしています
    1. nicePageBuilder.html2json
       * *.html ファイルを *.html.json ファイルに変換する
-        * メタ情報を配列の先頭に追加した HTMLJsonWithOptions 形式の .json ファイルです
+        * メタ情報を `Array` の先頭に追加した HTMLJsonWithOptions 形式の .json ファイルです
       * 参照されているテンプレートと Mixin をまとめたファイルを作成する
    2. nicePageBuilder.json2json
       * 動的ページのリストを出力する
@@ -76,32 +75,36 @@ gulp.task('html', function(){
 });
 ~~~
 
-## 名称
+## 用語解説
 
-| 名称                     | 説明                                                                                                 |
-|:-------------------------|:-----------------------------------------------------------------------------------------------------|
-| メタ情報 *1              | `<script type="application/json">{...}</script>` に書いておく                                        |
-| コンテンツ(.html) *2     | コンテンツとメタ情報だけが書かれた HTML                                                              |
-| テンプレート(.html/.php) | コンテンツ HTML、Mixin から参照される．必ず単一の `<slot></slot>` を持つこと                         |
-| Mixin(.json) *3          | 複数ページで共通のメタ情報を記述した json ファイル．コンテンツ HTML, テンプレート HTMLから参照される |
+| 名称            | 拡張子                    | 説明                                                                                                  |
+|:----------------|:--------------------------|:------------------------------------------------------------------------------------------------------|
+| メタ情報 *1     |                           | コンテンツ、テンプレート内 `<script type="application/json">{...}</script>` または Mixin に書いておく |
+| コンテンツ *2   | .html, .htm, .xhtml, .php | コンテンツとメタ情報だけが書かれた HTML                                                               |
+| テンプレート *3 | .html, .htm, .xhtml, .php | コンテンツ HTML、Mixin から参照される．必ず単一の `<slot></slot>` を持つこと                          |
+| Mixin *4        | .json                     | 複数ページで共通のメタ情報を記述した json ファイル．コンテンツ(.html), テンプレートから参照される     |
 
 1. メタ情報の各プロパティの優先度は、コンテンツ > コンテンツの MIXINS\[0] > コンテンツの MIXINS\[z] > テンプレート > テンプレートの MIXINS\[0] > テンプレートの MIXINS\[z] の順番です．
 2. テンプレート、メタ情報、Mixin を使用せず完全なドキュメントだけのプロジェクトも可能だが、その場合 [html.json](https://github.com/itozyun/html.json) だけで事足りる．
-3. Mixin は MIXINS プロパティを持つことが出来ません！
+3. テンプレートは入れ子にできます
+4. Mixin は MIXINS プロパティを持つことが出来ません！
 
 ## メタ情報の定義積みプロパティ
 
-| 名称        | 型               | 説明                                      |
-|:------------|:-----------------|:------------------------------------------|
-| TEMPLETE    | `string`         | テンプレート(.html) へのパス              |
-| MIXINS      | `Array.<string>` | Mixin(.json) はこのプロパティを持てません |
-| FILE_PATH   | `string`         | `"/contact/index.html"`                   |
-| URL         | `string`         | `"/contact/"`                             |
-| CREATED_AT  | `number`         |  `file.stat.birthtimeMs`                  |
-| MODIFIED_AT | `number`         |  `file.stat.ctimeMs`                      |
-| UPDATED_AT  | `number`         | コンテンツとそれが参照する Mixin, テンプレートの MODIFIED_AT の内の最大の値．MIxin の場合、メタ情報が上書きされなかった場合は UPDATED_AT は更新されない |
+| 名称        | 型               | 説明                         | コンテンツ(.html) | テンプレート | Mixin |
+|:------------|:-----------------|:-----------------------------|:------------------|:-------------|:------|
+| TEMPLETE    | `string`         | テンプレート(.html) へのパス | ✓                | ✓           | ✓    |
+| MIXINS      | `Array.<string>` |                              | ✓                | ✓           | - *2  |
+| FILE_PATH   | `string`         | `"/contact/index.html"`      | ✓                | -            | -     |
+| URL         | `string`         | `"/contact/"`                | ✓                | -            | -     |
+| CREATED_AT  | `number`         |  `file.stat.birthtimeMs`     | ✓                | -            | -     |
+| MODIFIED_AT | `number`         |  `file.stat.ctimeMs`         | ✓                | -            | -     |
+| UPDATED_AT  | `number`         | コンテンツとそれが参照する Mixin 及びテンプレートの MODIFIED_AT の内の最大の値．*1 | ✓ | - | - |
 
-### コンテンツ(.html)の例
+1. Mixin のメタ情報がコンテンツ(.html)にコピーされなかった場合、コンテンツ(.html)の UPDATED_AT は更新されません
+2. Mixin(.json) はこのプロパティを持てません
+
+### コンテンツの例
 
 `src/index.html`
 
@@ -110,7 +113,7 @@ gulp.task('html', function(){
 ~~~html
 <script type="application/json">
 {
-     TEMPLETE : "/templete.html"
+     "TEMPLETE" : "/templete.html"
 }
 </script>
 <p>Hello, World!
@@ -126,6 +129,11 @@ gulp.task('html', function(){
 
 ~~~html
 <!DOCTYPE html>
+<script type="application/json">
+{
+     "MIXINS" : [ "/common.json" ]
+}
+</script>
 <html>
 <body>
 <main>
@@ -143,14 +151,13 @@ gulp.task('html', function(){
 [9, "<!DOCTYPE html>", ["HTML"]]
 ~~~
 
-### nice-page-builder のメタ情報付き
+### nice-page-builder のメタ情報付き html.json のドキュメント
 
-先頭にメタ情報 `{}` のある配列です．nicePageBuilder.generator() を通すと html.json 形式になります．
+先頭にメタ情報 `{}` のある配列です．nicePageBuilder.generator() を通すとテンプレートが適用されます．
 
 ~~~json
 [{"FILE_PATH":"/contact/index.html"}, 9, "<!DOCTYPE html>", ["HTML"]]
 ~~~
-
 
 ## Links
 

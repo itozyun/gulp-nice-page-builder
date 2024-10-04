@@ -10,6 +10,7 @@ goog.provide( 'NicePageBuilder.util.completeBuiltinOptions' );
 goog.provide( 'NicePageBuilder.util.jsonFilePathToOriginalExtname' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
+goog.provide( 'NicePageBuilder.util.normalizeHTMLJson' );
 
 goog.require( 'htmljson.base' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
@@ -263,17 +264,17 @@ NicePageBuilder.util.getSLotElement = function( rootJSONNode, dropOptions ){
  * @private
  * @param {!HTMLJson | !HTMLJsonWithOptions} rootJSONNode
  * @param {function(string, (Attrs | null)):boolean} filter
- * @param {boolean=} opt_optionsdropOptions
+ * @param {boolean=} opt_dropOptions
  * @return {!Array | void} 0:target node, 1:parentnode, 3:index
  */
-function _getElementByFilter( rootJSONNode, filter, opt_optionsdropOptions ){
+function _getElementByFilter( rootJSONNode, filter, opt_dropOptions ){
     let options = rootJSONNode[ 0 ], result;
 
     if( !m_isArray( options ) && m_isObject( options ) ){
         rootJSONNode.shift();
         result = walkChildNodes( /** @type {!HTMLJson} */ (rootJSONNode) );
 
-        if( !opt_optionsdropOptions ){
+        if( !opt_dropOptions ){
             rootJSONNode.unshift( options );
             if( result ){
                 if( result[ 1 ] === rootJSONNode ){ // if parentNode === rootNode
@@ -336,6 +337,77 @@ function _getElementByFilter( rootJSONNode, filter, opt_optionsdropOptions ){
                     } else {
                         return walkChildNodes( currentJSONNode );
                     };
+                };
+        };
+    };
+};
+
+
+/**
+ * 文書下の DOCUMENT_FRAGMENT_NODE を展開します
+ * 
+ * @param {!HTMLJson | !HTMLJsonWithOptions} rootJSONNode
+ * @return {!Array | void}
+ */
+NicePageBuilder.util.normalizeHTMLJson = function( rootJSONNode ){
+    let options = rootJSONNode[ 0 ];
+
+    if( !m_isArray( options ) && m_isObject( options ) ){
+        rootJSONNode.shift();
+        walkChildNodes( /** @type {!HTMLJson} */ (rootJSONNode) );
+        rootJSONNode.unshift( options );
+    } else {
+        walkChildNodes( /** @type {!HTMLJson} */ (rootJSONNode) );
+    };
+
+    /**
+     * 
+     * @param {!HTMLJson} currentJSONNode
+     */
+    function walkChildNodes( currentJSONNode ){
+        let i = m_getChildNodeStartIndex( currentJSONNode );
+
+        for( ; i < currentJSONNode.length; ++i ){
+            const childNode = currentJSONNode[ i ];
+
+            if( m_isArray( childNode ) ){
+                if( walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i ) === -1 ){
+                    --i;
+                };
+            };
+        };
+    };
+
+    /**
+     * 
+     * @param {!HTMLJson} currentJSONNode 
+     * @param {!HTMLJson} parentJSONNode 
+     * @param {number} myIndex
+     * @return {number | void}
+     */
+    function walkNode( currentJSONNode, parentJSONNode, myIndex ){
+        const arg0 = currentJSONNode[ 0 ],
+              arg1 = currentJSONNode[ 1 ];
+        let tagName = arg0;
+
+        switch( arg0 ){
+            case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
+                // parentJSONNode.splice( myIndex, 1, currentJSONNode[1], 2, 3... );
+                currentJSONNode.unshift( myIndex );
+                currentJSONNode[ 1 ] = 1;
+                parentJSONNode.splice.apply( parentJSONNode, currentJSONNode );
+                return -1;
+            case htmljson.NODE_TYPE.DOCUMENT_NODE :
+            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
+            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+                walkChildNodes( currentJSONNode );
+                break;
+            case htmljson.NODE_TYPE.ELEMENT_NODE :
+            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
+                tagName = arg1;
+            default :
+                if( m_isString( tagName ) ){
+                    walkChildNodes( currentJSONNode );
                 };
         };
     };
