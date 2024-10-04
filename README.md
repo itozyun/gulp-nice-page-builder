@@ -60,7 +60,7 @@ gulp test
 
 ~~~js
 gulp.task('html', function(){
-    const nicePageBuilder = require('gulp-nice-page-builder').gulp({srcRootPath: 'src'});
+    const nicePageBuilder = require('gulp-nice-page-builder').gulp({srcRootPath: 'src', urlOrigin: '//example.com/'});
 
     return gulp.src(
                    ['./src/**/*.html', './src/**/*.htm', './src/**/*.php', './src/**/*.json']
@@ -96,12 +96,10 @@ gulp.task('html', function(){
 | TEMPLETE    | `string`         | テンプレート(.html) へのパス              |
 | MIXINS      | `Array.<string>` | Mixin(.json) はこのプロパティを持てません |
 | FILE_PATH   | `string`         | `"/contact/index.html"`                   |
-| FILE_NAME   | `string`         | `"index.html"`                            |
-| FOLDER_PATH | `string`         | `"/contact"`                              |
 | URL         | `string`         | `"/contact/"`                             |
 | CREATED_AT  | `number`         |  `file.stat.birthtimeMs`                  |
 | MODIFIED_AT | `number`         |  `file.stat.ctimeMs`                      |
-| UPDATED_AT  | `number`         | コンテンツとそれが参照する Mixin, テンプレートの MODIFIED_AT の内の最大の値、但しメタ情報が上書きされなかった場合は除外される |
+| UPDATED_AT  | `number`         | コンテンツとそれが参照する Mixin, テンプレートの MODIFIED_AT の内の最大の値．MIxin の場合、メタ情報が上書きされなかった場合は UPDATED_AT は更新されない |
 
 ### コンテンツ(.html)の例
 

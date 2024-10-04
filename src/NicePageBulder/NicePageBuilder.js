@@ -6,6 +6,7 @@ goog.provide( 'NicePageBuilder.SourceRootRelativePath' );
 goog.provide( 'NicePageBuilder.NicePageOptions' );
 goog.provide( 'NicePageBuilder.NicePageOrTemplete' );
 goog.provide( 'NicePageBuilder.Mixin' );
+goog.provide( 'NicePageBuilder.deepCopy' );
 goog.provide( 'NicePageBuilder._createContext' );
 goog.provide( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
 goog.provide( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
@@ -43,6 +44,7 @@ NicePageBuilder.INDEXES = {
  * @typedef {{
  *   srcRootPath      : string,
  *   allPagesPath     : string,
+ *   allOptionsPath   : string,
  *   allMixinsPath    : string,
  *   allTempletesPath : string,
  *   mixins           : (Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null),
@@ -138,6 +140,14 @@ NicePageBuilder = function( options ){
 };
 
 /**
+ * @param {!NicePageBuilder.NicePageOptions} nicePageOptions
+ * @return {!NicePageBuilder.NicePageOptions}
+ */
+NicePageBuilder.deepCopy = function( nicePageOptions ){
+    return JSON.parse( JSON.stringify( nicePageOptions ) );
+};
+
+/**
  * @package
  * 
  * @param {Object=} opt_options
@@ -151,12 +161,15 @@ NicePageBuilder._createContext = function( opt_options ){
 
     const allPagesPath     = options[ 'allPagesPath' ] &&
                              path.toSrcRootRelativeFilePath( '/', options[ 'allPagesPath'     ]                         ),
+          allOptionsPath   = options[ 'allOptionsPath' ] &&
+                             path.toSrcRootRelativeFilePath( '/', options[ 'allOptionsPath'     ]                       ),
           allMixinsPath    = path.toSrcRootRelativeFilePath( '/', options[ 'allMixinsPath'    ] || 'all-mixins.json'    ),
           allTempletesPath = path.toSrcRootRelativeFilePath( '/', options[ 'allTempletesPath' ] || 'all-templetes.json' );
 
     return {
         srcRootPath      : path.normalizeFilePath( srcRootPath ),
-        allPagesPath     : allPagesPath     || '',
+        allPagesPath     : allPagesPath   || '',
+        allOptionsPath   : allOptionsPath || '',
         allMixinsPath,
         allTempletesPath,
         keywordTempletes : NicePageBuilder.util.jsonFilePathToOriginalExtname( allTempletesPath, path ),

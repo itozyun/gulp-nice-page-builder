@@ -139,7 +139,7 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
                 return;
             };
             templetePath = '';
-            mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
+            mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
             mergeMinxins( templeteOptions.MIXINS );
             if( templetePath ){
                 templeteStack.push( templetePath );
@@ -159,7 +159,7 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
             for( let i = 0; i < mixinPathList.length; ++i ){
                 const mixin = MIXIN_LIST[ mixinPathList[ i ] ];
 
-                mix( /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
+                mix( /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
             };
         };
     };
@@ -167,8 +167,9 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
     /**
      * @param {!NicePageBuilder.NicePageOptions} altPageOptions 
      * @param {number} altUpdatedAt
+     * @param {boolean} isTemplete
      */
-    function mix( altPageOptions, altUpdatedAt ){
+    function mix( altPageOptions, altUpdatedAt, isTemplete ){
         let changed = 0;
 
         for( const k in altPageOptions ){
@@ -182,7 +183,7 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
                 ++changed;
             };
         };
-        if( changed ){
+        if( changed || isTemplete ){
             if( updatedAt < altUpdatedAt ){
                 updatedAt = altUpdatedAt;
             };

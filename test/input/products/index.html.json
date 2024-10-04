@@ -1,9 +1,0 @@
-[
-    {
-        "MIXINS" : [ "../mixin.json" ]
-    },
-    11,
-    [
-        "p", "Products..."
-    ]
-]

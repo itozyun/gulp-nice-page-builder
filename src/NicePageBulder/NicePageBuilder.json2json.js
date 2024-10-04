@@ -6,6 +6,7 @@ goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.requireType( 'NicePageBuilder.Context' );
+goog.require( 'NicePageBuilder.deepCopy' );
 goog.require( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToDocumentReadyHandler' );
@@ -32,27 +33,31 @@ NicePageBuilder.json2json = true;
  * @return {boolean|void} isStaticWebPage
  */
 __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
-    let pageOptions;
+    let originalPageOptions, pageOptions;
 
     if( NicePageBuilder.util.isHTMLJsonWithOptions( htmlJson ) ){
         const context = this;
 
-        pageOptions         = htmlJson.shift();
-        opt_onInstruction   = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
-        opt_onEnterNode     = NicePageBuilder.bindNicePageContextToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );
-        opt_onDocumentReady = NicePageBuilder.bindNicePageContextToDocumentReadyHandler( context, pageOptions, opt_onDocumentReady );
-        opt_onError         = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );
+        originalPageOptions = htmlJson.shift();
+        pageOptions         = NicePageBuilder.deepCopy( originalPageOptions );
+
+        pageOptions.URL = this.path.filePathToURL( pageOptions.FILE_PATH );
 
         // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
         if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
             NicePageBuilder.util.mergeOptions( pageOptions, [], context.templetes, context.mixins, opt_onError );
-        };
+        };        
+
+        opt_onInstruction   = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
+        opt_onEnterNode     = NicePageBuilder.bindNicePageContextToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );
+        opt_onDocumentReady = NicePageBuilder.bindNicePageContextToDocumentReadyHandler( context, pageOptions, opt_onDocumentReady );
+        opt_onError         = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );
     };
 
     const isStaticWebPage = json2json( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
-    if( pageOptions ){
-        htmlJson.unshift( pageOptions );
+    if( originalPageOptions ){
+        htmlJson.unshift( originalPageOptions );
     };
 
     return isStaticWebPage;

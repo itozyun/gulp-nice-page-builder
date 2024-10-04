@@ -45,11 +45,11 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
         // ↓
         // [ {...}, [ 'p' ] ]
 
-        // [ 9, 'xhtml', [ 'SCRIPT', {}, {...} ], [ 'p' ] ]
+        // [ 9, '<!DOCTYPE html>', [ 'SCRIPT', {}, {...} ], [ 'p' ] ]
         // ↓
-        // [ {...}, 9, 'xhtml', [ 'p' ] ]
+        // [ {...}, 9, '<!DOCTYPE html>', [ 'p' ] ]
         if( scriptJSONNode && scriptJSONNode.length === 3 ){
-            const options = eval( '(' + scriptJSONNode[ 2 ] + ');' ); // TODO JSON.parse()
+            const options = JSON.parse( /** @type {string} */ (scriptJSONNode[ 2 ]) );
 
             if( !m_isArray( options ) && m_isObject( options ) ){
                 htmlJson.unshift( options );
@@ -252,18 +252,18 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
 
         // 書出し
             const self = this;
+            const ALL_PAGES   = {};
+            const ALL_OPTIONS = {};
 
-            if( context.allPagesPath ){
-                writeFile( context.allPagesPath, PAGE_LIST );
-            };
             writeFile( context.allMixinsPath, MIXIN_LIST );
             writeFile( context.allTempletesPath, TEMPLETE_LIST );
 
             for( const filePath in PAGE_LIST ){
                 const nicePage = PAGE_LIST[ filePath ];
+                const url = this.path.filePathToURL( filePath );
                 delete PAGE_LIST[ filePath ];
 
-                const htmlJson     = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];
+                const htmlJson = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];
 
                 let pageOptions = htmlJson[ 0 ];
                 pageOptions = !m_isArray( pageOptions ) && m_isObject( pageOptions ) ? pageOptions : {};
@@ -276,6 +276,17 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                 };
 
                 writeFile( filePath + '.json', htmlJson );
+
+                delete pageOptions.FILE_PATH;
+                ALL_PAGES  [ url ] = htmlJson;
+                ALL_OPTIONS[ url ] = pageOptions;
+            };
+
+            if( context.allPagesPath ){
+                writeFile( context.allPagesPath, ALL_PAGES );
+            };
+            if( context.allOptionsPath ){
+                writeFile( context.allOptionsPath, ALL_OPTIONS );
             };
 
             callback();

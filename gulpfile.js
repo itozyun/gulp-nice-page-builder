@@ -74,7 +74,7 @@ gulp.task(
     'test',
     gulp.series(
         function(){
-            let NicePageBuilder = require( './index.js' ).gulp( { srcRootPath : 'test/input' } );
+            let NicePageBuilder = require( './index.js' ).gulp( { srcRootPath : 'test/input', allPagesPath : 'all-pages.json', allOptionsPath : 'all-options.json' } );
 
             return gulp.src(
                     [
