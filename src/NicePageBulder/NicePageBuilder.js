@@ -64,6 +64,7 @@ NicePageBuilder.Context;
 /**
  * @typedef {{
  *   getOptions        : function():NicePageBuilder.NicePageOptions,
+ *   path              : TinyPath,
  *   getJSON           : function(string):Object,
  *   toRootRelativeURL : function(string):string,
  *   toRelativeURL     : function(string):string,
@@ -297,7 +298,7 @@ NicePageBuilder.bindNicePageContextToErrorHandler = function( context, pageOptio
  * @param {!NicePageBuilder.NicePageOptions} pageOptions
  */
 function NicePageContext( context, filePath, pageOptions ){
-    this._path     = context.path;
+    this.path      = context.path;
     this._jsonList = context._jsonList;
     this._baseURL  = context.path.filePathToURL( filePath );
 
@@ -315,19 +316,19 @@ NicePageContext.prototype.getJSON = function( rootRelativePath ){
  * @param {string} url 
  * @return {string} */
 NicePageContext.prototype.toRelativeURL = function( url ){
-    return this._path.toRelativeURL( this._baseURL, url );
+    return this.path.toRelativeURL( this._baseURL, url );
 };
 
 /**
  * @param {string} url 
  * @return {string} */
 NicePageContext.prototype.toRootRelativeURL = function( url ){
-    return this._path.toRootRelativeURL( this._baseURL, url );
+    return this.path.toRootRelativeURL( this._baseURL, url );
 };
 
 /**
  * @param {string} url 
  * @return {string} */
 NicePageContext.prototype.toAbsoluteURL = function( url ){
-    return this._path.rootRelativeURLToAbsoluteURL( this.toRootRelativeURL( url ) );
+    return this.path.rootRelativeURLToAbsoluteURL( this.toRootRelativeURL( url ) );
 };
