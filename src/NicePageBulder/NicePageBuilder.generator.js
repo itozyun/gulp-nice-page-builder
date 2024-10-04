@@ -34,12 +34,12 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
     const pageOptions   = htmlJson[ 0 ];
     const templeteStack = [];
 
-    NicePageBuilder.util.mergeOptions( pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST );
+    NicePageBuilder.util.mergeOptions( pageOptions, templeteStack, TEMPLETE_LIST || this.templetes, MIXIN_LIST || this.mixins );
 
     let contentHtmlJson = htmlJson;
 
     while( templeteStack.length ){
-        const templete = TEMPLETE_LIST[ templeteStack.shift() ];
+        const templete = ( TEMPLETE_LIST || this.templetes )[ templeteStack.shift() ];
 
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
     };

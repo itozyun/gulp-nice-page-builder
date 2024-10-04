@@ -144,7 +144,7 @@ NicePageBuilder = function( options ){
  * @return {!NicePageBuilder.NicePageOptions}
  */
 NicePageBuilder.deepCopy = function( nicePageOptions ){
-    return JSON.parse( JSON.stringify( nicePageOptions ) );
+    return /** @type {!NicePageBuilder.NicePageOptions} */ (JSON.parse( JSON.stringify( nicePageOptions ) ));
 };
 
 /**
@@ -174,8 +174,8 @@ NicePageBuilder._createContext = function( opt_options ){
         allTempletesPath,
         keywordTempletes : NicePageBuilder.util.jsonFilePathToOriginalExtname( allTempletesPath, path ),
         keywordMixins    : NicePageBuilder.util.jsonFilePathToOriginalExtname( allMixinsPath   , path ),
-        mixins           : null,
-        templetes        : null,
+        mixins           : options[ 'mixins'    ] || null,
+        templetes        : options[ 'templetes' ] || null,
         _jsonList        : {},
         path
     };

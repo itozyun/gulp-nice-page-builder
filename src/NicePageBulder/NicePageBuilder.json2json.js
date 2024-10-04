@@ -131,7 +131,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
 
                     if( !m_isArray( json ) && m_isObject( json ) ){
                         if( context.mixins && JSON.stringify( context.mixins ) !== JSON.stringify( json ) ){
-                            console.log( pluginName + ' templete list changed!' );
+                            console.log( pluginName + ' mixin list changed!' );
                         };
                         /** @suppress {checkTypes} */
                         context.mixins = json;
