@@ -15,6 +15,7 @@ goog.provide( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
 
 goog.require( 'TinyPath' );
 goog.require( 'VNode' );
+goog.require( 'NicePageBuilder.util.jsonFilePathToOriginalExtname' );
 
 /**
  * @package
