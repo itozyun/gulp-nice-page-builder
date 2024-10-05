@@ -127,6 +127,13 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
 
     while( templetePath ){
         const templete = TEMPLETE_LIST[ templetePath ];
+
+        if( NicePageBuilder.DEFINE.DEBUG ){
+            if( !templete ){
+                throw 'Templete: ' + templetePath + ' required by ' + pageOptions.FILE_PATH + ' not found!';
+            };
+        };
+
         const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
 
         if( templeteOptions ){

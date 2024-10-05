@@ -168,20 +168,23 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                         const mixin     = MIXIN_LIST[ path ];
                         
                         mixinPathList[ i ] = path; // toSrcRootRelativeFilePath
-                        if( mixin && mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
-                            mixin.push( true ); // used
+                        if( mixin ){
                             const mixinOptions = /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]);
 
-                            if( mixinOptions.MIXINS ){
-                                if( NicePageBuilder.DEFINE.DEBUG ){
-                                    console.log( 'Mixin:"' + path + '" cannot have MIXINS property!' );
-                                };
-                                delete mixinOptions.MIXINS;
-                            };
                             if( !skipTemplete ){
                                 checkTemplete( path, mixinOptions.TEMPLETE, mixinOptions );
                             };
-                        } else if( !mixin ){
+
+                            if( mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
+                                mixin.push( true ); // used
+                                if( mixinOptions.MIXINS ){
+                                    if( NicePageBuilder.DEFINE.DEBUG ){
+                                        console.log( 'Mixin:"' + path + '" cannot have MIXINS property!' );
+                                    };
+                                    delete mixinOptions.MIXINS;
+                                };
+                            };
+                        } else {
                             throw 'Mixin:"' + path + '" required by "' + pageOrTempletePath + '" does not exist!';
                         };
                     };
@@ -189,32 +192,33 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
             };
 
             /**
-             * @param {string} pageOrTempletePath
+             * @param {string} basePath
              * @param {string | void} templetePath
              * @param {!NicePageBuilder.NicePageOptions} pageOptions
              */
-            function checkTemplete( pageOrTempletePath, templetePath, pageOptions ){
+            function checkTemplete( basePath, templetePath, pageOptions ){
                 while( templetePath ){
-                    const path     = context.path.toSrcRootRelativeFilePath( pageOrTempletePath, templetePath );
+                    const path     = context.path.toSrcRootRelativeFilePath( basePath, templetePath );
                     const templete = PAGES_OR_TEMPLETES[ path ];
 
                     if( templete ){
                         delete PAGES_OR_TEMPLETES[ path ];
                         TEMPLETE_LIST[ path ] = templete;
-                        pageOptions.TEMPLETE = pageOrTempletePath = path; // toSrcRootRelativeFilePath
+                        pageOptions.TEMPLETE = basePath = path; // toSrcRootRelativeFilePath
                         /** @suppress {checkTypes} */
                         pageOptions = NicePageBuilder.util.getNiceOptions( templete );
                         if( pageOptions ){
-                            checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
+                            checkMixins( basePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
                             /** @suppress {checkTypes} */
                             templetePath = pageOptions.TEMPLETE;
                         } else {
                             break;
                         };
-                    } else if( !TEMPLETE_LIST[ path ] ){
-                        throw 'Templete:"' + path + '" required by "' + pageOrTempletePath + '" does not exist!';
-                    } else {
+                    } else if( TEMPLETE_LIST[ path ] ){
+                        pageOptions.TEMPLETE = path;
                         break;
+                    } else {
+                        throw 'Templete:"' + path + '" required by "' + basePath + '" does not exist!';
                     };
                 };
             };
