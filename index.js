@@ -494,7 +494,7 @@ function za(a, b) {
       this.pa = e;
       break;
     case 7:
-      this.Ma = g || null;
+      this.Na = g || null;
     case 3:
     case 4:
     case 8:
@@ -523,7 +523,7 @@ Ma.prototype.ja = function() {
       a[1] = this.pa;
       break;
     case 7:
-      if (e = this.Ma) {
+      if (e = this.Na) {
         var g = 0;
         for (c = e.length; g < c; ++g) {
           a[2 + g] = e[g];
@@ -612,7 +612,7 @@ Ma.prototype.remove = function() {
     throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e discard() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   if (this.ba) {
-    return this.Na = V = !0, null;
+    return this.Oa = V = !0, null;
   }
   if (Na(this)) {
     throw "getMyIndex() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
@@ -644,7 +644,7 @@ function Na(a) {
   return 9 === a.$ || 11 === a.$;
 }
 function Pa(a) {
-  return a === Aa && !a.Na;
+  return a === Aa && !a.Oa;
 }
 ;function Sa(a, b, c) {
   function e(n, u, v, D) {
@@ -998,7 +998,7 @@ Z.aa.Fa = function(a, b, c, e, g) {
     }
   }
 };
-Z.aa.Ta = function(a, b) {
+Z.aa.Ua = function(a, b) {
   const c = b.split("/");
   a.FILE_NAME = c.pop();
   a.FOLDER_PATH = c.join("/");
@@ -1013,7 +1013,7 @@ Z.aa.Ca = function(a) {
   b = b.join(".json").split("/");
   return b.pop().split(".").pop();
 };
-Z.aa.La = function(a) {
+Z.aa.Ma = function(a) {
   return eb(a, function(b, c) {
     return ("SCRIPT" === b || "script" === b) && c && ("application/ld+json" === c.type || "application/json" === c.type || "nice-page-builder/object" === c.type) || !1;
   });
@@ -1065,11 +1065,11 @@ function eb(a, b, c) {
   let g = a[0], d;
   return !M(g) && N(g) ? (a.shift(), d = e(a), !c && (a.unshift(g), d && d[1] === a) ? [d[0], a, ++d[2]] : d) : e(a);
 }
-;Z.Oa = {};
+;Z.Pa = {};
+Z.Ta = {};
+Z.Ra = {};
 Z.Sa = {};
 Z.Qa = {};
-Z.Ra = {};
-Z.Pa = {};
 var fb = !1, gb = !1, hb = !1, ib = !1, bb = 0, cb = 0, db = 2;
 function Z(a) {
   a = Z.ua(a);
@@ -1079,13 +1079,13 @@ function Z(a) {
   ib && (a.json2html = ib);
   return a;
 }
-Z.Ka = function(a) {
+Z.La = function(a) {
   return JSON.parse(JSON.stringify(a));
 };
 Z.ua = function(a) {
   a = a || {};
-  const b = require("path").resolve(a.srcRootPath || "./") + "/", c = new Va(b), e = a.allPagesPath && $a(c, "/", a.allPagesPath), g = a.allOptionsPath && $a(c, "/", a.allOptionsPath), d = $a(c, "/", a.allMixinsPath || "all-mixins.json"), q = $a(c, "/", a.allTempletesPath || "all-templetes.json");
-  return {Ga:Xa(b), wa:e || "", va:g || "", Ha:d, Ia:q, Ea:Z.aa.Ca(q), Da:Z.aa.Ca(d), ea:a.mixins || null, da:a.templetes || null, ia:{}, path:c};
+  const b = require("path").resolve(a.srcRootPath || "./") + "/", c = new Va(b), e = a.allPagesPath && $a(c, "/", a.allPagesPath), g = a.allPageOptionsPath && $a(c, "/", a.allPageOptionsPath), d = $a(c, "/", a.allMixinsPath || "all-mixins.json"), q = $a(c, "/", a.allTempletesPath || "all-templetes.json");
+  return {Ga:Xa(b), wa:e || "", va:g || "", Ha:d, Ja:q, Ea:Z.aa.Ca(q), Da:Z.aa.Ca(d), ea:a.mixins || null, da:a.templetes || null, Ia:a.allPageOptions || null, ia:{}, path:c};
 };
 Z.ma = function(a, b) {
   return b.bind(a);
@@ -1119,7 +1119,7 @@ Z.xa = function(a, b, c) {
     return g;
   }
 };
-Z.Ja = function(a, b, c) {
+Z.Ka = function(a, b, c) {
   if (c) {
     return a = new jb(a, b.FILE_PATH), c.bind(a);
   }
@@ -1137,7 +1137,7 @@ function jb(a, b) {
 ;Z.html2json = !0;
 fb = function(a, b, c) {
   a = Sa(a, b, c);
-  if (b = Z.aa.La(a)) {
+  if (b = Z.aa.Ma(a)) {
     c = b[0], b[1].splice(b[2], 1), c && 3 === c.length && (b = JSON.parse(c[2]), !M(b) && N(b) && a.unshift(b));
   }
   return a;
@@ -1235,7 +1235,7 @@ function kb(a) {
     z = {};
     F = {};
     E(b.Ha, f);
-    E(b.Ia, q);
+    E(b.Ja, q);
     for (const r in d) {
       A = d[r];
       C = Ya(r);
@@ -1253,6 +1253,7 @@ function kb(a) {
       F[C] = l;
     }
     b.wa && E(b.wa, z);
+    b.Ia = F;
     b.va && E(b.va, F);
     k();
   });
@@ -1490,7 +1491,7 @@ function nb(a, b) {
 ;Z.json2json = !0;
 hb = function(a, b, c, e, g, d) {
   let q, f;
-  Z.aa.la(a) && (q = a.shift(), f = Z.Ka(q), f.URL = Ya(f.FILE_PATH), (Z.aa.ta(f) || Z.aa.ra(f)) && Z.aa.Fa(f, [], this.da, this.ea, g), b = Z.za(this, f, b), Z.xa(this, f, c), e = Z.Ja(this, f, e), g = Z.ya(this, f, g));
+  Z.aa.la(a) && (q = a.shift(), f = Z.La(q), f.URL = Ya(f.FILE_PATH), (Z.aa.ta(f) || Z.aa.ra(f)) && Z.aa.Fa(f, [], this.da, this.ea, g), b = Z.za(this, f, b), Z.xa(this, f, c), e = Z.Ka(this, f, e), g = Z.ya(this, f, g));
   b = mb(a, b, e, g, d);
   q && a.unshift(q);
   return b;

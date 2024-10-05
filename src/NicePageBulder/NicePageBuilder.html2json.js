@@ -253,7 +253,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
         // 書出し
             const self = this;
             const ALL_PAGES   = {};
-            const ALL_OPTIONS = {};
+            const ALL_PAGE_OPTIONS = {};
 
             writeFile( context.allMixinsPath, MIXIN_LIST );
             writeFile( context.allTempletesPath, TEMPLETE_LIST );
@@ -279,14 +279,17 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
 
                 delete pageOptions.FILE_PATH;
                 ALL_PAGES  [ url ] = htmlJson;
-                ALL_OPTIONS[ url ] = pageOptions;
+                ALL_PAGE_OPTIONS[ url ] = pageOptions;
             };
 
             if( context.allPagesPath ){
                 writeFile( context.allPagesPath, ALL_PAGES );
             };
-            if( context.allOptionsPath ){
-                writeFile( context.allOptionsPath, ALL_OPTIONS );
+
+            context.allPageOptions = ALL_PAGE_OPTIONS;
+
+            if( context.allPageOptionsPath ){
+                writeFile( context.allPageOptionsPath, ALL_PAGE_OPTIONS );
             };
 
             callback();
