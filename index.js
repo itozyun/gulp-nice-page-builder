@@ -43,7 +43,7 @@ function ea(a, b) {
     }
     if (0 <= r) {
       for (; r < m;) {
-        ha(F, A[--m], G && !q[A[m]], !1), k && aa[A[m]] && (k = !!F.ga);
+        ha(F, A[--m], G && !q[A[m]], !1), k && aa[A[m]] && (k = !!F.ha);
       }
       A.length = r;
       if (u) {
@@ -127,7 +127,7 @@ function ea(a, b) {
     }
     return 0;
   }
-  for (var h = [], k = !!b.ga, u = !1, E = a.length - c, z, D; a;) {
+  for (var h = [], k = !!b.ha, u = !1, E = a.length - c, z, D; a;) {
     z = h[h.length - 1];
     if (da[z]) {
       if ("PLAINTEXT" === z || "plaintext" === z) {
@@ -628,7 +628,7 @@ function U(a, b, c, e) {
     throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   if (a.ba) {
-    return a.ga = a.ga || [], a.ga.push([b, c, e]), V = !0, null;
+    return a.ha = a.ha || [], a.ha.push([b, c, e]), V = !0, null;
   }
   var f = X(a);
   if (a.ba) {
@@ -815,7 +815,7 @@ function ia(a, b, c, e) {
       throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
     if (a.ba) {
-      a.ga = a.ga || [], a.ga.push([1, b, c, void 0]);
+      a.ha = a.ha || [], a.ha.push([1, b, c, void 0]);
     } else {
       e = X(a);
       if (a.ba) {
@@ -914,10 +914,10 @@ function ab(a) {
 }
 ;Z.fa = {};
 Z.aa = {};
-Z.fa.ha = !0;
+Z.fa.ga = !0;
 Z.aa.ja = function(a) {
   a = a[bb];
-  if (Z.fa.ha && !M(a)) {
+  if (Z.fa.ga && !M(a)) {
     throw "Not html.json! " + JSON.stringify(a);
   }
   return a;
@@ -948,7 +948,7 @@ Z.aa.Fa = function(a, b, c, e, f) {
   function p(k, u, E) {
     let z = 0;
     for (const D in k) {
-      if (Z.fa.ha && !E && "MIXINS" === D) {
+      if (Z.fa.ga && !E && "MIXINS" === D) {
         throw "Mixin has MIXINS property!";
       }
       "TEMPLETE" === D ? (g = g || k[D], g === k[D] && ++z) : void 0 === a[D] && (a[D] = k[D], ++z);
@@ -1002,7 +1002,7 @@ Z.aa.Ta = function(a, b) {
 };
 Z.aa.Ca = function(a) {
   let b = Xa(a).split(".json");
-  if (Z.fa.ha && b[b.length - 1]) {
+  if (Z.fa.ga && b[b.length - 1]) {
     throw a + " is not .json file path!";
   }
   b.pop();
@@ -1186,7 +1186,7 @@ function kb(a) {
           var l = g[B];
           m[t] = B;
           if (l && l.length === db + 1) {
-            l.push(!0), l = l[cb], l.MIXINS && (Z.fa.ha && console.log('Mixin:"' + B + '" cannot have MIXINS property!'), delete l.MIXINS), n || u(B, l.TEMPLETE, l);
+            l.push(!0), l = l[cb], l.MIXINS && (Z.fa.ga && console.log('Mixin:"' + B + '" cannot have MIXINS property!'), delete l.MIXINS), n || u(B, l.TEMPLETE, l);
           } else if (!l) {
             throw 'Mixin:"' + B + '" required by "' + r + '" does not exist!';
           }
@@ -1220,10 +1220,10 @@ function kb(a) {
       A && (k(z, A.MIXINS, !!A.TEMPLETE), u(z, A.TEMPLETE, A), d[z] && D.push(!0));
     }
     for (var F in g) {
-      z = g[F], z.length === db + 1 ? (Z.fa.ha && console.log("Unused mixin found! " + F), delete g[F]) : z.pop();
+      z = g[F], z.length === db + 1 ? (Z.fa.ga && console.log("Unused mixin found! " + F), delete g[F]) : z.pop();
     }
     for (var y in d) {
-      F = d[y], z = Z.aa.ja(F), F.length === db + 1 && Z.aa.Ba(z, !1) && (Z.fa.ha && console.log("Unused templete found! " + y), delete d[y]);
+      F = d[y], z = Z.aa.ja(F), F.length === db + 1 && Z.aa.Ba(z, !1) && (Z.fa.ga && console.log("Unused templete found! " + y), delete d[y]);
     }
     const G = this;
     y = {};
@@ -1259,7 +1259,11 @@ gb = function(a, b, c) {
   const e = a[0], f = [];
   Z.aa.Fa(e, f, b || this.da, c || this.ea);
   for (var d = a; f.length;) {
-    c = (b || this.da)[f.shift()];
+    a = f.shift();
+    c = (b || this.da)[a];
+    if (Z.fa.ga && !c) {
+      throw "Templete: " + a + " required by " + e.FILE_PATH + " not found!";
+    }
     a = void 0;
     c = Z.aa.ja(c);
     c = JSON.parse(JSON.stringify(c));

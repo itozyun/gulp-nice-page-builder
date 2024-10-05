@@ -39,8 +39,14 @@ __NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXI
     let contentHtmlJson = htmlJson;
 
     while( templeteStack.length ){
-        const templete = ( TEMPLETE_LIST || this.templetes )[ templeteStack.shift() ];
+        const templetePath = templeteStack.shift();
+        const templete = ( TEMPLETE_LIST || this.templetes )[ templetePath ];
 
+        if( NicePageBuilder.DEFINE.DEBUG ){
+            if( !templete ){
+                throw 'Templete: ' + templetePath + ' required by ' + pageOptions.FILE_PATH + ' not found!';
+            };
+        };
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
     };
 
