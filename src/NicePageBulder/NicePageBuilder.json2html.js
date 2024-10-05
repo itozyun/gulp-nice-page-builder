@@ -36,8 +36,6 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
             throw pageOptions.FILE_PATH + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
         };
 
-        pageOptions.URL = this.path.filePathToURL( pageOptions.FILE_PATH );
-
         opt_onInstruction = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
         opt_onEnterNode   = NicePageBuilder.bindNicePageContextToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );
         opt_onError       = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );

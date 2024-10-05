@@ -51,6 +51,7 @@ NicePageBuilder.INDEXES = {
  *   mixins             : (Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null),
  *   templetes          : (Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null),
  *   allPageOptions     : (Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOptions> | null),
+ *   _allPageOptions    : (Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOptions> | null),
  *   keywordTempletes   : string,
  *   keywordMixins      : string,
  *   path               : !TinyPath,
@@ -181,7 +182,8 @@ NicePageBuilder._createContext = function( opt_options ){
         mixins             : options[ 'mixins'         ] || null,
         templetes          : options[ 'templetes'      ] || null,
         allPageOptions     : options[ 'allPageOptions' ] || null,
-        _jsonList        : {},
+        _allPageOptions    : {},
+        _jsonList          : {},
         path
     };
 };
@@ -306,9 +308,9 @@ function NicePageContext( context, filePath, pageOptions ){
     this._jsonList = context._jsonList;
     this._baseURL  = context.path.filePathToURL( filePath );
 
-    this.getOptions = function(){ return pageOptions };
-
-    var _allPageOptions = {};
+    this.getOptions = function(){
+        return this.getOptionsOf( this._baseURL );
+    };
 
 /**
  * @param {string} url 
@@ -316,7 +318,7 @@ function NicePageContext( context, filePath, pageOptions ){
  */
     this.getOptionsOf = function( url ){
         var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
-        var pageOptions = _allPageOptions[ rootRelativeURL ];
+        var pageOptions = context._allPageOptions[ rootRelativeURL ];
 
         if( !pageOptions ){
             pageOptions = context.allPageOptions[ rootRelativeURL ];
@@ -326,8 +328,10 @@ function NicePageContext( context, filePath, pageOptions ){
     
                 pageOptions.URL = rootRelativeURL;
                 NicePageBuilder.util.mergeOptions( pageOptions, [], context.templetes, context.mixins );
+
+                pageOptions = NicePageBuilder.deepCopy( pageOptions ); // コピーされたメタ情報(Array, Object)を改変から保護する
     
-                _allPageOptions[ rootRelativeURL ] = pageOptions;
+                context._allPageOptions[ rootRelativeURL ] = pageOptions;
             };
         };
         return pageOptions || null;

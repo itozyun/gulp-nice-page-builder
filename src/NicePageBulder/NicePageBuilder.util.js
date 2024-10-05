@@ -6,7 +6,6 @@ goog.provide( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.provide( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.provide( 'NicePageBuilder.util.hasMIXINSProperty' );
 goog.provide( 'NicePageBuilder.util.mergeOptions' );
-goog.provide( 'NicePageBuilder.util.completeBuiltinOptions' );
 goog.provide( 'NicePageBuilder.util.jsonFilePathToOriginalExtname' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
@@ -198,20 +197,6 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
             };
         };
     };
-};
-
-/**
- * 
- * @param {!NicePageBuilder.NicePageOptions} pageOptions
- * @param {string} filePath
- * @param {!TinyPath} path
- */
-NicePageBuilder.util.completeBuiltinOptions = function( pageOptions, filePath, path ){
-    const pathElements = filePath.split( '/' );
-
-    pageOptions.FILE_NAME   = pathElements.pop();
-    pageOptions.FOLDER_PATH = pathElements.join( '/' );
-    pageOptions.URL         = path.filePathToURL( filePath );
 };
 
 /**

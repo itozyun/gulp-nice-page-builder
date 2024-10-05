@@ -41,8 +41,6 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
         originalPageOptions = htmlJson.shift();
         pageOptions         = NicePageBuilder.deepCopy( originalPageOptions );
 
-        pageOptions.URL = this.path.filePathToURL( pageOptions.FILE_PATH );
-
         // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
         if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
             NicePageBuilder.util.mergeOptions( pageOptions, [], context.templetes, context.mixins, opt_onError );
