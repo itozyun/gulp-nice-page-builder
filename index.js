@@ -896,14 +896,16 @@ function $a(a, b, c) {
     if (e) {
       throw c + " is not a relative path!";
     }
-    a = c;
-    b = b.split("/");
-    b.pop();
-    "" === b[0] && b.shift();
+    c = a = c;
+    e = b.split("/");
+    e.pop();
+    "" === e[0] && e.shift();
     for ("./" === a.substr(0, 2) && (a = a.substr(2)); "../" === a.substr(0, 3);) {
-      a = a.substr(3), --b.length;
+      if (a = a.substr(3), --e.length, !e.length) {
+        throw "Failed _relativePathToRootRelativePath! base:" + b + " target:" + c;
+      }
     }
-    b = b.join("/") + "/" + a;
+    b = "/" + e.join("/") + "/" + a;
   }
   return b;
 }
