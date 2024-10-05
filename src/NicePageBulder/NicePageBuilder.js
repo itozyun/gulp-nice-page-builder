@@ -66,7 +66,7 @@ NicePageBuilder.Context;
 /**
  * @typedef {{
  *   getOptions        : function():NicePageBuilder.NicePageOptions,
- *   getAllOptions     : function():(Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOptions> | null),
+ *   getOptionsOf      : function(string):(NicePageBuilder.NicePageOptions | null),
  *   path              : TinyPath,
  *   getJSON           : function(string):Object,
  *   toRootRelativeURL : function(string):string,
@@ -307,7 +307,31 @@ function NicePageContext( context, filePath, pageOptions ){
     this._baseURL  = context.path.filePathToURL( filePath );
 
     this.getOptions = function(){ return pageOptions };
-    this.getAllOptions = function(){ return context.allPageOptions };
+
+    var _allPageOptions = {};
+
+/**
+ * @param {string} url 
+ * @return {NicePageBuilder.NicePageOptions | null} 
+ */
+    this.getOptionsOf = function( url ){
+        var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
+        var pageOptions = _allPageOptions[ rootRelativeURL ];
+
+        if( !pageOptions ){
+            pageOptions = context.allPageOptions[ rootRelativeURL ];
+
+            if( pageOptions ){
+                pageOptions = NicePageBuilder.deepCopy( pageOptions );
+    
+                pageOptions.URL = rootRelativeURL;
+                NicePageBuilder.util.mergeOptions( pageOptions, [], context.templetes, context.mixins );
+    
+                _allPageOptions[ rootRelativeURL ] = pageOptions;
+            };
+        };
+        return pageOptions || null;
+    };
 };
 /**
  * 
