@@ -100,19 +100,17 @@ NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrOptions ){
 NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST, opt_onError ){
     if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) && !TEMPLETE_LIST ){
         if( opt_onError ){
-            opt_onError( pageOptions.FILE_PATH + ' has TEMPLETE property, and no templetes found!' );
-        } else {
+            return opt_onError( pageOptions.FILE_PATH + ' has TEMPLETE property, and no templetes found!' );
+        } else if( NicePageBuilder.DEFINE.DEBUG ){
             throw pageOptions.FILE_PATH + ' has TEMPLETE property, and no templetes found!';
         };
-        return;
     };
     if( NicePageBuilder.util.hasMIXINSProperty( pageOptions ) && !MIXIN_LIST ){
         if( opt_onError ){
-            opt_onError( pageOptions.FILE_PATH + ' has MIXINS property, and no mixins found!' );
-        } else {
+            return opt_onError( pageOptions.FILE_PATH + ' has MIXINS property, and no mixins found!' );
+        } else if( NicePageBuilder.DEFINE.DEBUG ){
             throw pageOptions.FILE_PATH + ' has MIXINS property, and no mixins found!';
         };
-        return;
     };
 
     let templetePath = pageOptions.TEMPLETE;
@@ -138,11 +136,10 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
         if( templeteOptions ){
             if( NicePageBuilder.util.hasMIXINSProperty( templeteOptions ) && !MIXIN_LIST ){
                 if( opt_onError ){
-                    opt_onError( templetePath + ' has MIXINS property, and no mixins found!' );
-                } else {
+                    return opt_onError( templetePath + ' has MIXINS property, and no mixins found!' );
+                } else if( NicePageBuilder.DEFINE.DEBUG ){
                     throw templetePath + ' has MIXINS property, and no mixins found!';
                 };
-                return;
             };
             templetePath = '';
             mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );

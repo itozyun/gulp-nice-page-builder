@@ -32,8 +32,10 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
         const context     = this;
         const pageOptions = htmlJson.shift();
 
-        if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
-            throw pageOptions.FILE_PATH + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
+        if( NicePageBuilder.DEFINE.DEBUG ){
+            if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
+                throw pageOptions.FILE_PATH + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
+            };
         };
 
         opt_onInstruction = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction, false );

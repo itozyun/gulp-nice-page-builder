@@ -184,7 +184,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                                     delete mixinOptions.MIXINS;
                                 };
                             };
-                        } else {
+                        } else if( NicePageBuilder.DEFINE.DEBUG ){
                             throw 'Mixin:"' + path + '" required by "' + pageOrTempletePath + '" does not exist!';
                         };
                     };
@@ -217,7 +217,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                     } else if( TEMPLETE_LIST[ path ] ){
                         pageOptions.TEMPLETE = path;
                         break;
-                    } else {
+                    } else if( NicePageBuilder.DEFINE.DEBUG ){
                         throw 'Templete:"' + path + '" required by "' + basePath + '" does not exist!';
                     };
                 };
