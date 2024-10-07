@@ -9,7 +9,7 @@ goog.requireType( 'NicePageBuilder.Context' );
  * @param {Object=} opt_options
  * @return {!NicePageBuilder.Context}
  */
-NicePageBuilder.gulp = function( opt_options ){
+module.exports.gulp = function( opt_options ){
     var context = NicePageBuilder._createContext( opt_options );
 
     if( __NicePageBuilder_internal__.html2json ){

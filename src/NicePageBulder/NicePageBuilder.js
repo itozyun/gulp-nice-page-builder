@@ -1,4 +1,4 @@
-goog.provide( 'NicePageBuilder' );
+goog.provide( 'NicePageBuilder.init' );
 goog.provide( '__NicePageBuilder_internal__' );
 goog.provide( 'NicePageBuilder.INDEXES' );
 goog.provide( 'NicePageBuilder.Context' );
@@ -16,6 +16,7 @@ goog.provide( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
 goog.require( 'TinyPath' );
 goog.require( 'VNode' );
 goog.require( 'NicePageBuilder.util.jsonFilePathToOriginalExtname' );
+goog.require( 'NicePageBuilder.util.mergeOptions' );
 
 /**
  * @package
@@ -126,7 +127,7 @@ NicePageBuilder.Mixin;
  * @param {Object=} options
  * @return {!NicePageBuilder.Context}
  */
-NicePageBuilder = function( options ){
+NicePageBuilder.init = function( options ){
     const context = NicePageBuilder._createContext( options );
 
     if( __NicePageBuilder_internal__.html2json ){
