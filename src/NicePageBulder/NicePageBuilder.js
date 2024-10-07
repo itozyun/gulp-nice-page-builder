@@ -3,6 +3,7 @@ goog.provide( '__NicePageBuilder_internal__' );
 goog.provide( 'NicePageBuilder.INDEXES' );
 goog.provide( 'NicePageBuilder.Context' );
 goog.provide( 'NicePageBuilder.SourceRootRelativePath' );
+goog.provide( 'NicePageBuilder.NicePageContext' );
 goog.provide( 'NicePageBuilder.NicePageOptions' );
 goog.provide( 'NicePageBuilder.NicePageOrTemplete' );
 goog.provide( 'NicePageBuilder.Mixin' );
