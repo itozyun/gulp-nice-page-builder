@@ -64,7 +64,7 @@ gulp.task('html', function(){
     return gulp.src(
                    ['./src/**/*.html', './src/**/*.htm', './src/**/*.php', './src/**/*.json']
               ).pipe(
-                   nicePageBuilder.html2json({trimWhitespaces: 'aggressive' })
+                   nicePageBuilder.html2json(null, {trimWhitespaces: 'aggressive' })
               ).pipe(
                    nicePageBuilder.generator()
               ).pipe(

@@ -23,7 +23,7 @@ NicePageBuilder.json2html = true;
  * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson 破壊
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
- * @param {!function(string)=} opt_onError
+ * @param {!function((string | !Error)=)=} opt_onError
  * @param {!Object=} opt_options
  * @return {string} html string
  */
@@ -54,7 +54,7 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
  * 
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
- * @param {!function(string)=} opt_onError
+ * @param {!function((string | !Error)=)=} opt_onError
  * @param {!Object=} opt_options
  */
 __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){

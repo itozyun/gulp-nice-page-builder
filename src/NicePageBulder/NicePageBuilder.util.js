@@ -95,7 +95,7 @@ NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrOptions ){
  * @param {!Array.<NicePageBuilder.SourceRootRelativePath>} templeteStack
  * @param {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
  * @param {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null=} MIXIN_LIST
- * @param {!function(string)=} opt_onError
+ * @param {!function((string | !Error)=)=} opt_onError
  */
 NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST, opt_onError ){
     if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) && !TEMPLETE_LIST ){

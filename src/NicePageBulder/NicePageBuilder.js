@@ -285,8 +285,8 @@ NicePageBuilder.bindNicePageContextToDocumentReadyHandler = function( context, p
 /**
  * @param {!NicePageBuilder.Context} context
  * @param {!NicePageBuilder.NicePageOptions} pageOptions
- * @param {!function(string) | void} onError
- * @return {!function(string) | void}
+ * @param {!function((string | !Error)=) | void} onError
+ * @return {!function((string | !Error)=) | void}
  */
 NicePageBuilder.bindNicePageContextToErrorHandler = function( context, pageOptions, onError ){
     if( onError ){

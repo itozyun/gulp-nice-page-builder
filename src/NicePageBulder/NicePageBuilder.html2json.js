@@ -25,11 +25,12 @@ NicePageBuilder.html2json = true;
  *
  * @param {string} htmlString
  * @param {boolean} allowInvalidTree
+ * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  * @return {!HTMLJson | !HTMLJsonWithOptions}
  */
-__NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree, opt_options ){
-    const htmlJson = /** @type {!HTMLJson} */ (html2json( htmlString, allowInvalidTree, opt_options ));
+__NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree, opt_onError, opt_options ){
+    const htmlJson = /** @type {!HTMLJson} */ (html2json( htmlString, allowInvalidTree, opt_onError, opt_options ));
 
     const result = NicePageBuilder.util.getJsonScriptElement( htmlJson );
 
@@ -63,9 +64,10 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
  * @package
  * @this {NicePageBuilder.Context}
  * 
- * @param {!Object=} options
+ * @param {!function((string | !Error))=} opt_onError
+ * @param {!Object=} opt_options
  */
-__NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
+__NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_options ){
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.html2json',
@@ -113,7 +115,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( options ){
                 case '.htm'   :
                 case '.xhtml' :
                 case '.php'   :
-                    const htmlJson = __NicePageBuilder_internal__.html2json.call( context, contents, false, options );
+                    const htmlJson = __NicePageBuilder_internal__.html2json.call( context, contents, false, opt_onError, opt_options );
 
                     PAGES_OR_TEMPLETES[ rootRelativePath ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
                     break;
