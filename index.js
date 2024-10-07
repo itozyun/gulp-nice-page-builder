@@ -18,7 +18,7 @@ function ea(a, b) {
     c && (fa(b, f(a.substring(0, c))), a = a.substring(c), c = 0);
   }
   function f(C) {
-    return C.split("&lt;").join("<").split("&gt;").join(">").split("&amp;").join("&");
+    return C.split("&lt;").join("<").split("&gt;").join(">").split("&amp;lt;").join("&lt;").split("&amp;gt;").join("&gt;");
   }
   function e(C, D, x) {
     for (var F = 0, u = x.length, p = 3, g, E; p < u && 2 !== F;) {
@@ -869,7 +869,7 @@ function ha(a, b, c, d) {
   }
 }
 function fa(a, b) {
-  V(a.$, 3, b.split("&lt;").join("<").split("&gt;").join(">").split("&amp;lt;").join("&lt;").split("&amp;gt;").join("&gt;"));
+  V(a.$, 3, b);
 }
 function ma(a, b) {
   V(a.$, 8, b);
@@ -1537,11 +1537,11 @@ function Db(a, b, c, d, f) {
         break;
       case 4:
         S(y) || q("CDATA_SECTION Error! [" + x + "]");
-        u = "<![CDATA[" + y + "]]\x3e";
+        u = "<![CDATA[" + Ca("" + y) + "]]\x3e";
         break;
       case 8:
         S(y) || q("COMMENT_NODE Error! [" + x + "]");
-        u = "\x3c!--" + y + "--\x3e";
+        u = "\x3c!--" + Ca("" + y) + "--\x3e";
         break;
       case 13:
         S(y) || q("COND_CMT_HIDE_LOWER Error! [" + x + "]");
