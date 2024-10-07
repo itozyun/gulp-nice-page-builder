@@ -1,7 +1,7 @@
 goog.provide( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.provide( 'NicePageBuilder.util' );
 goog.provide( 'NicePageBuilder.util.getHTMLJson' );
-goog.provide( 'NicePageBuilder.util.getNiceOptions' );
+goog.provide( 'NicePageBuilder.util.getOptions' );
 goog.provide( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.provide( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.provide( 'NicePageBuilder.util.hasMIXINSProperty' );
@@ -38,7 +38,7 @@ NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
  * @param {!NicePageBuilder.NicePageOrTemplete} nicePageOrTemplete 
  * @return {NicePageBuilder.NicePageOptions | null}
  */
-NicePageBuilder.util.getNiceOptions = function( nicePageOrTemplete ){
+NicePageBuilder.util.getOptions = function( nicePageOrTemplete ){
     var options = /** @type {!NicePageBuilder.NicePageOptions} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
 
     return !m_isArray( options ) && m_isObject( options ) ? options : null;
@@ -91,25 +91,28 @@ NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrOptions ){
 
 
 /**
+ * @param {!NicePageBuilder.Context} context
  * @param {!NicePageBuilder.NicePageOptions} pageOptions
- * @param {!Array.<NicePageBuilder.SourceRootRelativePath>} templeteStack
- * @param {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
- * @param {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null=} MIXIN_LIST
+ * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
+ * @param {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
+ * @param {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin> | null=} MIXIN_LIST
  * @param {!function((string | !Error)=)=} opt_onError
  */
-NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST, opt_onError ){
+NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST, opt_onError ){
+    const filePath = context.path.urlToFilePath( pageOptions.URL );
+
     if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) && !TEMPLETE_LIST ){
         if( opt_onError ){
-            return opt_onError( pageOptions.FILE_PATH + ' has TEMPLETE property, and no templetes found!' );
+            return opt_onError( filePath + ' has TEMPLETE property, and no templetes found!' );
         } else if( NicePageBuilder.DEFINE.DEBUG ){
-            throw pageOptions.FILE_PATH + ' has TEMPLETE property, and no templetes found!';
+            throw filePath + ' has TEMPLETE property, and no templetes found!';
         };
     };
     if( NicePageBuilder.util.hasMIXINSProperty( pageOptions ) && !MIXIN_LIST ){
         if( opt_onError ){
-            return opt_onError( pageOptions.FILE_PATH + ' has MIXINS property, and no mixins found!' );
+            return opt_onError( filePath + ' has MIXINS property, and no mixins found!' );
         } else if( NicePageBuilder.DEFINE.DEBUG ){
-            throw pageOptions.FILE_PATH + ' has MIXINS property, and no mixins found!';
+            throw filePath + ' has MIXINS property, and no mixins found!';
         };
     };
 
@@ -127,11 +130,11 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
 
         if( NicePageBuilder.DEFINE.DEBUG ){
             if( !templete ){
-                throw 'Templete: ' + templetePath + ' required by ' + pageOptions.FILE_PATH + ' not found!';
+                throw 'Templete: ' + templetePath + ' required by ' + context.path.urlToFilePath( pageOptions.URL ) + ' not found!';
             };
         };
 
-        const templeteOptions = NicePageBuilder.util.getNiceOptions( templete );
+        const templeteOptions = NicePageBuilder.util.getOptions( templete );
 
         if( templeteOptions ){
             if( NicePageBuilder.util.hasMIXINSProperty( templeteOptions ) && !MIXIN_LIST ){
@@ -155,7 +158,7 @@ NicePageBuilder.util.mergeOptions = function( pageOptions, templeteStack, TEMPLE
     pageOptions.UPDATED_AT = updatedAt;
 
     /**
-     * @param {!Array.<NicePageBuilder.SourceRootRelativePath> | void} mixinPathList
+     * @param {!Array.<NicePageBuilder.RootRelativeURL> | void} mixinPathList
      */
     function mergeMinxins( mixinPathList ){
         if( mixinPathList ){

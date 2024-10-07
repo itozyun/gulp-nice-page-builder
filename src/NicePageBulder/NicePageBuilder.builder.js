@@ -5,12 +5,11 @@ goog.require( 'htmljson.base' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.Mixin' );
-goog.requireType( 'NicePageBuilder.SourceRootRelativePath' );
+goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
-goog.require( 'NicePageBuilder.util.getNiceOptions' );
 goog.require( 'NicePageBuilder.util.mergeOptions' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
@@ -19,8 +18,8 @@ goog.require( 'NicePageBuilder.util.getSLotElement' );
  * @this {NicePageBuilder.Context}
  * 
  * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson
- * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
- * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null=} MIXIN_LIST 
+ * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
+ * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin> | null=} MIXIN_LIST 
  * @return {!HTMLJson | !HTMLJsonWithOptions}
  */
 __NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
@@ -31,7 +30,7 @@ __NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_
     const pageOptions   = htmlJson[ 0 ];
     const templeteStack = [];
 
-    NicePageBuilder.util.mergeOptions( pageOptions, templeteStack, TEMPLETE_LIST || this.templetes, MIXIN_LIST || this.mixins );
+    NicePageBuilder.util.mergeOptions( this, pageOptions, templeteStack, TEMPLETE_LIST || this.templetes, MIXIN_LIST || this.mixins );
 
     let contentHtmlJson = htmlJson;
 
@@ -41,7 +40,7 @@ __NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_
 
         if( NicePageBuilder.DEFINE.DEBUG ){
             if( !templete ){
-                throw 'Templete: ' + templetePath + ' required by ' + pageOptions.FILE_PATH + ' not found!';
+                throw 'Templete: ' + templetePath + ' required by ' + this.path.urlToFilePath( pageOptions.URL ) + ' not found!';
             };
         };
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
@@ -102,13 +101,13 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, (!HTMLJsonWithOptions)>} */
+    /** @type {!Object.<NicePageBuilder.RootRelativeURL, (!HTMLJsonWithOptions)>} */
     const PAGE_LIST = {};
 
-    /** @type {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete> | null} */
+    /** @type {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null} */
     let TEMPLETE_LIST = context.templetes;
 
-    /** @type {Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null} */
+    /** @type {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin> | null} */
     let MIXIN_LIST = context.mixins;
 
     return through.obj(
@@ -139,7 +138,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    PAGE_LIST[ /** @type {!NicePageBuilder.NicePageOptions} */ (json[ 0 ]).FILE_PATH ] = json;
+                    PAGE_LIST[ /** @type {!NicePageBuilder.NicePageOptions} */ (json[ 0 ]).URL ] = json;
                     return callback();
                 case context.keywordTempletes :
                     if( !m_isArray( json ) && m_isObject( json ) ){
@@ -169,15 +168,15 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
          */
         function( callback ){
         // 書出し
-            for( const filePath in PAGE_LIST ){
-                const htmlJson = __NicePageBuilder_internal__.builder.call( context, /** @type {!HTMLJson} */ (PAGE_LIST[ filePath ]), TEMPLETE_LIST, MIXIN_LIST );
-                delete PAGE_LIST[ filePath ];
+            for( const rootRelativeURL in PAGE_LIST ){
+                const htmlJson = __NicePageBuilder_internal__.builder.call( context, /** @type {!HTMLJson} */ (PAGE_LIST[ rootRelativeURL ]), TEMPLETE_LIST, MIXIN_LIST );
+                delete PAGE_LIST[ rootRelativeURL ];
 
                 this.push(
                     new _Vinyl(
                         {
                             base     : '/',
-                            path     : filePath + '.json',
+                            path     : context.path.urlToFilePath( rootRelativeURL ) + '.json',
                             contents : Buffer.from( JSON.stringify( htmlJson ) )
                         }
                     )

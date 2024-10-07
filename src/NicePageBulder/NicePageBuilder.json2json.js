@@ -6,12 +6,12 @@ goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.requireType( 'NicePageBuilder.Context' );
+goog.require( 'NicePageBuilder.getPageOptionsOf' );
 goog.require( 'NicePageBuilder.deepCopy' );
 goog.require( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToDocumentReadyHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
-goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
@@ -36,12 +36,15 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
         const context = this;
 
         originalPageOptions = htmlJson.shift();
-        pageOptions         = NicePageBuilder.deepCopy( originalPageOptions );
+        pageOptions = NicePageBuilder.getPageOptionsOf( context, originalPageOptions.URL );
 
-        // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
-        if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
-            NicePageBuilder.util.mergeOptions( pageOptions, [], context.templetes, context.mixins, opt_onError );
-        };        
+        if( !pageOptions ){
+            pageOptions = NicePageBuilder.deepCopy( originalPageOptions );
+            // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
+            if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
+                NicePageBuilder.util.mergeOptions( this, pageOptions, [], context.templetes, context.mixins, opt_onError );
+            };
+        };
 
         opt_onInstruction   = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
         opt_onEnterNode     = NicePageBuilder.bindNicePageContextToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );

@@ -6,9 +6,6 @@ var BuiltinOptions = {};
 
     BuiltinOptions.TEMPLETE    = '';
     BuiltinOptions.MIXINS      = [ '' ];
-    BuiltinOptions.FILE_PATH   = '';
-    BuiltinOptions.FILE_NAME   = '';
-    BuiltinOptions.FOLDER_PATH = '';
     BuiltinOptions.URL         = '';
     BuiltinOptions.CREATED_AT  = 0;
     BuiltinOptions.MODIFIED_AT = 0;

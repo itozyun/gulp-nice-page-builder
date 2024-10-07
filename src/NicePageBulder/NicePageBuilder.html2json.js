@@ -6,13 +6,13 @@ goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.Mixin' );
-goog.requireType( 'NicePageBuilder.SourceRootRelativePath' );
+goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
-goog.require( 'NicePageBuilder.util.getNiceOptions' );
+goog.require( 'NicePageBuilder.util.getOptions' );
 goog.require( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
@@ -72,13 +72,13 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */
+    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>} */
     const PAGES_OR_TEMPLETES = {};
 
-    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.NicePageOrTemplete>} */
+    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>} */
     const TEMPLETE_LIST = context.templetes = context.templetes || {};
 
-    /** @type {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin>} */
+    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin>} */
     const MIXIN_LIST = context.mixins = context.mixins || {};
 
     return through.obj(
@@ -102,10 +102,10 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 return callback();
             };
     
-            const contents         = file.contents.toString( encoding ),
-                  createdTimeMs    = parseInt( file.stat.birthtimeMs, 10 ),
-                  updatedTimeMs    = parseInt( file.stat.ctimeMs, 10 ),
-                  rootRelativePath = context.path.absoluteFilePathToSrcRootRelativeFilePath( filePath );
+            const contents        = file.contents.toString( encoding ),
+                  createdTimeMs   = parseInt( file.stat.birthtimeMs, 10 ),
+                  updatedTimeMs   = parseInt( file.stat.ctimeMs, 10 ),
+                  rootRelativeURL = context.path.filePathToURL( context.path.absoluteFilePathToSrcRootRelativeFilePath( filePath ) );
 
             switch( file.extname ){
                 case '.html'  :
@@ -114,13 +114,13 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 case '.php'   :
                     const htmlJson = __NicePageBuilder_internal__.html2json.call( context, contents, false, opt_onError, opt_options );
 
-                    PAGES_OR_TEMPLETES[ rootRelativePath ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
+                    PAGES_OR_TEMPLETES[ rootRelativeURL ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
                     break;
                 case '.json' :
                     const mixinJson = JSON.parse( contents );
 
                     if( m_isObject( mixinJson ) ){
-                        MIXIN_LIST[ rootRelativePath ] = [ /** @type {!NicePageBuilder.NicePageOptions} */ (mixinJson), createdTimeMs, updatedTimeMs ];
+                        MIXIN_LIST[ rootRelativeURL ] = [ /** @type {!NicePageBuilder.NicePageOptions} */ (mixinJson), createdTimeMs, updatedTimeMs ];
                     };
                     break;
                 default :
@@ -140,7 +140,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             for( let pageOrTempletePath in PAGES_OR_TEMPLETES ){
                 const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempletePath ];
 
-                let pageOptions = NicePageBuilder.util.getNiceOptions( pageOrTemplete );
+                let pageOptions = NicePageBuilder.util.getOptions( pageOrTemplete );
 
                 if( !pageOptions ){
                     continue;
@@ -156,17 +156,17 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
 
             /**
              * @param {string} pageOrTempletePath
-             * @param {!Array.<NicePageBuilder.SourceRootRelativePath> | void} mixinPathList
+             * @param {!Array.<NicePageBuilder.RootRelativeURL> | void} mixinPathList
              * @param {boolean} skipTemplete
              */
             function checkMixins( pageOrTempletePath, mixinPathList, skipTemplete ){
                 if( mixinPathList ){
                     for( let i = 0, l = mixinPathList.length; i < l; ++i ){
                         const mixinPath = mixinPathList[ i ];
-                        const path      = context.path.toSrcRootRelativeFilePath( pageOrTempletePath, mixinPath );
+                        const path      = context.path.toRootRelativeURL( pageOrTempletePath, mixinPath );
                         const mixin     = MIXIN_LIST[ path ];
                         
-                        mixinPathList[ i ] = path; // toSrcRootRelativeFilePath
+                        mixinPathList[ i ] = path; // toRootRelativeURL
                         if( mixin ){
                             const mixinOptions = /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]);
 
@@ -197,15 +197,15 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
              */
             function checkTemplete( basePath, templetePath, pageOptions ){
                 while( templetePath ){
-                    const path     = context.path.toSrcRootRelativeFilePath( basePath, templetePath );
+                    const path     = context.path.toRootRelativeURL( basePath, templetePath );
                     const templete = PAGES_OR_TEMPLETES[ path ];
 
                     if( templete ){
                         delete PAGES_OR_TEMPLETES[ path ];
                         TEMPLETE_LIST[ path ] = templete;
-                        pageOptions.TEMPLETE = basePath = path; // toSrcRootRelativeFilePath
+                        pageOptions.TEMPLETE = basePath = path; // toRootRelativeURL
                         /** @suppress {checkTypes} */
-                        pageOptions = NicePageBuilder.util.getNiceOptions( templete );
+                        pageOptions = NicePageBuilder.util.getOptions( templete );
                         if( pageOptions ){
                             checkMixins( basePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
                             /** @suppress {checkTypes} */
@@ -257,16 +257,16 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             writeFile( context.allMixinsPath, MIXIN_LIST );
             writeFile( context.allTempletesPath, TEMPLETE_LIST );
 
-            for( const filePath in PAGE_LIST ){
-                const nicePage = PAGE_LIST[ filePath ];
-                const url = this.path.filePathToURL( filePath );
-                delete PAGE_LIST[ filePath ];
+            for( const rootRelativeURL in PAGE_LIST ){
+                const nicePage = PAGE_LIST[ rootRelativeURL ];
+                const filePath = context.path.urlToFilePath( rootRelativeURL );
+                delete PAGE_LIST[ rootRelativeURL ];
 
                 const htmlJson = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];
 
                 let pageOptions = htmlJson[ 0 ];
                 pageOptions = !m_isArray( pageOptions ) && m_isObject( pageOptions ) ? pageOptions : {};
-                pageOptions.FILE_PATH   = filePath;
+                pageOptions.URL         = rootRelativeURL;
                 pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.CREATED_AT ]);
                 pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.UPDATED_AT ]);
 
@@ -276,9 +276,9 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
 
                 writeFile( filePath + '.json', htmlJson );
 
-                delete pageOptions.FILE_PATH;
-                ALL_PAGES  [ url ] = htmlJson;
-                ALL_PAGE_OPTIONS[ url ] = pageOptions;
+                delete pageOptions.URL;
+                ALL_PAGES       [ rootRelativeURL ] = htmlJson;
+                ALL_PAGE_OPTIONS[ rootRelativeURL ] = pageOptions;
             };
 
             if( context.allPagesPath ){
