@@ -939,16 +939,16 @@ function eb(a) {
 function fb(a, b, c) {
   if (bb(c) || eb(c)) {
     if (bb(c)) {
-      b = c;
-      if (!bb(b)) {
-        throw b + " is not a absolute URL!";
+      var d = c;
+      if (!bb(d)) {
+        throw d + " is not a absolute URL!";
       }
-      if (eb(b)) {
-        throw b + " is a root relative URL!";
+      if (eb(d)) {
+        throw d + " is a root relative URL!";
       }
-      c = a.aa.length - 1;
-      0 === b.indexOf(a.aa) ? b = b.substr(c) : "//" === a.aa.substr(0, 2) && (0 === b.indexOf("https:" + a.aa) && (b = b.substring(6, c)), 0 === b.indexOf("http:" + a.aa) && (b = b.substring(5, c)));
-      a = b;
+      b = a.aa.length - 1;
+      0 === d.indexOf(a.aa) ? d = d.substr(b) : "//" === a.aa.substr(0, 2) && (0 === d.indexOf("https:" + a.aa) && (d = d.substring(6, b)), 0 === d.indexOf("http:" + a.aa) && (d = d.substring(5, b)));
+      a = d;
     } else {
       a = c;
     }
@@ -959,10 +959,10 @@ function fb(a, b, c) {
     if (eb(c) || bb(c)) {
       throw c + " is not a relative URL!";
     }
-    a = c.substr(c.indexOf("#"));
-    b = ab($a(Y(b), Y(c)));
-    a && (b += a);
-    a = b;
+    a = c.indexOf("#");
+    -1 !== a && (d = c.substr(a));
+    a = ab($a(Y(b), Y(c)));
+    d && (a += d);
   }
   return a;
 }
