@@ -16,11 +16,11 @@ var BuiltinOptions = {};
 
 var nicePageBuilder = function(){};
     nicePageBuilder.html2json = function(){};
-    nicePageBuilder.generator = function(){};
+    nicePageBuilder.builder   = function(){};
     nicePageBuilder.json2json = function(){};
     nicePageBuilder.json2html = function(){};
     nicePageBuilder.gulp = function(){};
     nicePageBuilder.gulp.html2json = function(){};
-    nicePageBuilder.gulp.generator = function(){};
+    nicePageBuilder.gulp.builder   = function(){};
     nicePageBuilder.gulp.json2json = function(){};
     nicePageBuilder.gulp.json2html = function(){};

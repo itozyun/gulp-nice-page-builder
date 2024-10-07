@@ -1070,7 +1070,7 @@ function ob(a, b, c) {
 function Z(a) {
   a = ub(a);
   qb && (a.html2json = qb);
-  rb && (a.generator = rb);
+  rb && (a.builder = rb);
   sb && (a.json2json = sb);
   tb && (a.json2html = tb);
   return a;
@@ -1283,7 +1283,7 @@ function Ab() {
       return k();
     }
     if (h.isStream()) {
-      return this.emit("error", new b("NicePageBuilder.gulp.generator", "Streaming not supported")), k();
+      return this.emit("error", new b("NicePageBuilder.gulp.builder", "Streaming not supported")), k();
     }
     if (".json" !== h.extname) {
       return this.push(h), k();
@@ -1297,10 +1297,10 @@ function Ab() {
       case "php":
         return f[m[0].FILE_PATH] = m, k();
       case a.pa:
-        !O(m) && Q(m) && (a.ca && JSON.stringify(a.ca) !== JSON.stringify(m) && console.log("NicePageBuilder.gulp.generator templete list changed!"), e = a.ca = m);
+        !O(m) && Q(m) && (a.ca && JSON.stringify(a.ca) !== JSON.stringify(m) && console.log("NicePageBuilder.gulp.builder templete list changed!"), e = a.ca = m);
         break;
       case a.oa:
-        !O(m) && Q(m) && (a.da && JSON.stringify(a.da) !== JSON.stringify(m) && console.log("NicePageBuilder.gulp.generator templete list changed!"), l = a.da = m);
+        !O(m) && Q(m) && (a.da && JSON.stringify(a.da) !== JSON.stringify(m) && console.log("NicePageBuilder.gulp.builder templete list changed!"), l = a.da = m);
     }
     this.push(h);
     k();
@@ -1677,7 +1677,7 @@ Z.ELEMENT_END_TAG = 18;
 module.exports.gulp = function(a) {
   a = ub(a);
   qb && (a.html2json = zb);
-  rb && (a.generator = Ab);
+  rb && (a.builder = Ab);
   sb && (a.json2json = Db);
   tb && (a.json2html = Fb);
   return a;

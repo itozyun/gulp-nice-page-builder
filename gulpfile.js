@@ -83,7 +83,7 @@ gulp.task(
                 ).pipe(
                     NicePageBuilder.html2json( null, { trimWhitespaces: 'aggressive' } )
                 ).pipe(
-                    NicePageBuilder.generator()
+                    NicePageBuilder.builder()
                 ).pipe(
                     NicePageBuilder.json2html()
                 ).pipe(

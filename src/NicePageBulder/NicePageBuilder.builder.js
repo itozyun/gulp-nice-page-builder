@@ -1,5 +1,5 @@
-goog.provide( 'NicePageBuilder.generator' );
-goog.provide( '__NicePageBuilder_internal__.generator' );
+goog.provide( 'NicePageBuilder.builder' );
+goog.provide( '__NicePageBuilder_internal__.builder' );
 
 goog.require( 'htmljson.base' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
@@ -14,9 +14,6 @@ goog.require( 'NicePageBuilder.util.getNiceOptions' );
 goog.require( 'NicePageBuilder.util.mergeOptions' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
-/** @private */
-NicePageBuilder.generator = true;
-
 /**
  * @package
  * @this {NicePageBuilder.Context}
@@ -26,7 +23,7 @@ NicePageBuilder.generator = true;
  * @param {!Object.<NicePageBuilder.SourceRootRelativePath, !NicePageBuilder.Mixin> | null=} MIXIN_LIST 
  * @return {!HTMLJson | !HTMLJsonWithOptions}
  */
-__NicePageBuilder_internal__.generator = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
+__NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
     if( !NicePageBuilder.util.isHTMLJsonWithOptions( htmlJson ) ){
         return htmlJson;
     };
@@ -96,13 +93,11 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
 /**
  * @package
  * @this {NicePageBuilder.Context}
- * 
- * @param {*} _options
  */
-__NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
+__NicePageBuilder_internal__._builderGulpPlugin = function(){
     const context = this;
 
-    const pluginName  = 'NicePageBuilder.gulp.generator',
+    const pluginName  = 'NicePageBuilder.gulp.builder',
           PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
@@ -175,7 +170,7 @@ __NicePageBuilder_internal__._generatorGulpPlugin = function( _options ){
         function( callback ){
         // 書出し
             for( const filePath in PAGE_LIST ){
-                const htmlJson = __NicePageBuilder_internal__.generator.call( context, /** @type {!HTMLJson} */ (PAGE_LIST[ filePath ]), TEMPLETE_LIST, MIXIN_LIST );
+                const htmlJson = __NicePageBuilder_internal__.builder.call( context, /** @type {!HTMLJson} */ (PAGE_LIST[ filePath ]), TEMPLETE_LIST, MIXIN_LIST );
                 delete PAGE_LIST[ filePath ];
 
                 this.push(

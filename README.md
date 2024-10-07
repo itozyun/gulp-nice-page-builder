@@ -32,7 +32,7 @@
       * `<? ?>` と動的属性(`<a :href="">`) を置き換える
       * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
       * `onDocumentReady(rootVNode)` で VDOM を使った文書ツリーの変更ができる
-   3. nicePageBuilder.generator
+   3. nicePageBuilder.builder
       * 参照する Mixin とテンプレートのメタ情報をコンテンツページのメタ情報にコピーする
       * *.html.json をテンプレートに埋め込んで完全な HTML を作成する
    4. nicePageBuilder.json2html
@@ -66,7 +66,7 @@ gulp.task('html', function(){
               ).pipe(
                    nicePageBuilder.html2json(null, {trimWhitespaces: 'aggressive'})
               ).pipe(
-                   nicePageBuilder.generator()
+                   nicePageBuilder.builder()
               ).pipe(
                    nicePageBuilder.json2html()
               ).pipe(
@@ -153,7 +153,7 @@ gulp.task('html', function(){
 
 ### nice-page-builder のメタ情報付き html.json のドキュメント
 
-先頭にメタ情報 `{}` のある配列です．nicePageBuilder.generator() を通すとテンプレートが適用されます．
+先頭にメタ情報 `{}` のある配列です．nicePageBuilder.builder() を通すとテンプレートが適用されます．
 
 ~~~json
 [{"FILE_PATH":"/contact/index.html"}, 9, "<!DOCTYPE html>", ["HTML"]]

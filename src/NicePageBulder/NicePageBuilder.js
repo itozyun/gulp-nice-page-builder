@@ -27,7 +27,7 @@ var __NicePageBuilder_internal__ = {};
 /** @suppress {checkTypes} */
 __NicePageBuilder_internal__.html2json = false;
 /** @suppress {checkTypes} */
-__NicePageBuilder_internal__.generator = false;
+__NicePageBuilder_internal__.builder   = false;
 /** @suppress {checkTypes} */
 __NicePageBuilder_internal__.json2json = false;
 /** @suppress {checkTypes} */
@@ -59,7 +59,7 @@ NicePageBuilder.INDEXES = {
  *   path               : !TinyPath,
  *   _jsonList          : !Object.<NicePageBuilder.SourceRootRelativePath, !Object>,
  *   html2json          : *,
- *   generator          : *,
+ *   builder            : *,
  *   json2json          : *,
  *   json2html          : *
  * }}
@@ -134,8 +134,8 @@ NicePageBuilder.init = function( options ){
     if( __NicePageBuilder_internal__.html2json ){
         context.html2json = __NicePageBuilder_internal__.html2json;
     };
-    if( __NicePageBuilder_internal__.generator ){
-        context.generator = __NicePageBuilder_internal__.generator;
+    if( __NicePageBuilder_internal__.builder ){
+        context.builder = __NicePageBuilder_internal__.builder;
     };
     if( __NicePageBuilder_internal__.json2json ){
         context.json2json = __NicePageBuilder_internal__.json2json;
