@@ -1,7 +1,7 @@
 goog.provide( 'NicePageBuilder.json2html' );
 goog.provide( '__NicePageBuilder_internal__.json2html' );
 
-goog.require( 'json2html' );
+goog.require( 'json2html.main' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
@@ -12,9 +12,6 @@ goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
-
-/** @private */
-NicePageBuilder.json2html = true;
 
 /**
  * @package
@@ -43,7 +40,7 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
         opt_onError       = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );
     };
     
-    const htmlString = json2html( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
+    const htmlString = json2html.main( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
 
     return htmlString || '';
 };

@@ -1,7 +1,7 @@
 goog.provide( 'NicePageBuilder.json2json' );
 goog.provide( '__NicePageBuilder_internal__.json2json' );
 
-goog.require( 'json2json' );
+goog.require( 'json2json.main' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
@@ -16,9 +16,6 @@ goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
 goog.require( 'NicePageBuilder.util.mergeOptions' );
-
-/** @private */
-NicePageBuilder.json2json = true;
 
 /**
  * @package
@@ -52,7 +49,7 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
         opt_onError         = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );
     };
 
-    const isStaticWebPage = json2json( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
+    const isStaticWebPage = json2json.main( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
     if( originalPageOptions ){
         htmlJson.unshift( originalPageOptions );

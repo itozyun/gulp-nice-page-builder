@@ -1,7 +1,7 @@
 goog.provide( 'NicePageBuilder.html2json' );
 goog.provide( '__NicePageBuilder_internal__.html2json' );
 
-goog.require( 'html2json' );
+goog.require( 'html2json.main' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
@@ -16,9 +16,6 @@ goog.require( 'NicePageBuilder.util.getNiceOptions' );
 goog.require( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
-/** @private */
-NicePageBuilder.html2json = true;
-
 /**
  * @package
  * @this {NicePageBuilder.Context}
@@ -30,7 +27,7 @@ NicePageBuilder.html2json = true;
  * @return {!HTMLJson | !HTMLJsonWithOptions}
  */
 __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree, opt_onError, opt_options ){
-    const htmlJson = /** @type {!HTMLJson} */ (html2json( htmlString, allowInvalidTree, opt_onError, opt_options ));
+    const htmlJson = /** @type {!HTMLJson} */ (html2json.main( htmlString, allowInvalidTree, opt_onError, opt_options ));
 
     const result = NicePageBuilder.util.getJsonScriptElement( htmlJson );
 
