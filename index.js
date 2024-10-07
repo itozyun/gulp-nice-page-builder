@@ -61,7 +61,7 @@ function ea(a, b) {
   function h(C, D, x, F) {
     function u(R, J) {
       function B(jb) {
-        return f(jb).split('\\"').join('"').split("\\'").join("'");
+        return f(jb).split('\\"').join('"').split("\\'").join("'").split("&quot;").join('"').split("&apos;").join("'");
       }
       r[R] = !0 === J ? !0 : ba[R.toLowerCase()] ? k ? B(J || R) : !0 : B(J || "");
       ++z;
