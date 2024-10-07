@@ -167,15 +167,15 @@ NicePageBuilder._createContext = function( opt_options ){
     const path = new TinyPath( options[ 'urlOrigin' ] || '', srcRootPath );
 
     const allPagesPath       = options[ 'allPagesPath' ] &&
-                               path.toSrcRootRelativeFilePath( '/', options[ 'allPagesPath'     ]                         ),
+                               path.toSrcRootRelativeFilePath( '/', options[ 'allPagesPath'       ]                         ),
           allPageOptionsPath = options[ 'allPageOptionsPath' ] &&
-                               path.toSrcRootRelativeFilePath( '/', options[ 'allPageOptionsPath'     ]                       ),
-          allMixinsPath      = path.toSrcRootRelativeFilePath( '/', options[ 'allMixinsPath'    ] || 'all-mixins.json'    ),
-          allTempletesPath   = path.toSrcRootRelativeFilePath( '/', options[ 'allTempletesPath' ] || 'all-templetes.json' );
+                               path.toSrcRootRelativeFilePath( '/', options[ 'allPageOptionsPath' ]                         ),
+          allMixinsPath      = path.toSrcRootRelativeFilePath( '/', options[ 'allMixinsPath'      ] || 'all-mixins.json'    ),
+          allTempletesPath   = path.toSrcRootRelativeFilePath( '/', options[ 'allTempletesPath'   ] || 'all-templetes.json' );
 
     return {
         srcRootPath        : path.normalizeFilePath( srcRootPath ),
-        allPagesPath       : allPagesPath   || '',
+        allPagesPath       : allPagesPath       || '',
         allPageOptionsPath : allPageOptionsPath || '',
         allMixinsPath,
         allTempletesPath,
