@@ -34,8 +34,7 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
     if( result ){
         const scriptJSONNode = /** @type {!HTMLJson} */ (result[ 0 ]);
         const parentJSONNode = /** @type {!HTMLJson} */ (result[ 1 ]);
-
-        let myIndex = /** @type {number} */ (result[ 2 ]);
+        const myIndex        = /** @type {number}    */ (result[ 2 ]);
 
         parentJSONNode.splice( myIndex, 1 );
 
