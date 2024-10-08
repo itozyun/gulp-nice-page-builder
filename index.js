@@ -889,11 +889,13 @@ function $a(a, b) {
   d.pop();
   "" === d[0] && d.shift();
   for ("./" === b.substr(0, 2) && (b = b.substr(2)); "../" === b.substr(0, 3);) {
-    if (b = b.substr(3), --d.length, !d.length) {
+    if (!d.length) {
       throw "Failed _relativePathToRootRelativePath! base:" + a + " target:" + c;
     }
+    b = b.substr(3);
+    --d.length;
   }
-  return "/" + d.join("/") + "/" + b;
+  return (d.length ? "/" + d.join("/") : "") + "/" + b;
 }
 function ab(a) {
   a = a.split("index.html");
