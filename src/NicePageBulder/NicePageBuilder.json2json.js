@@ -79,12 +79,14 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
+    const CONTENT_FILE_LIST = [];
+
     return through.obj(
         /**
          * @this {stream.Writable}
          * @param {!Vinyl} file
          * @param {string} encoding
-         * @param {function()} callback
+         * @param {function(Error=, Vinyl=)} callback
          */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();
@@ -106,13 +108,8 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (JSON.parse( file.contents.toString( encoding ) ));
-
-                    __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
-
-
-                    file.contents = Buffer.from( JSON.stringify( htmlJson ) );
-                    break;
+                    CONTENT_FILE_LIST.push( file, encoding );
+                    return callback();
                 case context.keywordTempletes :
                     var json = JSON.parse( file.contents.toString( encoding ) );
 
@@ -136,10 +133,25 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
                     };
                     break;
             };
-            this.push( file );
-            callback();
+            callback( null, file );
         },
+        /**
+         * @this {stream.Writable}
+         * @param {function()} callback
+         */
         function( callback ){
+            while( CONTENT_FILE_LIST.length ){
+                const file = CONTENT_FILE_LIST.shift();
+                const encoding = CONTENT_FILE_LIST.shift();
+
+                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (JSON.parse( file.contents.toString( encoding ) ));
+
+                __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
+
+                file.contents = Buffer.from( JSON.stringify( htmlJson ) );
+
+                this.push( file );
+            };
             for( const filePath in context._jsonList ){
                 this.push(
                     new _Vinyl(

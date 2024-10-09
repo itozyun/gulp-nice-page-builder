@@ -115,7 +115,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
          * @this {stream.Writable}
          * @param {!Vinyl} file
          * @param {string} encoding
-         * @param {function()} callback
+         * @param {function(Error=, Vinyl=)} callback
          */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();
@@ -126,8 +126,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
             };
 
             if( file.extname !== '.json' ){
-                this.push( file );
-                return callback();
+                return callback( null, file );
             };
     
             const text = file.contents.toString( encoding );
@@ -159,8 +158,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                     };
                     break;
             };
-            this.push( file );
-            callback();
+            callback( null, file );
         },
         /**
          * @this {stream.Writable}

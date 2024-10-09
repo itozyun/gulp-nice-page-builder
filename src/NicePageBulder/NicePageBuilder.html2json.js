@@ -85,7 +85,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
          * @this {stream.Writable}
          * @param {!Vinyl} file
          * @param {string} encoding
-         * @param {function()} callback
+         * @param {function(Error=, Vinyl=)} callback
          */
         function( file, encoding, callback ){
             const filePath = context.path.normalizeFilePath( file.path );

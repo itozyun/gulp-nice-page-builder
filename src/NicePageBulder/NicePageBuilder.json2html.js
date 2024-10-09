@@ -62,12 +62,14 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
+    const CONTENT_FILE_LIST = [];
+
     return through.obj(
         /**
          * @this {stream.Writable}
          * @param {!Vinyl} file
          * @param {string} encoding
-         * @param {function()} callback
+         * @param {function(Error=, Vinyl=)} callback
          */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();
@@ -78,8 +80,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
             };
 
             if( file.extname !== '.json' ){
-                this.push( file );
-                return callback();
+                return callback( null, file );
             };
 
             const originalExtname = file.stem.split( '.' ).pop();
@@ -89,20 +90,32 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (JSON.parse( file.contents.toString( encoding ) ));
-                    const filePathElements = file.path.split( '.json' );
-
-                    filePathElements.pop();
-
-                    file.path     = filePathElements.join( '.json' );
-                    file.contents = Buffer.from( __NicePageBuilder_internal__.json2html.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ) );
-                    file.extname  = '.' + originalExtname;
-                    break;
+                    CONTENT_FILE_LIST.push( file, encoding, originalExtname );
+                    return callback();
             };
-            this.push( file );
-            callback();
+            callback( null, file );
         },
+        /**
+         * @this {stream.Writable}
+         * @param {function()} callback
+         */
         function( callback ){
+            while( CONTENT_FILE_LIST.length ){
+                const file = CONTENT_FILE_LIST.shift();
+                const encoding = CONTENT_FILE_LIST.shift();
+                const originalExtname = CONTENT_FILE_LIST.shift();
+
+                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (JSON.parse( file.contents.toString( encoding ) ));
+                const filePathElements = file.path.split( '.json' );
+
+                filePathElements.pop();
+
+                file.path     = filePathElements.join( '.json' );
+                file.contents = Buffer.from( __NicePageBuilder_internal__.json2html.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ) );
+                file.extname  = '.' + originalExtname;
+
+                this.push( file );
+            };
             for( const filePath in context._jsonList ){
                 this.push(
                     new _Vinyl(
