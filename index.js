@@ -1122,7 +1122,7 @@ function Z(a) {
 function yb(a) {
   a = a || {};
   const b = require("path").resolve(a.srcRootPath || "./") + "/", c = new Ya(a.urlOrigin || "", b), d = a.allPagesPath && db(c, a.allPagesPath), f = a.allPageOptionsPath && db(c, a.allPageOptionsPath), e = db(c, a.allMixinsPath || "all-mixins.json"), l = db(c, a.allTempletesPath || "all-templetes.json");
-  return {sa:Za(b), oa:d || "", na:f || "", ta:e, ua:l, ra:qb(l), qa:qb(e), da:a.mixins || null, ca:a.templetes || null, ma:a.allPageOptions || null, la:{}, ga:{}, path:c};
+  return {sa:Za(b), oa:d || "", na:f || "", ta:e, ua:l, ra:qb(l), qa:qb(e), da:a.mixins || null, ca:a.templetes || null, la:a.allPageOptions || null, ma:{}, ga:{}, path:c};
 }
 function zb(a, b) {
   if (b) {
@@ -1261,7 +1261,7 @@ function Bb(a, b) {
       w[p] = g;
     }
     c.oa && y(c.oa, F);
-    c.ma = w;
+    c.la = w;
     c.na && y(c.na, w);
     m();
   });
@@ -1499,10 +1499,14 @@ function Eb(a, b) {
   let l;
   if (jb(a)) {
     l = a.shift();
+    console.log(l);
     c = l.URL;
-    var h = this.la[c];
-    !h && (h = this.ma[c]) && (h = JSON.parse(JSON.stringify(h)), h.URL = c, nb(h, [], this.ca, this.da), h = JSON.parse(JSON.stringify(h)), this.la[c] = h);
-    h || (c = JSON.parse(JSON.stringify(l)), (kb(c) || mb(c)) && nb(c, [], this.ca, this.da, f));
+    console.log(this);
+    var h = this.ma[c];
+    !h && this.la && (h = this.la[c]) && (h = JSON.parse(JSON.stringify(h)), h.URL = c, nb(h, [], this.ca, this.da), h = JSON.parse(JSON.stringify(h)), this.ma[c] = h);
+    c = h || null;
+    console.log(999);
+    c || (c = JSON.parse(JSON.stringify(l)), (kb(c) || mb(c)) && nb(c, [], this.ca, this.da, f));
     b = zb(this, b);
     d = d ? d.bind(new Ab(this)) : void 0;
     f = f ? f.bind(new Ab(this)) : void 0;

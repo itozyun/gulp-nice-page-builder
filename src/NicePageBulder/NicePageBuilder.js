@@ -311,17 +311,19 @@ NicePageBuilder.getPageOptionsOf = function( context, rootRelativeURL ){
     var pageOptions = context._allPageOptions[ rootRelativeURL ];
 
     if( !pageOptions ){
-        pageOptions = context.allPageOptions[ rootRelativeURL ];
+        if( context.allPageOptions ){
+            pageOptions = context.allPageOptions[ rootRelativeURL ];
 
-        if( pageOptions ){
-            pageOptions = NicePageBuilder.deepCopy( pageOptions );
+            if( pageOptions ){
+                pageOptions = NicePageBuilder.deepCopy( pageOptions );
 
-            pageOptions.URL = rootRelativeURL;
-            NicePageBuilder.util.mergeOptions( context, pageOptions, [], context.templetes, context.mixins );
+                pageOptions.URL = rootRelativeURL;
+                NicePageBuilder.util.mergeOptions( context, pageOptions, [], context.templetes, context.mixins );
 
-            pageOptions = NicePageBuilder.deepCopy( pageOptions ); // コピーされたメタ情報(Array, Object)を改変から保護する
+                pageOptions = NicePageBuilder.deepCopy( pageOptions ); // コピーされたメタ情報(Array, Object)を改変から保護する
 
-            context._allPageOptions[ rootRelativeURL ] = pageOptions;
+                context._allPageOptions[ rootRelativeURL ] = pageOptions;
+            };
         };
     };
     return pageOptions || null;
