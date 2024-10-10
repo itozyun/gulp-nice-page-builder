@@ -490,7 +490,7 @@ function za(a, b) {
   switch(c) {
     case 1:
     case 17:
-      this.pa = f || null;
+      this.pa = f || null, d = Ja(d), this.xa = d[1], this.wa = d[2], d = d[0];
     case 18:
       this.ja = d;
       break;
@@ -516,7 +516,7 @@ function Pa(a) {
     case 1:
       b.length = 0;
     case 17:
-      b.push(a.ja);
+      b.push(Ka(a.ja, a.xa, a.wa));
       a = a.pa;
       va(a) && (b.push(a), a.style && Q(a.style) && (a.style = La(a.style)));
       break;
@@ -613,7 +613,7 @@ Na.prototype.remove = function() {
     throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e discard() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   if (this.aa) {
-    return this.wa = V = !0, null;
+    return this.ya = V = !0, null;
   }
   if (Oa(this)) {
     throw "getMyIndex() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
@@ -645,7 +645,7 @@ function Oa(a) {
   return 9 === a.$ || 11 === a.$;
 }
 function Ra(a) {
-  return a === Aa && !a.wa;
+  return a === Aa && !a.ya;
 }
 ;function Va(a, b, c, d) {
   function f(p, r, C, y) {
@@ -703,7 +703,8 @@ function Ra(a) {
         r.push([18, Sa(p)]);
         break;
       case 3:
-        (t = Ga("" + W(p), C, y, w, A, B)) && r.push(t);
+        t = Ga("" + W(p), C, y, w, A, B);
+        "" !== t && r.push(t);
         break;
       case 4:
         E && (t = W(p), r.push([4, ta(t)]));
