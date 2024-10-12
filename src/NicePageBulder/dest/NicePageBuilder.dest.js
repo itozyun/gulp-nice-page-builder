@@ -29,7 +29,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
           through = require( 'through2' );
 
     return through.obj(
-        null,
+        function( file, encoding, callback ){ callback() },
         /**
          * @this {stream.Writable}
          * @param {function()} callback
@@ -46,6 +46,8 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                 file.extname = '.json';
                 self.push( file );
             };
+
+            const self = this;
 
             // TODO dest
             if( destTargets & DEST_TARGET.ALL_MIXINS ){
