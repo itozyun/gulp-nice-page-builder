@@ -31,7 +31,7 @@ __NicePageBuilder_internal__.json2htmlStream = function( opt_onInstruction, opt_
     parser._onTokenForHTMLJson = parser.onToken;
     parser.onToken = onTokenForMeta;
     parser._context = this;
-    parser._readingMetaPhase = 0;
+    parser._metadataPhase = 0;
 
     return stream;
 };
@@ -51,22 +51,21 @@ function onTokenForMeta( token, value ){
 
     const self = this;
 
-    // console.log( this._readingMetaPhase, value, this.currentValue, this.jsonStack.length )
+    // console.log( this._metadataPhase, value, this.currentValue, this.jsonStack.length )
 
-    switch( this._readingMetaPhase ){
+    switch( this._metadataPhase ){
         case 0 :
             if( token === Parser.C.LEFT_BRACKET ){ // [
-                this._readingMetaPhase = 1;
+                this._metadataPhase = 1;
                 this._onTokenForHTMLJson( token, value );
-            } else {
-                // error
+            } else if( NicePageBuilder.DEFINE.DEBUG ){
                 this._onError( 'Not html.json format!' );
                 this._stream.emit( 'error', 'Not html.json format!' );
             };
             break;
         case 1 :
             if( token === Parser.C.LEFT_BRACE ){ // {
-                this._readingMetaPhase = 2;
+                this._metadataPhase = 2;
                 this._createValue( token, value );
             } else {
                 startHTMLJson();
@@ -76,7 +75,7 @@ function onTokenForMeta( token, value ){
             break;
         case 2 :
             if( token === Parser.C.RIGHT_BRACE && this.jsonStack.length === 1 ){ // }
-                this._readingMetaPhase = 3;
+                this._metadataPhase = 3;
                 const pageOptions = /** @type {!NicePageBuilder.NicePageOptions} */ (this.currentValue);
                 this.currentValue = null;
 
@@ -85,20 +84,19 @@ function onTokenForMeta( token, value ){
                         throw this.path.urlToFilePath( pageOptions.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
                     };
                 };
-                /** @const {InstructionHandler | void}          */ this._onInstruction = NicePageBuilder.bindNicePageContextToInstructuionHandler( this._context, pageOptions, this._onInstruction, true );
-                /** @const {EnterNodeHandler | void}            */ this._onEnterNode   = NicePageBuilder.bindNicePageContextToEnterNodeHandler( this._context, pageOptions, this._onEnterNode, true );
-                /** @const {function((string | !Error)) | void} */ this._onError       = NicePageBuilder.bindNicePageContextToErrorHandler( this._context, pageOptions, this._onError );
+                /** @suppress {constantProperty} @const {InstructionHandler | void} */ this._onInstruction = NicePageBuilder.bindNicePageContextToInstructuionHandler( this._context, pageOptions, this._onInstruction, true );
+                /** @suppress {constantProperty} @const {EnterNodeHandler | void}   */ this._onEnterNode   = NicePageBuilder.bindNicePageContextToEnterNodeHandler( this._context, pageOptions, this._onEnterNode, true );
+                /**                     @const {function((string | !Error)) | void} */ this._onError       = NicePageBuilder.bindNicePageContextToErrorHandler( this._context, pageOptions, this._onError );
             };
             this._createValue( token, value );
             break;
         case 3 :
             if( token === Parser.C.COMMA ){ // ,
                 startHTMLJson();
-            } else if( token === Parser.C.RIGHT_BRACKET ){ // ]
-                startHTMLJson();
-                this.onToken( token, value );
-            } else {
-                // error
+            // } else if( token === Parser.C.RIGHT_BRACKET ){ // ]  // empty aray
+            //    startHTMLJson();
+            //    this.onToken( token, value );
+            } else if( NicePageBuilder.DEFINE.DEBUG ){
                 this._onError( 'Not html.json format!' );
                 this._stream.emit( 'error', 'Not html.json format!' );
             };

@@ -38,7 +38,6 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
             function writeFile( filePath, json ){
                 const file = new _Vinyl(
                     {
-                        base     : '/',
                         path     : filePath,
                         contents : Buffer.from( JSON.stringify( json ) )
                     }
@@ -67,7 +66,6 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                     this.push(
                         new _Vinyl(
                             {
-                                base     : '/',
                                 path     : filePath,
                                 contents : Buffer.from( JSON.stringify( context._jsonList[ filePath ] ) )
                             }

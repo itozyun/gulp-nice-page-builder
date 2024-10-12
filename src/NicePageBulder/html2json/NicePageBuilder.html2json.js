@@ -293,7 +293,6 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             function writeFile( filePath, json ){
                 const file = new _Vinyl(
                     {
-                        base     : '/',
                         path     : filePath,
                         contents : Buffer.from( JSON.stringify( json ) )
                     }

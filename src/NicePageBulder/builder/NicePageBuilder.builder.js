@@ -172,7 +172,6 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                 this.push(
                     new _Vinyl(
                         {
-                            base     : '/',
                             path     : context.path.urlToFilePath( rootRelativeURL ) + '.json',
                             contents : Buffer.from( JSON.stringify( htmlJson ) )
                         }
