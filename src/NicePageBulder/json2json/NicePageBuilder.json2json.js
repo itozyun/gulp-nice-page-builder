@@ -18,7 +18,6 @@ goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
 goog.require( 'NicePageBuilder.util.mergeOptions' );
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  *
  * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson
@@ -36,7 +35,7 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
         const context = this;
 
         originalPageOptions = htmlJson.shift();
-        pageOptions = NicePageBuilder.getPageOptionsOf( context, originalPageOptions.URL );
+        pageOptions = NicePageBuilder.getPageOptionsOf( context, originalPageOptions.URL, false );
 
         if( !pageOptions ){
             pageOptions = NicePageBuilder.deepCopy( originalPageOptions );
@@ -62,7 +61,6 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
 };
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  * 
  * @param {!InstructionHandler=} opt_onInstruction

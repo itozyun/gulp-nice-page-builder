@@ -14,7 +14,6 @@ goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  * 
  * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson 破壊
@@ -46,7 +45,6 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
 };
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  * 
  * @param {!InstructionHandler=} opt_onInstruction

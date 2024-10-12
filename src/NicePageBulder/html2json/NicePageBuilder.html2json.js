@@ -17,7 +17,6 @@ goog.require( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  *
  * @param {string} htmlString
@@ -57,7 +56,6 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
 };
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  * 
  * @param {!function((string | !Error))=} opt_onError
@@ -136,8 +134,8 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             const PAGE_LIST = PAGES_OR_TEMPLETES;
 
         // 使用している TEMPLETE と MIXIN のチェック
-            for( let pageOrTempletePath in PAGES_OR_TEMPLETES ){
-                const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempletePath ];
+            for( let pageOrTempleteRootRelativeURL in PAGES_OR_TEMPLETES ){
+                const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ];
 
                 let pageOptions = NicePageBuilder.util.getOptions( pageOrTemplete );
 
@@ -145,105 +143,118 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                     continue;
                 };
 
-                checkMixins( pageOrTempletePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
-                checkTemplete( pageOrTempletePath, pageOptions.TEMPLETE, pageOptions );
+                checkMixins( pageOrTempleteRootRelativeURL, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
+                checkTemplete( pageOrTempleteRootRelativeURL, pageOptions.TEMPLETE, pageOptions );
 
-                if( PAGES_OR_TEMPLETES[ pageOrTempletePath ] ){
+                if( PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ] ){
                     pageOrTemplete.push( true ); // isPage
                 };
             };
 
             /**
-             * @param {string} pageOrTempletePath
+             * @param {string} baseURL root relative url
+             * @param {string} url 
+             * @return {string} */
+            function getShortestURL( baseURL, url ){
+                var relativeURL     = context.path.toRelativeURL( baseURL, url ),
+                    rootRelativeURL = context.path.toRootRelativeURL( baseURL, url );
+
+                return relativeURL.length < rootRelativeURL.length ? relativeURL : rootRelativeURL;
+            };
+
+            /**
+             * @param {string} pageOrTempleteRootRelativeURL
              * @param {!Array.<NicePageBuilder.RootRelativeURL> | void} mixinPathList
              * @param {boolean} skipTemplete
              */
-            function checkMixins( pageOrTempletePath, mixinPathList, skipTemplete ){
+            function checkMixins( pageOrTempleteRootRelativeURL, mixinPathList, skipTemplete ){
                 if( mixinPathList ){
                     for( let i = 0, l = mixinPathList.length; i < l; ++i ){
-                        const mixinPath = mixinPathList[ i ];
-                        const path      = context.path.toRootRelativeURL( pageOrTempletePath, mixinPath );
-                        const mixin     = MIXIN_LIST[ path ];
+                        const mixinRootRelativeURL = context.path.toRootRelativeURL( pageOrTempleteRootRelativeURL, mixinPathList[ i ] );
+                        const mixin                = MIXIN_LIST[ mixinRootRelativeURL ];
                         
-                        mixinPathList[ i ] = path; // toRootRelativeURL
+                        mixinPathList[ i ] = getShortestURL( pageOrTempleteRootRelativeURL, mixinRootRelativeURL );
                         if( mixin ){
                             const mixinOptions = /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]);
 
                             if( !skipTemplete ){
-                                checkTemplete( path, mixinOptions.TEMPLETE, mixinOptions );
+                                checkTemplete( mixinRootRelativeURL, mixinOptions.TEMPLETE, mixinOptions );
                             };
 
                             if( mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
                                 mixin.push( true ); // used
                                 if( mixinOptions.MIXINS ){
                                     if( NicePageBuilder.DEFINE.DEBUG ){
-                                        console.log( 'Mixin:"' + path + '" cannot have MIXINS property!' );
+                                        console.log( 'Mixin:"' + mixinRootRelativeURL + '" cannot have MIXINS property!' );
                                     };
                                     delete mixinOptions.MIXINS;
                                 };
                             };
                         } else if( NicePageBuilder.DEFINE.DEBUG ){
-                            throw 'Mixin:"' + path + '" required by "' + pageOrTempletePath + '" does not exist!';
+                            throw 'Mixin:"' + mixinRootRelativeURL + '" required by "' + pageOrTempleteRootRelativeURL + '" does not exist!';
                         };
                     };
                 };
             };
 
             /**
-             * @param {string} basePath
+             * @param {string} rootRelativeURL
              * @param {string | void} templetePath
              * @param {!NicePageBuilder.NicePageOptions} pageOptions
              */
-            function checkTemplete( basePath, templetePath, pageOptions ){
+            function checkTemplete( rootRelativeURL, templetePath, pageOptions ){
                 while( templetePath ){
-                    const path     = context.path.toRootRelativeURL( basePath, templetePath );
-                    const templete = PAGES_OR_TEMPLETES[ path ];
+                    const templeteRootRelativeURL = context.path.toRootRelativeURL( rootRelativeURL, templetePath );
+                    const templete                = PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
 
                     if( templete ){
-                        delete PAGES_OR_TEMPLETES[ path ];
-                        TEMPLETE_LIST[ path ] = templete;
-                        pageOptions.TEMPLETE = basePath = path; // toRootRelativeURL
+                        pageOptions.TEMPLETE = getShortestURL( rootRelativeURL, templeteRootRelativeURL );
+                        rootRelativeURL = templeteRootRelativeURL;
+
+                        delete PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
+                        TEMPLETE_LIST[ templeteRootRelativeURL ] = templete;
+
                         /** @suppress {checkTypes} */
                         pageOptions = NicePageBuilder.util.getOptions( templete );
                         if( pageOptions ){
-                            checkMixins( basePath, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
+                            checkMixins( rootRelativeURL, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
                             /** @suppress {checkTypes} */
                             templetePath = pageOptions.TEMPLETE;
                         } else {
                             break;
                         };
-                    } else if( TEMPLETE_LIST[ path ] ){
-                        pageOptions.TEMPLETE = path;
+                    } else if( TEMPLETE_LIST[ templeteRootRelativeURL ] ){
+                        pageOptions.TEMPLETE = getShortestURL( rootRelativeURL, templeteRootRelativeURL );
                         break;
                     } else if( NicePageBuilder.DEFINE.DEBUG ){
-                        throw 'Templete:"' + path + '" required by "' + basePath + '" does not exist!';
+                        throw 'Templete:"' + templeteRootRelativeURL + '" required by "' + rootRelativeURL + '" does not exist!';
                     };
                 };
             };
 
         // 使用していない TEMPLETE と MIXIN を削除
-            for( const mixinPath in MIXIN_LIST ){
-                const mixin = MIXIN_LIST[ mixinPath ];
+            for( const mixinRootRelativeURL in MIXIN_LIST ){
+                const mixin = MIXIN_LIST[ mixinRootRelativeURL ];
                 if( mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
                     if( NicePageBuilder.DEFINE.DEBUG ){
-                        console.log( 'Unused mixin found! ' + mixinPath );
+                        console.log( 'Unused mixin found! ' + mixinRootRelativeURL );
                     };
-                    delete MIXIN_LIST[ mixinPath ];
+                    delete MIXIN_LIST[ mixinRootRelativeURL ];
                 } else {
                     mixin.pop(); // delete used flag
                 };
             };
 
-            for( const pageOrTempletePath in PAGES_OR_TEMPLETES ){
-                const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempletePath ];
+            for( const pageOrTempleteRootRelativeURL in PAGES_OR_TEMPLETES ){
+                const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ];
                 const htmlJson       = NicePageBuilder.util.getHTMLJson( pageOrTemplete );
 
                 if( pageOrTemplete.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){ // NicePageBuilder.NicePageOrTemplete[4] use templete == false
                     if( NicePageBuilder.util.getSLotElement( htmlJson, false ) ){
                         if( NicePageBuilder.DEFINE.DEBUG ){
-                            console.log( 'Unused templete found! ' + pageOrTempletePath );
+                            console.log( 'Unused templete found! ' + pageOrTempleteRootRelativeURL );
                         };
-                        delete PAGES_OR_TEMPLETES[ pageOrTempletePath ];
+                        delete PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ];
                     };
                 };
             };
@@ -253,19 +264,20 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             const ALL_PAGES   = {};
             const ALL_PAGE_OPTIONS = {};
 
+            // TODO .gulp.export
             writeFile( context.allMixinsPath, MIXIN_LIST );
             writeFile( context.allTempletesPath, TEMPLETE_LIST );
 
-            for( const rootRelativeURL in PAGE_LIST ){
-                const nicePage = PAGE_LIST[ rootRelativeURL ];
-                const filePath = context.path.urlToFilePath( rootRelativeURL );
-                delete PAGE_LIST[ rootRelativeURL ];
+            for( const pageRootRelativeURL in PAGE_LIST ){
+                const nicePage = PAGE_LIST[ pageRootRelativeURL ];
+                const filePath = context.path.urlToFilePath( pageRootRelativeURL );
+                delete PAGE_LIST[ pageRootRelativeURL ];
 
                 const htmlJson = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];
 
                 let pageOptions = htmlJson[ 0 ];
                 pageOptions = !m_isArray( pageOptions ) && m_isObject( pageOptions ) ? pageOptions : {};
-                pageOptions.URL         = rootRelativeURL;
+                pageOptions.URL         = pageRootRelativeURL;
                 pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.CREATED_AT ]);
                 pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.UPDATED_AT ]);
 
@@ -276,16 +288,18 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 writeFile( filePath + '.json', htmlJson );
 
                 delete pageOptions.URL;
-                ALL_PAGES       [ rootRelativeURL ] = htmlJson;
-                ALL_PAGE_OPTIONS[ rootRelativeURL ] = pageOptions;
+                ALL_PAGES       [ pageRootRelativeURL ] = htmlJson;
+                ALL_PAGE_OPTIONS[ pageRootRelativeURL ] = pageOptions;
             };
 
+            // TODO .gulp.export
             if( context.allPagesPath ){
                 writeFile( context.allPagesPath, ALL_PAGES );
             };
 
             context.allPageOptions = ALL_PAGE_OPTIONS;
 
+            // TODO .gulp.export
             if( context.allPageOptionsPath ){
                 writeFile( context.allPageOptionsPath, ALL_PAGE_OPTIONS );
             };

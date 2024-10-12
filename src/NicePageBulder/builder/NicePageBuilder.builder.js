@@ -14,7 +14,6 @@ goog.require( 'NicePageBuilder.util.mergeOptions' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  * 
  * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson
@@ -28,7 +27,7 @@ __NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_
     };
 
     const pageOptions   = htmlJson[ 0 ];
-    const templeteStack = [];
+    const templeteStack = []; // Array.<NicePageBuilder.RootRelativeURL>
 
     NicePageBuilder.util.mergeOptions( this, pageOptions, templeteStack, TEMPLETE_LIST || this.templetes, MIXIN_LIST || this.mixins );
 
@@ -90,7 +89,6 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
 };
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  */
 __NicePageBuilder_internal__._builderGulpPlugin = function(){

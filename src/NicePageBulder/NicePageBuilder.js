@@ -1,4 +1,3 @@
-goog.provide( 'NicePageBuilder.init' );
 goog.provide( '__NicePageBuilder_internal__' );
 goog.provide( 'NicePageBuilder.INDEXES' );
 goog.provide( 'NicePageBuilder.Context' );
@@ -20,9 +19,6 @@ goog.require( 'VNode' );
 goog.require( 'NicePageBuilder.util.jsonFilePathToOriginalExtname' );
 goog.require( 'NicePageBuilder.util.mergeOptions' );
 
-/**
- * @package
- */
 var __NicePageBuilder_internal__ = {};
 
 /** @suppress {checkTypes} */
@@ -128,34 +124,6 @@ NicePageBuilder.NicePageOrTemplete;
  * @typedef {!Array.<(!NicePageBuilder.NicePageOptions | number | boolean)>}
  */
 NicePageBuilder.Mixin;
-
-/**
- * @param {Object=} options
- * @return {!NicePageBuilder.Context}
- */
-NicePageBuilder.init = function( options ){
-    const context = NicePageBuilder._createContext( options );
-
-    if( __NicePageBuilder_internal__.html2json ){
-        context.html2json = __NicePageBuilder_internal__.html2json;
-    };
-    if( __NicePageBuilder_internal__.builder ){
-        context.builder = __NicePageBuilder_internal__.builder;
-    };
-    if( __NicePageBuilder_internal__.json2json ){
-        context.json2json = __NicePageBuilder_internal__.json2json;
-    };
-    if( __NicePageBuilder_internal__.json2html ){
-        context.json2html = __NicePageBuilder_internal__.json2html;
-    };
-    if( __NicePageBuilder_internal__.json2htmlStream ){
-        if( !context.json2html ){
-            context.json2html = {};
-        };
-        context.json2html.stream = __NicePageBuilder_internal__.json2htmlStream.bind( context );
-    };
-    return context;
-};
 
 /**
  * @param {!NicePageBuilder.NicePageOptions} nicePageOptions
@@ -316,9 +284,14 @@ NicePageBuilder.bindNicePageContextToErrorHandler = function( context, pageOptio
 /**
  * @param {!NicePageBuilder.Context} context
  * @param {string} rootRelativeURL
+ * @param {boolean} rawOptions
  * @return {NicePageBuilder.NicePageOptions | null} 
  */
-NicePageBuilder.getPageOptionsOf = function( context, rootRelativeURL ){
+NicePageBuilder.getPageOptionsOf = function( context, rootRelativeURL, rawOptions ){
+    if( rawOptions ){
+        return context.allPageOptions && context.allPageOptions[ rootRelativeURL ] || null;
+    };
+
     var pageOptions = context._allPageOptions[ rootRelativeURL ];
 
     if( !pageOptions ){
@@ -350,23 +323,38 @@ function NicePageContext( context, rootRelativeURL ){
     this._jsonList = context._jsonList;
     this._baseURL  = rootRelativeURL;
 
-/**
- * @param {string} url 
- * @return {NicePageBuilder.NicePageOptions | null} 
- */
+    /**
+     * @param {string} url 
+     * @return {NicePageBuilder.NicePageOptions | null}
+     */
     this.getOptionsOf = function( url ){
         var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
 
-        return NicePageBuilder.getPageOptionsOf( context, rootRelativeURL )
+        return NicePageBuilder.getPageOptionsOf( context, rootRelativeURL, false )
     };
 
-    // this.getOptions = NicePageContext_getOptions
+    /**
+     * @param {string} url 
+     * @return {NicePageBuilder.NicePageOptions | null}
+     */
+    this.getRawOptionsOf = function( url ){
+        var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
+
+        return NicePageBuilder.getPageOptionsOf( context, rootRelativeURL, true )
+    };
 };
 
 /**
  * @return {NicePageBuilder.NicePageOptions | null} */
 NicePageContext.prototype.getOptions = function(){
     return this.getOptionsOf( this._baseURL );
+};
+
+
+/**
+ * @return {NicePageBuilder.NicePageOptions | null} */
+NicePageContext.prototype.getRawOptions = function(){
+    return this.getRawOptionsOf( this._baseURL );
 };
 
 /**
@@ -396,4 +384,14 @@ NicePageContext.prototype.toRootRelativeURL = function( url ){
  * @return {string} */
 NicePageContext.prototype.toAbsoluteURL = function( url ){
     return this.path.rootRelativeURLToAbsoluteURL( this.toRootRelativeURL( url ) );
+};
+
+/**
+ * @param {string} url 
+ * @return {string} */
+NicePageContext.prototype.getShortestURL = function( url ){
+    var relativeURL = this.toRelativeURL( url ),
+        rootRelativeURL = this.toRootRelativeURL( url );
+
+    return relativeURL.length < rootRelativeURL.length ? relativeURL : rootRelativeURL;
 };

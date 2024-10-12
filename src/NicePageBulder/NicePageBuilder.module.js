@@ -1,19 +1,47 @@
 goog.provide( 'NicePageBuilder.module' );
 
-goog.require( 'NicePageBuilder.init' );
 goog.require( 'htmljson.NODE_TYPE' );
+goog.require( 'NicePageBuilder._createContext' );
+goog.require( '__NicePageBuilder_internal__' );
+goog.requireType( 'NicePageBuilder.Context' );
 
-module.exports = NicePageBuilder.init;
+/**
+ * @param {Object=} options
+ * @return {!NicePageBuilder.Context}
+ */
+module.exports = function( options ){
+    const context = NicePageBuilder._createContext( options );
 
-NicePageBuilder.init.DOCUMENT_NODE                 = htmljson.NODE_TYPE.DOCUMENT_NODE;
-NicePageBuilder.init.DOCUMENT_FRAGMENT_NODE        = htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
-NicePageBuilder.init.ELEMENT_NODE                  = htmljson.NODE_TYPE.ELEMENT_NODE;
-NicePageBuilder.init.TEXT_NODE                     = htmljson.NODE_TYPE.TEXT_NODE;
-NicePageBuilder.init.CDATA_SECTION                 = htmljson.NODE_TYPE.CDATA_SECTION;
-NicePageBuilder.init.PROCESSING_INSTRUCTION        = htmljson.NODE_TYPE.PROCESSING_INSTRUCTION;
-NicePageBuilder.init.COMMENT_NODE                  = htmljson.NODE_TYPE.COMMENT_NODE;
-NicePageBuilder.init.COND_CMT_HIDE_LOWER           = htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER;
-NicePageBuilder.init.COND_CMT_SHOW_LOWER_START     = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START;
-NicePageBuilder.init.NETSCAPE4_COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER;
-NicePageBuilder.init.ELEMENT_START_TAG             = htmljson.NODE_TYPE.ELEMENT_START_TAG;
-NicePageBuilder.init.ELEMENT_END_TAG               = htmljson.NODE_TYPE.ELEMENT_END_TAG;
+    if( __NicePageBuilder_internal__.html2json ){
+        context.html2json = __NicePageBuilder_internal__.html2json;
+    };
+    if( __NicePageBuilder_internal__.builder ){
+        context.builder = __NicePageBuilder_internal__.builder;
+    };
+    if( __NicePageBuilder_internal__.json2json ){
+        context.json2json = __NicePageBuilder_internal__.json2json;
+    };
+    if( __NicePageBuilder_internal__.json2html ){
+        context.json2html = __NicePageBuilder_internal__.json2html;
+    };
+    if( __NicePageBuilder_internal__.json2htmlStream ){
+        if( !context.json2html ){
+            context.json2html = {};
+        };
+        context.json2html.stream = __NicePageBuilder_internal__.json2htmlStream.bind( context );
+    };
+    return context;
+};
+
+module.exports.DOCUMENT_NODE                 = htmljson.NODE_TYPE.DOCUMENT_NODE;
+module.exports.DOCUMENT_FRAGMENT_NODE        = htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+module.exports.ELEMENT_NODE                  = htmljson.NODE_TYPE.ELEMENT_NODE;
+module.exports.TEXT_NODE                     = htmljson.NODE_TYPE.TEXT_NODE;
+module.exports.CDATA_SECTION                 = htmljson.NODE_TYPE.CDATA_SECTION;
+module.exports.PROCESSING_INSTRUCTION        = htmljson.NODE_TYPE.PROCESSING_INSTRUCTION;
+module.exports.COMMENT_NODE                  = htmljson.NODE_TYPE.COMMENT_NODE;
+module.exports.COND_CMT_HIDE_LOWER           = htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER;
+module.exports.COND_CMT_SHOW_LOWER_START     = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START;
+module.exports.NETSCAPE4_COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER;
+module.exports.ELEMENT_START_TAG             = htmljson.NODE_TYPE.ELEMENT_START_TAG;
+module.exports.ELEMENT_END_TAG               = htmljson.NODE_TYPE.ELEMENT_END_TAG;

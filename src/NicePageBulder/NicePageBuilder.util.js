@@ -116,21 +116,26 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
         };
     };
 
-    let templetePath = pageOptions.TEMPLETE;
     let updatedAt = pageOptions.MODIFIED_AT;
+    let templeteRootRelativePath;
 
-    mergeMinxins( pageOptions.MIXINS );
-
-    if( templetePath ){
-        templeteStack[ 0 ] = templetePath;
+    if( pageOptions.TEMPLETE ){
+        templeteRootRelativePath = context.path.toRootRelativeURL( pageOptions.URL, pageOptions.TEMPLETE );
     };
 
-    while( templetePath ){
-        const templete = TEMPLETE_LIST[ templetePath ];
+    mergeMinxins( pageOptions.URL, pageOptions.MIXINS );
+
+    if( templeteRootRelativePath ){
+        templeteStack[ 0 ] = templeteRootRelativePath;
+    };
+
+    while( templeteRootRelativePath ){
+        const tmpTempleteRootRelativePath = templeteRootRelativePath;
+        const templete                    = TEMPLETE_LIST[ templeteRootRelativePath ];
 
         if( NicePageBuilder.DEFINE.DEBUG ){
             if( !templete ){
-                throw 'Templete: ' + templetePath + ' required by ' + context.path.urlToFilePath( pageOptions.URL ) + ' not found!';
+                throw 'Templete: ' + templeteRootRelativePath + ' required by ' + context.path.urlToFilePath( pageOptions.URL ) + ' not found!';
             };
         };
 
@@ -139,51 +144,54 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
         if( templeteOptions ){
             if( NicePageBuilder.util.hasMIXINSProperty( templeteOptions ) && !MIXIN_LIST ){
                 if( opt_onError ){
-                    return opt_onError( templetePath + ' has MIXINS property, and no mixins found!' );
+                    return opt_onError( templeteRootRelativePath + ' has MIXINS property, and no mixins found!' );
                 } else if( NicePageBuilder.DEFINE.DEBUG ){
-                    throw templetePath + ' has MIXINS property, and no mixins found!';
+                    throw templeteRootRelativePath + ' has MIXINS property, and no mixins found!';
                 };
             };
-            templetePath = '';
-            mix( templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
-            mergeMinxins( templeteOptions.MIXINS );
-            if( templetePath ){
-                templeteStack.push( templetePath );
+            templeteRootRelativePath = '';
+            mix( tmpTempleteRootRelativePath, templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
+            mergeMinxins( tmpTempleteRootRelativePath, templeteOptions.MIXINS );
+            if( templeteRootRelativePath ){
+                templeteStack.push( templeteRootRelativePath );
             };
         } else {
-            templetePath = '';
+            templeteRootRelativePath = '';
         };
     };
 
     pageOptions.UPDATED_AT = updatedAt;
 
     /**
+     * @param {string} rootRelativePath
      * @param {!Array.<NicePageBuilder.RootRelativeURL> | void} mixinPathList
      */
-    function mergeMinxins( mixinPathList ){
+    function mergeMinxins( rootRelativePath, mixinPathList ){
         if( mixinPathList ){
             for( let i = 0; i < mixinPathList.length; ++i ){
-                const mixin = MIXIN_LIST[ mixinPathList[ i ] ];
+                const mixinRootRelativeURL = context.path.toRootRelativeURL( rootRelativePath, mixinPathList[ i ] );
+                const mixin                = MIXIN_LIST[ mixinRootRelativeURL ];
 
-                mix( /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
+                mix( mixinRootRelativeURL, /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
             };
         };
     };
 
     /**
+     * @param {string} rootRelativePath
      * @param {!NicePageBuilder.NicePageOptions} altPageOptions 
      * @param {number} altUpdatedAt
-     * @param {boolean} isTemplete
+     * @param {boolean} isMixin
      */
-    function mix( altPageOptions, altUpdatedAt, isTemplete ){
+    function mix( rootRelativePath, altPageOptions, altUpdatedAt, isMixin ){
         let changed = 0;
 
         for( const k in altPageOptions ){
-            if( NicePageBuilder.DEFINE.DEBUG && !isTemplete && k === 'MIXINS' ){
+            if( NicePageBuilder.DEFINE.DEBUG && isMixin && k === 'MIXINS' ){
                 throw 'Mixin has MIXINS property!';
             } else if( k === 'TEMPLETE' ){
-                templetePath = templetePath || altPageOptions[ k ]; // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
-                if( templetePath === altPageOptions[ k ] ){
+                if( !templeteRootRelativePath ){
+                    templeteRootRelativePath = context.path.toRootRelativeURL( rootRelativePath, altPageOptions[ k ] ); // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
                     ++changed;
                 };
             } else if( pageOptions[ k ] === undefined ){
@@ -191,7 +199,7 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
                 ++changed;
             };
         };
-        if( changed || isTemplete ){
+        if( changed || !isMixin ){
             if( updatedAt < altUpdatedAt ){
                 updatedAt = altUpdatedAt;
             };

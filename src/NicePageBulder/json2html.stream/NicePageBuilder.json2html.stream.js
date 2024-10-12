@@ -15,7 +15,6 @@ goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
 
 /**
- * @package
  * @this {NicePageBuilder.Context}
  * 
  * @param {!InstructionHandler=} opt_onInstruction
