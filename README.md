@@ -53,6 +53,7 @@ git submodule foreach git pull origin master
 ~~~sh
 gulp dist
 gulp tutorial
+npm run test
 ~~~
 
 ## gulp plugin の使用例
