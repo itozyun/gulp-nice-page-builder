@@ -33,6 +33,8 @@ __NicePageBuilder_internal__.builder   = false;
 __NicePageBuilder_internal__.json2json = false;
 /** @suppress {checkTypes} */
 __NicePageBuilder_internal__.json2html = false;
+/** @suppress {checkTypes} */
+__NicePageBuilder_internal__.json2htmlStream = false;
 
 /**
  * @enum {number}
@@ -94,7 +96,6 @@ NicePageBuilder.RootRelativeURL;
  * @typedef {{
  *   TEMPLETE    : (NicePageBuilder.RootRelativeURL | void),
  *   MIXINS      : (!Array.<NicePageBuilder.RootRelativeURL> | void),
- *   FILE_PATH   : NicePageBuilder.SourceRootRelativeFilePath,
  *   URL         : NicePageBuilder.RootRelativeURL,
  *   CREATED_AT  : number,
  *   MODIFIED_AT : number,
@@ -146,6 +147,12 @@ NicePageBuilder.init = function( options ){
     };
     if( __NicePageBuilder_internal__.json2html ){
         context.json2html = __NicePageBuilder_internal__.json2html;
+    };
+    if( __NicePageBuilder_internal__.json2htmlStream ){
+        if( !context.json2html ){
+            context.json2html = {};
+        };
+        context.json2html.stream = __NicePageBuilder_internal__.json2htmlStream.bind( context );
     };
     return context;
 };
@@ -202,25 +209,29 @@ NicePageBuilder._createContext = function( opt_options ){
  * @return {!Function}
  */
 NicePageBuilder._createHandler = function( isStreamContext, pageContext, originalHandler ){
-    /**
-     * @param {*} thisContext
-     * @param {!NicePageContext} pageContext
-     * @return {*}
-     */
-    function merge( thisContext, pageContext ){
-        thisContext = thisContext || {};
-
-        for( var key in pageContext ){
-            thisContext[ key ] = pageContext[ key ];
-        };
-        return thisContext;
-    };
-
     if( !isStreamContext ){
         return originalHandler.bind( pageContext );
     };
     return function(){
-        return originalHandler.apply( merge( this, pageContext ), arguments );
+        var stream = this || {}, result;
+
+        if( stream.pause && stream.resume ){
+            pageContext.pause = function(){
+                stream.pause();
+                pageContext.paused = stream.paused;
+            };
+            pageContext.resume = function(){
+                stream.resume();
+                pageContext.paused = stream.paused;
+            };
+        };
+
+        result = originalHandler.apply( pageContext, arguments );
+
+        if( stream.pause && stream.resume ){
+            pageContext.pause = null;
+        };
+        return result;
     };
 };
 
@@ -291,8 +302,8 @@ NicePageBuilder.bindNicePageContextToDocumentReadyHandler = function( context, p
 /**
  * @param {!NicePageBuilder.Context} context
  * @param {!NicePageBuilder.NicePageOptions} pageOptions
- * @param {!function((string | !Error)=) | void} onError
- * @return {!function((string | !Error)=) | void}
+ * @param {!function((string | !Error)) | void} onError
+ * @return {!function((string | !Error)) | void}
  */
 NicePageBuilder.bindNicePageContextToErrorHandler = function( context, pageOptions, onError ){
     if( onError ){
@@ -348,6 +359,8 @@ function NicePageContext( context, rootRelativeURL ){
 
         return NicePageBuilder.getPageOptionsOf( context, rootRelativeURL )
     };
+
+    // this.getOptions = NicePageContext_getOptions
 };
 
 /**

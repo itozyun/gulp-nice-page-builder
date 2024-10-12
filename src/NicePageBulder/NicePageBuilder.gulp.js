@@ -24,6 +24,11 @@ module.exports.gulp = function( opt_options ){
     if( __NicePageBuilder_internal__.json2html ){
         context.json2html = __NicePageBuilder_internal__._json2htmlGulpPlugin;
     };
-
+    if( __NicePageBuilder_internal__.json2htmlStream ){
+        if( !context.json2html ){
+            context.json2html = {};
+        };
+        context.json2html.stream = __NicePageBuilder_internal__.json2htmlStream.bind( context );
+    };
     return context;
 };

@@ -2,7 +2,15 @@
   "name": "gulp-nice-page-builder",
   "version": "2.0.0",
   "description": "Gulp plugin of Static Site Generator",
-  "keywords": ["gulpplugin", "ssg", "static-site", "static site generation", "website", "html", "html-json"],
+  "keywords": [
+    "gulpplugin",
+    "ssg",
+    "static-site",
+    "static site generation",
+    "website",
+    "html",
+    "html-json"
+  ],
   "main": "index.js",
   "author": "itozyun (https://outcloud.blogspot.com/)",
   "license": "MIT",
@@ -14,8 +22,18 @@
     "url": "https://github.com/itozyun/gulp-nice-page-builder/issues"
   },
   "homepage": "https://github.com/itozyun/gulp-nice-page-builder#readme",
+  "scripts": {
+    "make": "gulp dist",
+    "test": "ava"
+  },
+  "ava": {
+    "files": [
+      "test/**/*"
+    ]
+  },
   "devDependencies": {
     "@externs/nodejs": "^1.5.0",
+    "ava": "^6.1.3",
     "google-closure-compiler": "^20240317.0.0",
     "gulp": "^4.0.2"
   },

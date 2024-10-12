@@ -1,0 +1,57 @@
+[
+    {
+        "URL": "/",
+        "CREATED_AT": 1234567890,
+        "MODIFIED_AT": 1234567890,
+        "title": "My First Stream"
+    },
+    "DIV",
+    {
+        "color": "red",
+        "true": true,
+        "false": false,
+        "null": null,
+        ":clock": [
+            "date",
+            2,
+            {
+                "aa": "cccc"
+            },
+            null
+        ]
+    },
+    [
+        7,
+        "title"
+    ],
+    [
+        13,
+        "if IE",
+        [
+            "P",
+            "Hello, IE"
+        ]
+    ],
+    [
+        7,
+        "date",
+        2,
+        {
+            "aa": "bb"
+        },
+        null
+    ],
+    "< Hello, World! >",
+    [
+        1,
+        "B",
+        [
+            3,
+            "♥"
+        ]
+    ],
+    [
+        "I",
+        123
+    ]
+]

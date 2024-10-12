@@ -26,8 +26,8 @@ gulp.task(
                             entry_point       : 'goog:NicePageBuilder.all',
                             externs           : [
                                // './src/js-externs/console.js',
-                               // './node_modules/@externs/nodejs/v8/nodejs.js',
-                               // './node_modules/@externs/nodejs/v8/global.js',
+                               './node_modules/@externs/nodejs/v8/nodejs.js',
+                               './node_modules/@externs/nodejs/v8/global.js',
                                // './node_modules/@externs/nodejs/v8/fs.js',
                                // './node_modules/@externs/nodejs/v8/http.js',
                                // './node_modules/@externs/nodejs/v8/https.js',
@@ -71,14 +71,14 @@ gulp.task(
 );
 
 gulp.task(
-    'test',
+    'tutorial',
     gulp.series(
         function(){
-            let NicePageBuilder = require( './index.js' ).gulp( { srcRootPath : 'test/input', allPagesPath : 'all-pages.json', allPageOptionsPath : 'all-options.json' } );
+            let NicePageBuilder = require( './index.js' ).gulp( { srcRootPath : 'tutorial/input', allPagesPath : 'all-pages.json', allPageOptionsPath : 'all-options.json' } );
 
             return gulp.src(
                     [
-                        './test/input/**/*.html', './test/input/**/*.php', './test/input/**/*.json' // .xhtml, .htm
+                        './tutorial/input/**/*.html', './tutorial/input/**/*.php', './tutorial/input/**/*.json' // .xhtml, .htm
                     ]
                 ).pipe(
                     NicePageBuilder.html2json( null, { trimWhitespaces: 'aggressive' } )
@@ -89,7 +89,7 @@ gulp.task(
                 ).pipe(
                     NicePageBuilder.json2html()
                 ).pipe(
-                    gulp.dest( 'test/output' )
+                    gulp.dest( 'tutorial/output' )
                 );
         }
     )

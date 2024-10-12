@@ -24,7 +24,7 @@ goog.require( 'NicePageBuilder.util.mergeOptions' );
  * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
- * @param {!function((string | !Error)=)=} opt_onError
+ * @param {!function((string | !Error))=} opt_onError
  * @param {!function(!VNode)=} opt_onDocumentReady
  * @param {!Object=} opt_options
  * @return {boolean|void} isStaticWebPage
@@ -68,7 +68,7 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(!VNode)=} opt_onDocumentReady
- * @param {!function((string | !Error)=)=} opt_onError
+ * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  */
 __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){

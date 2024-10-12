@@ -52,7 +52,7 @@ git submodule foreach git pull origin master
 
 ~~~sh
 gulp dist
-gulp test
+gulp tutorial
 ~~~
 
 ## gulp plugin の使用例
@@ -95,7 +95,6 @@ gulp.task('html', function(){
 |:------------|:-----------------|:-----------------------------|:------------------|:-------------|:------|
 | TEMPLETE    | `string`         | テンプレート(.html) へのパス | ✓                | ✓           | ✓    |
 | MIXINS      | `Array.<string>` |                              | ✓                | ✓           | - *2  |
-| FILE_PATH   | `string`         | `"/contact/index.html"`      | ✓                | -            | -     |
 | URL         | `string`         | `"/contact/"`                | ✓                | -            | -     |
 | CREATED_AT  | `number`         |  `file.stat.birthtimeMs`     | ✓                | -            | -     |
 | MODIFIED_AT | `number`         |  `file.stat.ctimeMs`         | ✓                | -            | -     |
@@ -156,7 +155,7 @@ gulp.task('html', function(){
 先頭にメタ情報 `{}` のある配列です．nicePageBuilder.builder() を通すとテンプレートが適用されます．
 
 ~~~json
-[{"FILE_PATH":"/contact/index.html"}, 9, "<!DOCTYPE html>", ["HTML"]]
+[{"URL":"/contact/"}, 9, "<!DOCTYPE html>", ["HTML"]]
 ~~~
 
 ## Links
