@@ -30,5 +30,8 @@ module.exports.gulp = function( opt_options ){
         };
         context.json2html.stream = __NicePageBuilder_internal__.json2htmlStream.bind( context );
     };
+    if( __NicePageBuilder_internal__._destGulpPlugin ){
+        context.dest = __NicePageBuilder_internal__._destGulpPlugin;
+    };
     return context;
 };

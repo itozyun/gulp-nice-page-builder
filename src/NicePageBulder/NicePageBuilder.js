@@ -51,6 +51,7 @@ NicePageBuilder.INDEXES = {
  *   allTempletesPath   : string,
  *   mixins             : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin> | null),
  *   templetes          : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null),
+ *   allPages           : (Object.<NicePageBuilder.RootRelativeURL, !HTMLJsonWithOptions> | null),
  *   allPageOptions     : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOptions> | null),
  *   _allPageOptions    : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOptions> | null),
  *   keywordTempletes   : string,
@@ -163,6 +164,7 @@ NicePageBuilder._createContext = function( opt_options ){
         mixins             : options[ 'mixins'         ] || null,
         templetes          : options[ 'templetes'      ] || null,
         allPageOptions     : options[ 'allPageOptions' ] || null,
+        allPages           : {},
         _allPageOptions    : {},
         _jsonList          : {},
         path

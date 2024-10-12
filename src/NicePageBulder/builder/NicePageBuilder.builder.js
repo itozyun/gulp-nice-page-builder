@@ -9,6 +9,7 @@ goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( '__NicePageBuilder_internal__' );
+goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.mergeOptions' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );

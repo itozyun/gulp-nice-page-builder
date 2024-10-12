@@ -9,6 +9,7 @@ goog.require( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToDocumentReadyHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
+goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
@@ -57,7 +58,6 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
 
     const pluginName  = 'NicePageBuilder.gulp.json2html',
           PluginError = require( 'plugin-error' ),
-          _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
     const CONTENT_FILE_LIST = [];
@@ -113,17 +113,6 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                 file.extname  = '.' + originalExtname;
 
                 this.push( file );
-            };
-            for( const filePath in context._jsonList ){
-                this.push(
-                    new _Vinyl(
-                        {
-                            base     : '/',
-                            path     : filePath,
-                            contents : Buffer.from( JSON.stringify( context._jsonList[ filePath ] ) )
-                        }
-                    )
-                );
             };
             callback();
         }

@@ -261,12 +261,6 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
 
         // 書出し
             const self = this;
-            const ALL_PAGES   = {};
-            const ALL_PAGE_OPTIONS = {};
-
-            // TODO .gulp.export
-            writeFile( context.allMixinsPath, MIXIN_LIST );
-            writeFile( context.allTempletesPath, TEMPLETE_LIST );
 
             for( const pageRootRelativeURL in PAGE_LIST ){
                 const nicePage = PAGE_LIST[ pageRootRelativeURL ];
@@ -288,20 +282,10 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 writeFile( filePath + '.json', htmlJson );
 
                 delete pageOptions.URL;
-                ALL_PAGES       [ pageRootRelativeURL ] = htmlJson;
-                ALL_PAGE_OPTIONS[ pageRootRelativeURL ] = pageOptions;
-            };
-
-            // TODO .gulp.export
-            if( context.allPagesPath ){
-                writeFile( context.allPagesPath, ALL_PAGES );
-            };
-
-            context.allPageOptions = ALL_PAGE_OPTIONS;
-
-            // TODO .gulp.export
-            if( context.allPageOptionsPath ){
-                writeFile( context.allPageOptionsPath, ALL_PAGE_OPTIONS );
+                if( context.allPagesPath ){
+                    context.allPages[ pageRootRelativeURL ] = /** @type {!HTMLJsonWithOptions} */ (htmlJson);
+                };
+                context.allPageOptions[ pageRootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOptions} */ (pageOptions);
             };
 
             callback();

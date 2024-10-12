@@ -12,10 +12,12 @@ goog.require( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToDocumentReadyHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
+goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
 goog.require( 'NicePageBuilder.util.mergeOptions' );
+goog.require( 'NicePageBuilder.util.getHTMLJson' );
 
 /**
  * @this {NicePageBuilder.Context}
@@ -74,7 +76,6 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
 
     const pluginName  = 'NicePageBuilder.gulp.json2json',
           PluginError = require( 'plugin-error' ),
-          _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
     const CONTENT_FILE_LIST = [];
@@ -150,16 +151,16 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
 
                 this.push( file );
             };
-            for( const filePath in context._jsonList ){
-                this.push(
-                    new _Vinyl(
-                        {
-                            base     : '/',
-                            path     : filePath,
-                            contents : Buffer.from( JSON.stringify( context._jsonList[ filePath ] ) )
-                        }
-                    )
-                );
+            if( opt_options && opt_options[ 'processedTemplets' ] ){
+                if( context.templetes ){
+                    for( const rootRelativePath in context.templetes ){
+                        const htmlJson = NicePageBuilder.util.getHTMLJson( context.templetes[ rootRelativePath ] );
+    
+                        __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
+                    };
+                } else if( NicePageBuilder.DEFINE.DEBUG ){
+                    throw '[processedTemplets] context.templetes not found!';
+                };
             };
             callback();
         }

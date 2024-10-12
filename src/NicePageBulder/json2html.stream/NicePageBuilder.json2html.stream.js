@@ -10,6 +10,7 @@ goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.require( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
+goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );

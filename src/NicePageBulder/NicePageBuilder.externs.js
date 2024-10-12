@@ -17,9 +17,12 @@ var nicePageBuilder = function(){};
     nicePageBuilder.json2json = function(){};
     nicePageBuilder.json2html = function(){};
     nicePageBuilder.json2html.stream = function(){};
+
     nicePageBuilder.gulp = function(){};
     nicePageBuilder.gulp.html2json = function(){};
     nicePageBuilder.gulp.builder   = function(){};
     nicePageBuilder.gulp.json2json = function(){};
     nicePageBuilder.gulp.json2html = function(){};
     nicePageBuilder.gulp.json2html.stream = function(){};
+    nicePageBuilder.gulp.dest = function(){};
+    nicePageBuilder.gulp.filter = function(){};
