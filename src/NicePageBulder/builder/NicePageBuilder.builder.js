@@ -13,7 +13,6 @@ goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
-goog.require( 'NicePageBuilder.util.mergeMetadata' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
 /**
@@ -30,7 +29,8 @@ __NicePageBuilder_internal__.builder = function( htmlJson ){
     const metadata      = htmlJson[ 0 ];
     const templeteStack = []; // Array.<NicePageBuilder.RootRelativeURL>
 
-    NicePageBuilder.util.mergeMetadata( this, metadata, templeteStack );
+    this.storeMetadata( metadata );
+    this.mergeMetadata( metadata, templeteStack );
 
     let contentHtmlJson = htmlJson;
 
@@ -45,6 +45,8 @@ __NicePageBuilder_internal__.builder = function( htmlJson ){
         };
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
     };
+
+    this.unmergeMetadata( metadata );
 
     delete metadata.TEMPLETE;
     delete metadata.MIXINS;

@@ -279,7 +279,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
 
                 writeFile( filePath + '.json', htmlJson );
 
-                delete metadata.URL;
+                // delete metadata.URL;
                 if( context.allPagesPath ){
                     context.allPages[ pageRootRelativeURL ] = /** @type {!HTMLJsonWithMetadata} */ (htmlJson);
                 };

@@ -10,8 +10,6 @@ goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.Mixin' );
-goog.require( 'NicePageBuilder.getMetadataOf' );
-goog.require( 'NicePageBuilder.deepCopy' );
 goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToDocumentReadyHandler' );
@@ -20,7 +18,6 @@ goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
-goog.require( 'NicePageBuilder.util.mergeMetadata' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 
 /**
@@ -35,21 +32,12 @@ goog.require( 'NicePageBuilder.util.getHTMLJson' );
  * @return {boolean|void} isStaticWebPage
  */
 __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
-    let originalMetadata, metadata;
+    const context = this;
+
+    let metadata;
 
     if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
-        const context = this;
-
-        originalMetadata = htmlJson.shift();
-        metadata = NicePageBuilder.getMetadataOf( context, originalMetadata.URL, false );
-
-        if( !metadata ){
-            metadata = NicePageBuilder.deepCopy( originalMetadata );
-            // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
-            if( NicePageBuilder.util.hasTEMPLETEProperty( metadata ) || NicePageBuilder.util.hasMIXINSProperty( metadata ) ){
-                NicePageBuilder.util.mergeMetadata( this, metadata, [], opt_onError );
-            };
-        };
+        metadata = context.getMergedMetadata( htmlJson.shift(), opt_onError );
 
         opt_onInstruction   = NicePageBuilder.PageContext.bindToInstructuionHandler( context, metadata, opt_onInstruction, false );
         opt_onEnterNode     = NicePageBuilder.PageContext.bindToEnterNodeHandler( context, metadata, opt_onEnterNode, false );
@@ -59,8 +47,8 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
 
     const isStaticWebPage = json2json.main( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
-    if( originalMetadata ){
-        htmlJson.unshift( originalMetadata );
+    if( metadata ){
+        htmlJson.unshift( context.unmergeMetadata( metadata ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
     };
 
     return isStaticWebPage;

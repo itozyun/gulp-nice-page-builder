@@ -5,7 +5,6 @@ goog.provide( 'NicePageBuilder.util.getMetadata' );
 goog.provide( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.provide( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.provide( 'NicePageBuilder.util.hasMIXINSProperty' );
-goog.provide( 'NicePageBuilder.util.mergeMetadata' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
@@ -90,109 +89,6 @@ NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrMetadata ){
     };
 
     return false;
-};
-
-
-/**
- * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.Metadata} metadata
- * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
- * @param {!function((string | !Error))=} opt_onError
- */
-NicePageBuilder.util.mergeMetadata = function( context, metadata, templeteStack, opt_onError ){
-    let updatedAt = metadata.MODIFIED_AT;
-    let templeteRootRelativePath;
-
-    if( metadata.TEMPLETE ){
-        templeteRootRelativePath = context.path.toRootRelativeURL( metadata.URL, metadata.TEMPLETE );
-    };
-
-    mergeMinxins( metadata.URL, metadata.MIXINS );
-
-    if( templeteRootRelativePath ){
-        templeteStack[ 0 ] = templeteRootRelativePath;
-    };
-
-    while( templeteRootRelativePath ){
-        const tmpTempleteRootRelativePath = templeteRootRelativePath;
-        const templete                    = context.templetes[ templeteRootRelativePath ];
-
-        if( !templete ){
-            if( opt_onError ){
-                opt_onError( 'Templete not found!' );
-            } else if( NicePageBuilder.DEFINE.DEBUG ){
-                throw 'Templete: ' + templeteRootRelativePath + ' required by ' + context.path.urlToFilePath( metadata.URL ) + ' not found!';
-            };
-        };
-
-        const templeteMetadata = NicePageBuilder.util.getMetadata( templete );
-
-        if( templeteMetadata ){
-            templeteRootRelativePath = '';
-            mix( tmpTempleteRootRelativePath, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
-            mergeMinxins( tmpTempleteRootRelativePath, templeteMetadata.MIXINS );
-            if( templeteRootRelativePath ){
-                templeteStack.push( templeteRootRelativePath );
-            };
-        } else {
-            templeteRootRelativePath = '';
-        };
-    };
-
-    metadata.UPDATED_AT = updatedAt;
-
-    /**
-     * @param {string} rootRelativePath
-     * @param {!Array.<NicePageBuilder.RootRelativeURL> | void} mixinPathList
-     */
-    function mergeMinxins( rootRelativePath, mixinPathList ){
-        if( mixinPathList ){
-            for( let i = 0; i < mixinPathList.length; ++i ){
-                const mixinRootRelativeURL = context.path.toRootRelativeURL( rootRelativePath, mixinPathList[ i ] );
-                const mixin                = context.mixins[ mixinRootRelativeURL ];
-
-                if( !mixin ){
-                    if( opt_onError ){
-                        opt_onError( 'Mixin not found!' );
-                    } else if( NicePageBuilder.DEFINE.DEBUG ){
-                        throw 'Mixin: ' + mixinRootRelativeURL + ' required by ' + context.path.urlToFilePath( rootRelativePath ) + ' not found!';
-                    };
-                };
-
-                mix( mixinRootRelativeURL, /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
-            };
-        };
-    };
-
-    /**
-     * @param {string} rootRelativePath
-     * @param {!NicePageBuilder.Metadata} altMetadata 
-     * @param {number} altUpdatedAt
-     * @param {boolean} isMixin
-     */
-    function mix( rootRelativePath, altMetadata, altUpdatedAt, isMixin ){
-        let changed = 0;
-
-        for( const k in altMetadata ){
-            if( NicePageBuilder.DEFINE.DEBUG && isMixin && k === 'MIXINS' ){ // TODO
-                throw 'Mixin has MIXINS property!';
-            } else if( k === 'TEMPLETE' ){
-                if( !templeteRootRelativePath ){
-                    templeteRootRelativePath = context.path.toRootRelativeURL( rootRelativePath, altMetadata[ k ] ); // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
-                    ++changed;
-                };
-            } else if( metadata[ k ] === undefined ){
-                metadata[ k ] = altMetadata[ k ];
-                ++changed;
-                // TODO mixedProperties
-            };
-        };
-        if( changed || !isMixin ){
-            if( updatedAt < altUpdatedAt ){
-                updatedAt = altUpdatedAt;
-            };
-        };
-    };
 };
 
 /**

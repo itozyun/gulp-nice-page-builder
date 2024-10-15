@@ -9,7 +9,6 @@ goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
 goog.requireType( 'VNode' );
-goog.require( 'NicePageBuilder.getMetadataOf' );
 
 /**
  * @private
@@ -18,9 +17,9 @@ goog.require( 'NicePageBuilder.getMetadataOf' );
  * @param {!NicePageBuilder.Context} context
  * @param {string} rootRelativeURL */
 NicePageBuilder.PageContext = function( context, rootRelativeURL ){
-    this.path      = context.path;
-    this._jsonList = context._jsonList;
-    this._baseURL  = rootRelativeURL;
+    this.path = context.path;
+    /** @private */ this._allAppendixes = context.allAppendixes;
+    /** @private */ this._baseURL       = rootRelativeURL;
 
     /**
      * @param {string} url 
@@ -29,7 +28,7 @@ NicePageBuilder.PageContext = function( context, rootRelativeURL ){
     this.getMetadataOf = function( url ){
         var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
 
-        return NicePageBuilder.getMetadataOf( context, rootRelativeURL, false )
+        return context.getMetadataOf( rootRelativeURL )
     };
 };
 
@@ -49,7 +48,7 @@ NicePageBuilder.PageContext.prototype.getMetadata = function(){
  * @param {string} rootRelativePath 
  * @return {!Object} */
 NicePageBuilder.PageContext.prototype.getJSON = function( rootRelativePath ){
-    return this._jsonList[ rootRelativePath ] = this._jsonList[ rootRelativePath ] || {};
+    return this._allAppendixes[ rootRelativePath ] = this._allAppendixes[ rootRelativePath ] || {};
 };
 
 /**

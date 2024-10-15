@@ -55,15 +55,21 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                 writeFile( context.allTempletesPath, context.templetes );
             };
             if( destTargets & DEST_TARGET.ALL_PAGES_METADATA ){
+                for( const rootRelativeURL in context.metadataOfAllPages ){
+                    delete context.metadataOfAllPages[ rootRelativeURL ].URL;
+                };
                 writeFile( context.metadataOfAllPagesPath, context.metadataOfAllPages );
+                for( const rootRelativeURL in context.metadataOfAllPages ){
+                    context.metadataOfAllPages[ rootRelativeURL ].URL = rootRelativeURL;
+                };
             };
             if( destTargets & DEST_TARGET.ALL_APPENDIXES ){
-                for( const filePath in context._jsonList ){
+                for( const filePath in context.allAppendixes ){
                     this.push(
                         new _Vinyl(
                             {
                                 path     : filePath,
-                                contents : Buffer.from( JSON.stringify( context._jsonList[ filePath ] ) )
+                                contents : Buffer.from( JSON.stringify( context.allAppendixes[ filePath ] ) )
                             }
                         )
                     );

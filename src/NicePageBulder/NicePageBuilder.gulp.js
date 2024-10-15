@@ -1,7 +1,7 @@
 goog.provide( 'NicePageBuilder.gulp' );
 
 goog.require( 'NicePageBuilder.module' );
-goog.require( 'NicePageBuilder.createContext' );
+goog.require( 'NicePageBuilder.Context' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 
@@ -10,7 +10,7 @@ goog.requireType( 'NicePageBuilder.Context' );
  * @return {!NicePageBuilder.Context}
  */
 module.exports.gulp = function( opt_options ){
-    var context = NicePageBuilder.createContext( opt_options );
+    var context = new NicePageBuilder.Context( opt_options );
 
     if( __NicePageBuilder_internal__.html2json ){
         context.html2json = __NicePageBuilder_internal__._html2jsonGulpPlugin;

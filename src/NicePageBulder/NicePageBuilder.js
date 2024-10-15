@@ -6,12 +6,6 @@ goog.provide( 'NicePageBuilder.Metadata' );
 goog.provide( 'HTMLJsonWithMetadata' );
 goog.provide( 'NicePageBuilder.NicePageOrTemplete' );
 goog.provide( 'NicePageBuilder.Mixin' );
-goog.provide( 'NicePageBuilder.deepCopy' );
-goog.provide( 'NicePageBuilder.getMetadataOf' );
-
-goog.requireType( 'TinyPath' );
-goog.requireType( 'NicePageBuilder.Context' );
-goog.require( 'NicePageBuilder.util.mergeMetadata' );
 
 var __NicePageBuilder_internal__ = {};
 
@@ -82,43 +76,3 @@ NicePageBuilder.NicePageOrTemplete;
  * @typedef {!Array.<(!NicePageBuilder.Metadata | number | boolean)>}
  */
 NicePageBuilder.Mixin;
-
-/**
- * @param {!NicePageBuilder.Metadata} metadata
- * @return {!NicePageBuilder.Metadata}
- */
-NicePageBuilder.deepCopy = function( metadata ){
-    return /** @type {!NicePageBuilder.Metadata} */ (JSON.parse( JSON.stringify( metadata ) ));
-};
-
-/**
- * @param {!NicePageBuilder.Context} context
- * @param {string} rootRelativeURL
- * @param {boolean} rawMetadata
- * @return {NicePageBuilder.Metadata | null} 
- */
-NicePageBuilder.getMetadataOf = function( context, rootRelativeURL, rawMetadata ){
-    if( rawMetadata ){
-        return context.metadataOfAllPages && context.metadataOfAllPages[ rootRelativeURL ] || null;
-    };
-
-    var metadata = context._metadataOfAllPages[ rootRelativeURL ];
-
-    if( !metadata ){
-        if( context.metadataOfAllPages ){
-            metadata = context.metadataOfAllPages[ rootRelativeURL ];
-
-            if( metadata ){
-                metadata = NicePageBuilder.deepCopy( metadata );
-
-                metadata.URL = rootRelativeURL;
-                NicePageBuilder.util.mergeMetadata( context, metadata, [] );
-
-                metadata = NicePageBuilder.deepCopy( metadata ); // コピーされたメタ情報(Array, Object)を改変から保護する
-
-                context._metadataOfAllPages[ rootRelativeURL ] = metadata;
-            };
-        };
-    };
-    return metadata || null;
-};
