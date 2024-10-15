@@ -29,7 +29,8 @@ goog.require( 'TinyPath' );
  *   builder                : *,
  *   json2json              : *,
  *   json2html              : *,
- *   dest                   : *
+ *   dest                   : *,
+ *   storeMetadataOfNewPages : function(!Array.<!Vinyl | !HTMLJson | !HTMLJsonWithMetadata>)
  * }}
 */
 NicePageBuilder.Context;
@@ -52,20 +53,47 @@ NicePageBuilder.createContext = function( opt_options ){
           allTempletesPath       = options[ 'allTempletesPath'       ] || 'all-templetes.json';
 
     return {
-        srcRootPath         : tinyPath._absolutePathOfSrcRoot,
+        srcRootPath             : tinyPath._absolutePathOfSrcRoot,
         allPagesPath,
         metadataOfAllPagesPath,
         allMixinsPath,
         allTempletesPath,
-        keywordTempletes    : _jsonFilePathToOriginalExtname( allTempletesPath, tinyPath ),
-        keywordMixins       : _jsonFilePathToOriginalExtname( allMixinsPath   , tinyPath ),
-        mixins              : options[ 'mixins'             ] || {},
-        templetes           : options[ 'templetes'          ] || {},
-        metadataOfAllPages  : options[ 'metadataOfAllPages' ] || {},
-        _metadataOfAllPages : {},
-        allPages            : {},
-        _jsonList           : {},
-        path                : tinyPath
+        keywordTempletes        : _jsonFilePathToOriginalExtname( allTempletesPath, tinyPath ),
+        keywordMixins           : _jsonFilePathToOriginalExtname( allMixinsPath   , tinyPath ),
+        mixins                  : options[ 'mixins'             ] || {},
+        templetes               : options[ 'templetes'          ] || {},
+        metadataOfAllPages      : options[ 'metadataOfAllPages' ] || {},
+        _metadataOfAllPages     : {},
+        allPages                : {},
+        _jsonList               : {},
+        path                    : tinyPath,
+        storeMetadataOfNewPages : _storeMetadataOfNewPages
+    };
+};
+
+/**
+ * [2n+0] Vinyl
+ * [2n+1] HTMLJson | HTMLJsonWithMetadata
+ * 
+ * @param {!Array.<!Vinyl | !HTMLJson | !HTMLJsonWithMetadata>} PAGE_FILE_LIST 
+ */
+function _storeMetadataOfNewPages( PAGE_FILE_LIST ){
+    const context = this;
+
+    for( let i = 0, l = PAGE_FILE_LIST.length; i < l; i += 2 ){
+        const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST[ i + 1 ]);
+
+        if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
+            const metadata = /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]);
+            const rootRelativeURL = metadata.URL;
+
+            if( !context.metadataOfAllPages[ rootRelativeURL ] ){
+                const _metadata = NicePageBuilder.deepCopy( metadata );
+
+                delete _metadata.URL;
+                context.metadataOfAllPages[ rootRelativeURL ] = _metadata;
+            };
+        };
     };
 };
 

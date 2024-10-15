@@ -55,9 +55,6 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                 writeFile( context.allTempletesPath, context.templetes );
             };
             if( destTargets & DEST_TARGET.ALL_PAGES_METADATA ){
-                for( const rootRelativeURL in context.metadataOfAllPages ){
-                    delete context.metadataOfAllPages[ rootRelativeURL ].URL;
-                };
                 writeFile( context.metadataOfAllPagesPath, context.metadataOfAllPages );
             };
             if( destTargets & DEST_TARGET.ALL_APPENDIXES ){

@@ -82,7 +82,7 @@ function onTokenForMeta( token, value ){
 
                 if( NicePageBuilder.DEFINE.DEBUG ){
                     if( NicePageBuilder.util.hasTEMPLETEProperty( metadata ) || NicePageBuilder.util.hasMIXINSProperty( metadata ) ){
-                        throw this.path.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
+                        throw this._context.path.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
                     };
                 };
                 /** @suppress {constantProperty} @const {InstructionHandler | void} */ this._onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( this._context, metadata, this._onInstruction, true );

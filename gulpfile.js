@@ -85,7 +85,7 @@ gulp.task(
                 ).pipe(
                     NicePageBuilder.json2json( null, null, function(){console.log( this )} )
                 ).pipe(
-                    NicePageBuilder.dest( 1 + 2 + 4 + 8 )
+                    NicePageBuilder.dest( 1 + 2 + 4 + 8 + 16 )
                 ).pipe(
                     NicePageBuilder.builder()
                 ).pipe(

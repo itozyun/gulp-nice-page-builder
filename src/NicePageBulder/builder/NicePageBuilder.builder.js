@@ -100,6 +100,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
+    /** @const {!Array.<!Vinyl | !HTMLJson | !HTMLJsonWithMetadata>} */
     const PAGE_FILE_LIST = [];
 
     return through.obj(
@@ -130,7 +131,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                 case 'xhtml' :
                 case 'php'   :
                     if( NicePageBuilder.util.isHTMLJsonWithMetadata( /** @type {!HTMLJson} */ (json) ) ){
-                        PAGE_FILE_LIST.push( file, json );
+                        PAGE_FILE_LIST.push( file, /** @type {!HTMLJsonWithMetadata} */ (json) );
                         return callback();
                     };
                 case context.keywordTempletes :
@@ -155,15 +156,8 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
          * @param {function()} callback
          */
         function( callback ){
-            for( let i = 0, l = PAGE_FILE_LIST.length; i < l; i += 2 ){
-                const htmlJson = PAGE_FILE_LIST[ i + 1 ];
+            context.storeMetadataOfNewPages( PAGE_FILE_LIST );
 
-                if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
-                    const metadata = /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]);
-
-                    context.metadataOfAllPages[ metadata.URL ] = metadata;
-                };
-            };
         // 書出し
             while( PAGE_FILE_LIST.length ){
                 const file     = PAGE_FILE_LIST.shift();

@@ -61,6 +61,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
           PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     );
 
+    /** @const {!Array.<!Vinyl | !HTMLJson | !HTMLJsonWithMetadata>} */
     const PAGE_FILE_LIST = [];
 
     return through.obj(
@@ -92,7 +93,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                     const json = JSON.parse( file.contents.toString( encoding ) );
 
                     if( m_isArray( json ) ){
-                        PAGE_FILE_LIST.push( file, json, originalExtname );
+                        PAGE_FILE_LIST.push( file, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (json) );
                         return callback();
                     };
             };
@@ -103,20 +104,12 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
          * @param {function()} callback
          */
         function( callback ){
-            for( let i = 0, l = PAGE_FILE_LIST.length; i < l; i += 3 ){
-                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST[ i + 1 ]);
+            context.storeMetadataOfNewPages( PAGE_FILE_LIST );
 
-                if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
-                    const metadata = /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]);
-
-                    context.metadataOfAllPages[ metadata.URL ] = metadata;
-                };
-            };
             while( PAGE_FILE_LIST.length ){
-                const file            = PAGE_FILE_LIST.shift();
-                const htmlJson        = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST.shift());
-                const originalExtname = PAGE_FILE_LIST.shift();
-
+                const file             = PAGE_FILE_LIST.shift();
+                const htmlJson         = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST.shift());
+                const originalExtname  = file.stem.split( '.' ).pop(); // _jsonFilePathToOriginalExtname
                 const filePathElements = file.path.split( '.json' );
 
                 filePathElements.pop();
