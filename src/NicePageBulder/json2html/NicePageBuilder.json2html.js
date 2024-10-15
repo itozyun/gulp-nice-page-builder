@@ -61,7 +61,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
           PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     );
 
-    const CONTENT_FILE_LIST = [];
+    const PAGE_FILE_LIST = [];
 
     return through.obj(
         /**
@@ -82,15 +82,19 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                 return callback( null, file );
             };
 
-            const originalExtname = file.stem.split( '.' ).pop();
+            const originalExtname = file.stem.split( '.' ).pop(); // _jsonFilePathToOriginalExtname
 
             switch( originalExtname ){
                 case 'html'  :
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    CONTENT_FILE_LIST.push( file, encoding, originalExtname );
-                    return callback();
+                    const json = JSON.parse( file.contents.toString( encoding ) );
+
+                    if( m_isArray( json ) ){
+                        PAGE_FILE_LIST.push( file, json, originalExtname );
+                        return callback();
+                    };
             };
             callback( null, file );
         },
@@ -99,12 +103,20 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
          * @param {function()} callback
          */
         function( callback ){
-            while( CONTENT_FILE_LIST.length ){
-                const file = CONTENT_FILE_LIST.shift();
-                const encoding = CONTENT_FILE_LIST.shift();
-                const originalExtname = CONTENT_FILE_LIST.shift();
+            for( let i = 0, l = PAGE_FILE_LIST.length; i < l; i += 3 ){
+                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST[ i + 1 ]);
 
-                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (JSON.parse( file.contents.toString( encoding ) ));
+                if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
+                    const metadata = /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]);
+
+                    context.metadataOfAllPages[ metadata.URL ] = metadata;
+                };
+            };
+            while( PAGE_FILE_LIST.length ){
+                const file            = PAGE_FILE_LIST.shift();
+                const htmlJson        = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST.shift());
+                const originalExtname = PAGE_FILE_LIST.shift();
+
                 const filePathElements = file.path.split( '.json' );
 
                 filePathElements.pop();

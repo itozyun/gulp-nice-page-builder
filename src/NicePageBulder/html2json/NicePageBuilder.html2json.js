@@ -72,11 +72,9 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
     /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>} */
     const PAGES_OR_TEMPLETES = {};
 
-    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>} */
-    const TEMPLETE_LIST = context.templetes = context.templetes || {};
+    const TEMPLETE_LIST = context.templetes;
 
-    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin>} */
-    const MIXIN_LIST = context.mixins = context.mixins || {};
+    const MIXIN_LIST = context.mixins;
 
     return through.obj(
         /**
@@ -116,7 +114,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 case '.json' :
                     const mixinJson = JSON.parse( contents );
 
-                    if( m_isObject( mixinJson ) ){
+                    if( !m_isArray( mixinJson ) && m_isObject( mixinJson ) ){
                         MIXIN_LIST[ rootRelativeURL ] = [ /** @type {!NicePageBuilder.Metadata} */ (mixinJson), createdTimeMs, updatedTimeMs ];
                     };
                     break;

@@ -8,6 +8,8 @@ goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'HTMLJsonWithMetadata' );
 goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
+goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
+goog.requireType( 'NicePageBuilder.Mixin' );
 goog.require( 'NicePageBuilder.getMetadataOf' );
 goog.require( 'NicePageBuilder.deepCopy' );
 goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
@@ -80,7 +82,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
           PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     );
 
-    const CONTENT_FILE_LIST = [];
+    const PAGE_FILE_LIST = [];
 
     return through.obj(
         /**
@@ -102,35 +104,35 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
                 return callback();
             };
 
-            const originalExtname = file.stem.split( '.' ).pop();
+            const originalExtname = file.stem.split( '.' ).pop(); // _jsonFilePathToOriginalExtname
 
             switch( originalExtname ){
                 case 'html'  :
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    CONTENT_FILE_LIST.push( file, encoding );
-                    return callback();
+                    var json = JSON.parse( file.contents.toString( encoding ) );
+
+                    if( m_isArray( json ) ){
+                        PAGE_FILE_LIST.push( file, json );
+                        return callback();
+                    };
                 case context.keywordTempletes :
                     var json = JSON.parse( file.contents.toString( encoding ) );
 
                     if( !m_isArray( json ) && m_isObject( json ) ){
-                        if( context.templetes && JSON.stringify( context.templetes ) !== JSON.stringify( json ) ){
-                            console.log( pluginName + ' templete list changed!' );
+                        for( const rootRelativeURL in json ){
+                            context.templetes[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplete} */ (json[ rootRelativeURL ]);
                         };
-                        /** @suppress {checkTypes} */
-                        context.templetes = json;
                     };
                     break;
                 case context.keywordMixins :
                     var json = JSON.parse( file.contents.toString( encoding ) );
 
                     if( !m_isArray( json ) && m_isObject( json ) ){
-                        if( context.mixins && JSON.stringify( context.mixins ) !== JSON.stringify( json ) ){
-                            console.log( pluginName + ' mixin list changed!' );
+                        for( const rootRelativeURL in json ){
+                            context.mixins[ rootRelativeURL ] = /** @type {!NicePageBuilder.MIXins} */ (json[ rootRelativeURL ]);
                         };
-                        /** @suppress {checkTypes} */
-                        context.mixins = json;
                     };
                     break;
             };
@@ -141,13 +143,18 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
          * @param {function()} callback
          */
         function( callback ){
-            // TODO .metadataOfAllPages[ rrurl ] = metadata
+            for( let i = 0, l = PAGE_FILE_LIST.length; i < l; i += 2 ){
+                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST[ i + 1 ]);
 
-            while( CONTENT_FILE_LIST.length ){
-                const file = CONTENT_FILE_LIST.shift();
-                const encoding = CONTENT_FILE_LIST.shift();
+                if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
+                    const metadata = /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]);
 
-                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (JSON.parse( file.contents.toString( encoding ) ));
+                    context.metadataOfAllPages[ metadata.URL ] = metadata;
+                };
+            };
+            while( PAGE_FILE_LIST.length ){
+                const file     = PAGE_FILE_LIST.shift();
+                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST.shift());
 
                 __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 

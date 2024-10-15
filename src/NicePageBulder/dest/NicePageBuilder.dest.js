@@ -48,7 +48,6 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
 
             const self = this;
 
-            // TODO dest
             if( destTargets & DEST_TARGET.ALL_MIXINS ){
                 writeFile( context.allMixinsPath, context.mixins );
             };
@@ -56,10 +55,10 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                 writeFile( context.allTempletesPath, context.templetes );
             };
             if( destTargets & DEST_TARGET.ALL_PAGES_METADATA ){
+                for( const rootRelativeURL in context.metadataOfAllPages ){
+                    delete context.metadataOfAllPages[ rootRelativeURL ].URL;
+                };
                 writeFile( context.metadataOfAllPagesPath, context.metadataOfAllPages );
-            };
-            if( destTargets & DEST_TARGET.ALL_PAGES_DATA ){
-                writeFile( context.allPagesPath, context.allPages );
             };
             if( destTargets & DEST_TARGET.ALL_APPENDIXES ){
                 for( const filePath in context._jsonList ){
@@ -72,6 +71,9 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                         )
                     );
                 };
+            };
+            if( destTargets & DEST_TARGET.ALL_PAGES_DATA ){
+                writeFile( context.allPagesPath, context.allPages );
             };
             callback();
         }
