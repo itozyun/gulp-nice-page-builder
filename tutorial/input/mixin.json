@@ -1,4 +1,5 @@
 {
     "TEMPLETE" : "main.php",
-    "MIXINS" : ["/m.json"]
+    "MIXINS" : ["/m.json"],
+    "apple" : 1
 }

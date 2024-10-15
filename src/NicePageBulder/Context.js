@@ -64,6 +64,7 @@ NicePageBuilder.Context.prototype.storeMetadataOfNewPages = function( PAGE_FILE_
 /**
  * @this {!NicePageBuilder.Context}
  * @param {!NicePageBuilder.Metadata} metadata
+ * @return {!NicePageBuilder.Metadata}
  */
 NicePageBuilder.Context.prototype.storeMetadata = function( metadata ){
     const rootRelativeURL = metadata.URL;
@@ -71,6 +72,7 @@ NicePageBuilder.Context.prototype.storeMetadata = function( metadata ){
     if( !this.metadataOfAllPages[ rootRelativeURL ] ){
         this.metadataOfAllPages[ rootRelativeURL ] = _deepCopyMetadata( metadata );
     };
+    return this.metadataOfAllPages[ rootRelativeURL ];
 };
 
 /**
@@ -101,7 +103,7 @@ NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt
 
     if( metadata ){
         if( !this.mergedPropertiesOf[ rootRelativeURL ] ){
-            this.mergedPropertiesOf[ rootRelativeURL ] = this.mergeMetadata( metadata, [], opt_onError );
+            this.mergeMetadata( metadata, [], opt_onError );
         };
     };
     return metadata;
@@ -128,10 +130,9 @@ NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
  * @param {!NicePageBuilder.Metadata} metadata
  * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
  * @param {!function((string | !Error))=} opt_onError
- * @return {!Array.<string>} merged properties
  */
 NicePageBuilder.Context.prototype.mergeMetadata = function( metadata, templeteStack, opt_onError ){
-    return _mergeOrUnmerge( null, this,  metadata, templeteStack, opt_onError );
+    this.mergedPropertiesOf[ metadata.URL ] = _mergeOrUnmerge( null, this,  metadata, templeteStack, opt_onError );
 };
 
 /**

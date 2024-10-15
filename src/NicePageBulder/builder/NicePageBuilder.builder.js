@@ -29,8 +29,7 @@ __NicePageBuilder_internal__.builder = function( htmlJson ){
     const metadata      = htmlJson[ 0 ];
     const templeteStack = []; // Array.<NicePageBuilder.RootRelativeURL>
 
-    this.storeMetadata( metadata );
-    this.mergeMetadata( metadata, templeteStack );
+    this.mergeMetadata( this.storeMetadata( metadata ), templeteStack );
 
     let contentHtmlJson = htmlJson;
 
