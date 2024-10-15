@@ -123,10 +123,10 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                 return callback( null, file );
             };
     
-            const text = file.contents.toString( encoding );
-            const json = JSON.parse( text );
+            const originalExtname = file.stem.split( '.' ).pop(); // _jsonFilePathToOriginalExtname
+            const json = JSON.parse( file.contents.toString( encoding ) );
 
-            switch( file.stem.split( '.' ).pop() ){ // _jsonFilePathToOriginalExtname
+            switch( originalExtname ){
                 case 'html'  :
                 case 'htm'   :
                 case 'xhtml' :
@@ -135,17 +135,22 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                         PAGE_FILE_LIST.push( file.path, /** @type {!HTMLJsonWithMetadata} */ (json) );
                         return callback();
                     };
+                    break;
                 case context.keywordTempletes :
                     if( !m_isArray( json ) && m_isObject( json ) ){
-                        for( var rootRelativeURL in json ){
-                            context.templetes[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplete} */ (json[ rootRelativeURL ]);
+                        for( const rootRelativeURL in json ){
+                            if( !context.templetes[ rootRelativeURL ] ){
+                                context.templetes[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplete} */ (json[ rootRelativeURL ]);
+                            };
                         };
                     };
                     break;
                 case context.keywordMixins :
                     if( !m_isArray( json ) && m_isObject( json ) ){
-                        for( var rootRelativeURL in json ){
-                            context.mixins[ rootRelativeURL ] = /** @type {!NicePageBuilder.Mixin} */ (json[ rootRelativeURL ]);
+                        for( const rootRelativeURL in json ){
+                            if( !context.mixins[ rootRelativeURL ] ){
+                                context.mixins[ rootRelativeURL ] = /** @type {!NicePageBuilder.Mixin} */ (json[ rootRelativeURL ]);
+                            };
                         };
                     };
                     break;

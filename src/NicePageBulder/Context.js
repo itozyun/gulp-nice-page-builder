@@ -118,7 +118,7 @@ NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
     const _metadata        = _deepCopyMetadata( metadata );
 
     if( mergedProperties ){
-        _mergeOrUnmerge( mergedProperties, this,  _metadata, [] );
+        _mergeOrUnmerge( mergedProperties, this,  _metadata, [], undefined, this.metadataOfAllPages[ rootRelativeURL ] );
     };
 
     delete _metadata.UPDATED_AT;
@@ -141,9 +141,10 @@ NicePageBuilder.Context.prototype.mergeMetadata = function( metadata, templeteSt
  * @param {!NicePageBuilder.Metadata} metadata
  * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
  * @param {!function((string | !Error))=} opt_onError
+ * @param {!NicePageBuilder.Metadata=} opt_otiginalMetadata
  * @return {!Array.<string>} merged properties
  */
-function _mergeOrUnmerge( mergedProperties, context,  metadata, templeteStack, opt_onError ){
+function _mergeOrUnmerge( mergedProperties, context,  metadata, templeteStack, opt_onError, opt_otiginalMetadata ){
     const isUnmerge = !!mergedProperties;
 
     if( !isUnmerge ){
@@ -225,7 +226,7 @@ function _mergeOrUnmerge( mergedProperties, context,  metadata, templeteStack, o
 
         for( const k in altMetadata ){
             if( isUnmerge && mergedProperties.indexOf( k ) !== -1 ){
-                if( metadata[ k ] === altMetadata[ k ] ){
+                if( ( opt_otiginalMetadata ? opt_otiginalMetadata : metadata )[ k ] === altMetadata[ k ] ){ // TODO deepEqual
                     delete metadata[ k ];
                 };
             } else if( NicePageBuilder.DEFINE.DEBUG && isMixin && k === 'MIXINS' ){ // TODO
