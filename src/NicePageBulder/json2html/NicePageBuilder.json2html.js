@@ -59,9 +59,10 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
 
     const pluginName  = 'NicePageBuilder.gulp.json2html',
           PluginError = require( 'plugin-error' ),
+          _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @const {!Array.<!Vinyl | !HTMLJson | !HTMLJsonWithMetadata>} */
+    /** @const {!Array.<string | !HTMLJson | !HTMLJsonWithMetadata>} */
     const PAGE_FILE_LIST = [];
 
     return through.obj(
@@ -93,7 +94,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                     const json = JSON.parse( file.contents.toString( encoding ) );
 
                     if( m_isArray( json ) ){
-                        PAGE_FILE_LIST.push( file, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (json) );
+                        PAGE_FILE_LIST.push( file.path, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (json) );
                         return callback();
                     };
             };
@@ -107,18 +108,21 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
             context.storeMetadataOfNewPages( PAGE_FILE_LIST );
 
             while( PAGE_FILE_LIST.length ){
-                const file             = PAGE_FILE_LIST.shift();
+                const filePath         = PAGE_FILE_LIST.shift();
                 const htmlJson         = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST.shift());
-                const originalExtname  = file.stem.split( '.' ).pop(); // _jsonFilePathToOriginalExtname
-                const filePathElements = file.path.split( '.json' );
+                const filePathElements = filePath.split( '.json' );
 
                 filePathElements.pop();
 
-                file.path     = filePathElements.join( '.json' );
-                file.contents = Buffer.from( __NicePageBuilder_internal__.json2html.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ) );
-                file.extname  = '.' + originalExtname;
-
-                this.push( file );
+                this.push(
+                    new _Vinyl(
+                        {
+                            base     : '/',
+                            path     : filePathElements.join( '.json' ),
+                            contents : Buffer.from( __NicePageBuilder_internal__.json2html.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ) )
+                        }
+                    )
+                );
             };
             callback();
         }

@@ -5,6 +5,7 @@ goog.provide( 'NicePageBuilder.dest' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
+goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 
 /**
  * @enum {number}
@@ -25,11 +26,27 @@ var DEST_TARGET = {
 __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
     const context = this;
 
-    const _Vinyl  = require( 'vinyl'    ),
-          through = require( 'through2' );
-
+    const pluginName  = 'NicePageBuilder.gulp.dest',
+          PluginError = require( 'plugin-error' ),
+          _Vinyl      = require( 'vinyl'        ),
+          through     = require( 'through2'     );
     return through.obj(
-        function( file, encoding, callback ){ callback() },
+        /**
+         * @this {stream.Writable}
+         * @param {!Vinyl} file
+         * @param {string} encoding
+         * @param {function(Error=, Vinyl=)} callback
+         */
+        function( file, encoding, callback ){
+            if( file.isNull() ) return callback();
+    
+            if( file.isStream() ){
+                this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
+                return callback();
+            };
+
+            return callback( null, file );
+        },
         /**
          * @this {stream.Writable}
          * @param {function()} callback
@@ -55,13 +72,13 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                 writeFile( context.allTempletesPath, context.templetes );
             };
             if( destTargets & DEST_TARGET.ALL_PAGES_METADATA ){
+                const metadataOfAllPages = {};
+
                 for( const rootRelativeURL in context.metadataOfAllPages ){
-                    delete context.metadataOfAllPages[ rootRelativeURL ].URL;
+                    metadataOfAllPages[ rootRelativeURL ] = context.unmergeMetadata( context.metadataOfAllPages[ rootRelativeURL ] );
+                    delete metadataOfAllPages[ rootRelativeURL ].URL;
                 };
-                writeFile( context.metadataOfAllPagesPath, context.metadataOfAllPages );
-                for( const rootRelativeURL in context.metadataOfAllPages ){
-                    context.metadataOfAllPages[ rootRelativeURL ].URL = rootRelativeURL;
-                };
+                writeFile( context.metadataOfAllPagesPath, metadataOfAllPages );
             };
             if( destTargets & DEST_TARGET.ALL_APPENDIXES ){
                 for( const filePath in context.allAppendixes ){
@@ -76,6 +93,14 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                 };
             };
             if( destTargets & DEST_TARGET.ALL_PAGES_DATA ){
+                for( const rootRelativeURL in context.allPages ){
+                    const htmlJson = context.allPages[ rootRelativeURL ];
+
+                    if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
+                        htmlJson[ 0 ] = context.unmergeMetadata( htmlJson[ 0 ] );
+                        delete htmlJson[ 0 ].URL;
+                    };
+                };
                 writeFile( context.allPagesPath, context.allPages );
             };
             callback();

@@ -102,7 +102,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @const {!Array.<!Vinyl | !HTMLJson | !HTMLJsonWithMetadata>} */
+    /** @const {!Array.<string | !HTMLJson | !HTMLJsonWithMetadata>} */
     const PAGE_FILE_LIST = [];
 
     return through.obj(
@@ -133,7 +133,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                 case 'xhtml' :
                 case 'php'   :
                     if( NicePageBuilder.util.isHTMLJsonWithMetadata( /** @type {!HTMLJson} */ (json) ) ){
-                        PAGE_FILE_LIST.push( file, /** @type {!HTMLJsonWithMetadata} */ (json) );
+                        PAGE_FILE_LIST.push( file.path, /** @type {!HTMLJsonWithMetadata} */ (json) );
                         return callback();
                     };
                 case context.keywordTempletes :
@@ -162,12 +162,18 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
 
         // 書出し
             while( PAGE_FILE_LIST.length ){
-                const file     = PAGE_FILE_LIST.shift();
+                const filePath = PAGE_FILE_LIST.shift();
                 const htmlJson = __NicePageBuilder_internal__.builder.call( context, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST.shift()) );
 
-                file.contents = Buffer.from( JSON.stringify( htmlJson ) );
-
-                this.push( file );
+                this.push(
+                    new _Vinyl(
+                        {
+                            base     : '/',
+                            path     : filePath,
+                            contents : Buffer.from( JSON.stringify( htmlJson ) )
+                        }
+                    )
+                );
             };
 
             callback();

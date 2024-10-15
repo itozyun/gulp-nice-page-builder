@@ -68,9 +68,10 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
 
     const pluginName  = 'NicePageBuilder.gulp.json2json',
           PluginError = require( 'plugin-error' ),
+          _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @const {!Array.<!Vinyl | !HTMLJson | !HTMLJsonWithMetadata>} */
+    /** @const {!Array.<string | !HTMLJson | !HTMLJsonWithMetadata>} */
     const PAGE_FILE_LIST = [];
 
     return through.obj(
@@ -103,7 +104,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
                     var json = JSON.parse( file.contents.toString( encoding ) );
 
                     if( m_isArray( json ) ){
-                        PAGE_FILE_LIST.push( file, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (json) );
+                        PAGE_FILE_LIST.push( file.path, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (json) );
                         return callback();
                     };
                 case context.keywordTempletes :
@@ -135,24 +136,26 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
             context.storeMetadataOfNewPages( PAGE_FILE_LIST );
 
             while( PAGE_FILE_LIST.length ){
-                const file     = PAGE_FILE_LIST.shift();
+                const filePath = PAGE_FILE_LIST.shift();
                 const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST.shift());
 
                 __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
-                file.contents = Buffer.from( JSON.stringify( htmlJson ) );
-
-                this.push( file );
+                this.push(
+                    new _Vinyl(
+                        {
+                            base     : '/',
+                            path     : filePath,
+                            contents : Buffer.from( JSON.stringify( htmlJson ) )
+                        }
+                    )
+                );
             };
             if( opt_options && opt_options[ 'processedTemplets' ] ){
-                if( context.templetes ){
-                    for( const rootRelativePath in context.templetes ){
-                        const htmlJson = NicePageBuilder.util.getHTMLJson( context.templetes[ rootRelativePath ] );
-    
-                        __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
-                    };
-                } else if( NicePageBuilder.DEFINE.DEBUG ){
-                    throw '[processedTemplets] context.templetes not found!';
+                for( const rootRelativePath in context.templetes ){
+                    const htmlJson = NicePageBuilder.util.getHTMLJson( context.templetes[ rootRelativePath ] );
+
+                    __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
                 };
             };
             callback();
