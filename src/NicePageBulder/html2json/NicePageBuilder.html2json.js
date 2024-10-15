@@ -7,7 +7,7 @@ goog.requireType( 'NicePageBuilder.NicePageOptions' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
-goog.requireType( 'NicePageBuilder.Context' );
+goog.requireType( 'HTMLJsonWithOptions' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );

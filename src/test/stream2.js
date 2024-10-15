@@ -1,7 +1,7 @@
 goog.provide( 'test.stream2' );
 
 goog.requireType( 'InstructionHandler' );
-goog.requireType( 'NicePageBuilder.NicePageContext' );
+goog.requireType( 'NicePageBuilder.PageContext' );
 
 module.exports[ 'onInstruction' ] = module.exports[ 'onInstruction' ] || {};
 
@@ -13,7 +13,7 @@ goog.scope(
         
         /** @type {!InstructionHandler} */
         module.exports[ 'onInstruction' ][ 2 ] = {
-            /** @this {!NicePageBuilder.NicePageContext} */
+            /** @this {!NicePageBuilder.PageContext} */
             'title' : function(){
                 var meta = this.getOptions();
         

@@ -6,13 +6,16 @@ goog.provide( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.provide( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.provide( 'NicePageBuilder.util.hasMIXINSProperty' );
 goog.provide( 'NicePageBuilder.util.mergeOptions' );
-goog.provide( 'NicePageBuilder.util.jsonFilePathToOriginalExtname' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
 goog.require( 'htmljson.base' );
+goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.NicePageOptions' );
+goog.requireType( 'NicePageBuilder.Mixin' );
+goog.requireType( 'NicePageBuilder.Context' );
+goog.requireType( 'HTMLJsonWithOptions' );
 
 /** @define {boolean} */
 NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , false );
@@ -197,6 +200,7 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
             } else if( pageOptions[ k ] === undefined ){
                 pageOptions[ k ] = altPageOptions[ k ];
                 ++changed;
+                // TODO mixedProperties
             };
         };
         if( changed || !isMixin ){
@@ -205,26 +209,6 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
             };
         };
     };
-};
-
-/**
- * `"/.json/xxx.AAA.json" => "AAA"`
- * @param {string} filePath
- * @param {!TinyPath} path
- */
-NicePageBuilder.util.jsonFilePathToOriginalExtname = function( filePath, path ){
-    let filePathElements = path.normalizeFilePath( filePath ).split( '.json' );
- 
-    if( NicePageBuilder.DEFINE.DEBUG ){
-        if( filePathElements[ filePathElements.length - 1 ] ){
-            throw filePath + ' is not .json file path!';
-        };
-    };
-
-    filePathElements.pop();
-    filePathElements = filePathElements.join( '.json' ).split( '/' );
-
-    return filePathElements.pop().split( '.' ).pop();
 };
 
 /**

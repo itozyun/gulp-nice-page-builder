@@ -1,7 +1,7 @@
 goog.provide( 'NicePageBuilder.module' );
 
 goog.require( 'htmljson.NODE_TYPE' );
-goog.require( 'NicePageBuilder._createContext' );
+goog.require( 'NicePageBuilder.createContext' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 
@@ -10,7 +10,7 @@ goog.requireType( 'NicePageBuilder.Context' );
  * @return {!NicePageBuilder.Context}
  */
 module.exports = function( options ){
-    const context = NicePageBuilder._createContext( options );
+    const context = NicePageBuilder.createContext( options );
 
     if( __NicePageBuilder_internal__.html2json ){
         context.html2json = __NicePageBuilder_internal__.html2json;

@@ -4,11 +4,12 @@ goog.provide( '__NicePageBuilder_internal__.json2html' );
 goog.require( 'json2html.main' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
-goog.requireType( 'NicePageBuilder.NicePageOptions' );
-goog.require( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
-goog.require( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
-goog.require( 'NicePageBuilder.bindNicePageContextToDocumentReadyHandler' );
-goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
+goog.requireType( 'HTMLJsonWithOptions' );
+goog.requireType( 'InstructionHandler' );
+goog.requireType( 'EnterNodeHandler' );
+goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
+goog.require( 'NicePageBuilder.PageContext.bindToEnterNodeHandler' );
+goog.require( 'NicePageBuilder.PageContext.bindToErrorHandler' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
@@ -35,9 +36,9 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
             };
         };
 
-        opt_onInstruction = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
-        opt_onEnterNode   = NicePageBuilder.bindNicePageContextToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );
-        opt_onError       = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );
+        opt_onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
+        opt_onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );
+        opt_onError       = NicePageBuilder.PageContext.bindToErrorHandler( context, pageOptions, opt_onError );
     };
     
     const htmlString = json2html.main( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );

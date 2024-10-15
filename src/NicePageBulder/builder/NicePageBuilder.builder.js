@@ -7,6 +7,8 @@ goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.Context' );
+goog.requireType( 'HTMLJsonWithOptions' );
+goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
@@ -145,6 +147,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                         };
                         /** @suppress {checkTypes} */
                         TEMPLETE_LIST = context.templetes = json;
+                        // TODO for in json; context.templetes[rruel]=json[rrurl]
                     };
                     break;
                 case context.keywordMixins :

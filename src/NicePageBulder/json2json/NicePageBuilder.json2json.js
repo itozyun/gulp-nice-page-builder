@@ -3,15 +3,17 @@ goog.provide( '__NicePageBuilder_internal__.json2json' );
 
 goog.require( 'json2json.main' );
 goog.require( '__NicePageBuilder_internal__' );
+goog.requireType( 'VNode' );
 goog.requireType( 'NicePageBuilder.Context' );
-goog.requireType( 'NicePageBuilder.NicePageOptions' );
-goog.requireType( 'NicePageBuilder.Context' );
+goog.requireType( 'HTMLJsonWithOptions' );
+goog.requireType( 'InstructionHandler' );
+goog.requireType( 'EnterNodeHandler' );
 goog.require( 'NicePageBuilder.getPageOptionsOf' );
 goog.require( 'NicePageBuilder.deepCopy' );
-goog.require( 'NicePageBuilder.bindNicePageContextToInstructuionHandler' );
-goog.require( 'NicePageBuilder.bindNicePageContextToEnterNodeHandler' );
-goog.require( 'NicePageBuilder.bindNicePageContextToDocumentReadyHandler' );
-goog.require( 'NicePageBuilder.bindNicePageContextToErrorHandler' );
+goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
+goog.require( 'NicePageBuilder.PageContext.bindToEnterNodeHandler' );
+goog.require( 'NicePageBuilder.PageContext.bindToDocumentReadyHandler' );
+goog.require( 'NicePageBuilder.PageContext.bindToErrorHandler' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
@@ -47,10 +49,10 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
             };
         };
 
-        opt_onInstruction   = NicePageBuilder.bindNicePageContextToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
-        opt_onEnterNode     = NicePageBuilder.bindNicePageContextToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );
-        opt_onDocumentReady = NicePageBuilder.bindNicePageContextToDocumentReadyHandler( context, pageOptions, opt_onDocumentReady );
-        opt_onError         = NicePageBuilder.bindNicePageContextToErrorHandler( context, pageOptions, opt_onError );
+        opt_onInstruction   = NicePageBuilder.PageContext.bindToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
+        opt_onEnterNode     = NicePageBuilder.PageContext.bindToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );
+        opt_onDocumentReady = NicePageBuilder.PageContext.bindToDocumentReadyHandler( context, pageOptions, opt_onDocumentReady );
+        opt_onError         = NicePageBuilder.PageContext.bindToErrorHandler( context, pageOptions, opt_onError );
     };
 
     const isStaticWebPage = json2json.main( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
@@ -139,6 +141,8 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
          * @param {function()} callback
          */
         function( callback ){
+            // TODO .allPageOptions[ rrurl ] = metadata
+
             while( CONTENT_FILE_LIST.length ){
                 const file = CONTENT_FILE_LIST.shift();
                 const encoding = CONTENT_FILE_LIST.shift();
