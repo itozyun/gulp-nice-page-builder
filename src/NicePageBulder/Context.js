@@ -21,24 +21,19 @@ NicePageBuilder.Context = function( opt_options ){
           srcRootPath = Path.resolve( options[ 'srcRootPath' ] || './' ) + '/', // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
           tinyPath    = new TinyPath( options[ 'urlOrigin' ] || '', srcRootPath );
 
-    const allPagesPath           = options[ 'allPagesPath'           ] || '',
-          metadataOfAllPagesPath = options[ 'metadataOfAllPagesPath' ] || 'netadata-of-all-pages,json',
-          allMixinsPath          = options[ 'allMixinsPath'          ] || 'all-mixins.json',
-          allTempletesPath       = options[ 'allTempletesPath'       ] || 'all-templetes.json';
-
     this.srcRootPath            = tinyPath._absolutePathOfSrcRoot,
-    this.allPagesPath           = allPagesPath;
-    this.metadataOfAllPagesPath = metadataOfAllPagesPath;
-    this.allMixinsPath          = allMixinsPath;
-    this.allTempletesPath       = allTempletesPath;
-    this.keywordTempletes       = _jsonFilePathToOriginalExtname( allTempletesPath, tinyPath ),
-    this.keywordMixins          = _jsonFilePathToOriginalExtname( allMixinsPath   , tinyPath ),
+    this.allPagesPath           = options[ 'allPagesPath'           ] || '';
+    this.metadataOfAllPagesPath = options[ 'metadataOfAllPagesPath' ] || 'netadata-of-all-pages.json';
+    this.allMixinsPath          = options[ 'allMixinsPath'          ] || 'all-mixins.json';
+    this.allTempletesPath       = options[ 'allTempletesPath'       ] || 'all-templetes.json';
+    this.keywordMixins          = _jsonFilePathToOriginalExtname( this.allMixinsPath   , tinyPath ),
+    this.keywordTempletes       = _jsonFilePathToOriginalExtname( this.allTempletesPath, tinyPath ),
     this.mixins                 = options[ 'mixins'             ] || {},
     this.templetes              = options[ 'templetes'          ] || {},
     this.metadataOfAllPages     = options[ 'metadataOfAllPages' ] || {},
     this.mergedPropertiesOf     = {},
     this.allPages               = {},
-    this.allAppendixes              = {},
+    this.allAppendixes          = {},
     this.path                   = tinyPath;
 
     /** @type {*} */ this.html2json;

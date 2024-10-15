@@ -1007,8 +1007,8 @@ function tb(a, b) {
     if (q.isStream()) {
       return this.emit("error", new d("NicePageBuilder.gulp.html2json", "Streaming not supported")), k();
     }
-    if (0 !== z.indexOf(c.ma)) {
-      return this.emit("error", new d("NicePageBuilder.gulp.html2json", '"' + z + '" is outside of srcRootPath:"' + c.ma + '"')), k();
+    if (0 !== z.indexOf(c.pa)) {
+      return this.emit("error", new d("NicePageBuilder.gulp.html2json", '"' + z + '" is outside of srcRootPath:"' + c.pa + '"')), k();
     }
     const h = q.contents.toString(n);
     n = parseInt(q.stat.birthtimeMs, 10);
@@ -1098,7 +1098,7 @@ function tb(a, b) {
     }
     const x = this;
     for (const p in g) {
-      B = g[p], t = Y(p), delete g[p], l = B[0], r = l[0], r = !Q(r) && R(r) ? r : {}, r.URL = p, r.CREATED_AT = B[1], r.MODIFIED_AT = B[2], r !== l[0] && l.unshift(r), h(t + ".json", l), c.ha && (c.fa[p] = l), c.$[p] = r;
+      B = g[p], t = Y(p), delete g[p], l = B[0], r = l[0], r = !Q(r) && R(r) ? r : {}, r.URL = p, r.CREATED_AT = B[1], r.MODIFIED_AT = B[2], r !== l[0] && l.unshift(r), h(t + ".json", l), c.ia && (c.ha[p] = l), c.$[p] = r;
     }
     q();
   });
@@ -1162,14 +1162,14 @@ function zb() {
         if (nb(e)) {
           return c.push(d, e), f();
         }
-      case a.la:
+      case a.oa:
         if (!Q(e) && R(e)) {
           for (var g in e) {
             a.ba[g] = e[g];
           }
         }
         break;
-      case a.ia:
+      case a.ma:
         if (!Q(e) && R(e)) {
           for (g in e) {
             a.da[g] = e[g];
@@ -1444,7 +1444,7 @@ function Ib(a, b, c, d, e) {
         if (Q(k)) {
           return u.push(w, k), n();
         }
-      case f.la:
+      case f.oa:
         k = JSON.parse(w.contents.toString(q));
         if (!Q(k) && R(k)) {
           for (const z in k) {
@@ -1452,7 +1452,7 @@ function Ib(a, b, c, d, e) {
           }
         }
         break;
-      case f.ia:
+      case f.ma:
         if (k = JSON.parse(w.contents.toString(q)), !Q(k) && R(k)) {
           for (const z in k) {
             f.da[z] = k[z];
@@ -2589,8 +2589,8 @@ function gc(a, b) {
       f.push(g);
     }
     const f = this;
-    a & 1 && e(b.oa, b.da);
-    a & 2 && e(b.pa, b.ba);
+    a & 1 && e(b.fa, b.da);
+    a & 2 && e(b.la, b.ba);
     if (a & 4) {
       for (const g in b.$) {
         delete b.$[g].URL;
@@ -2605,7 +2605,7 @@ function gc(a, b) {
         this.push(new c({path:g, contents:Buffer.from(JSON.stringify(b.ea[g]))}));
       }
     }
-    a & 16 && e(b.ha, b.fa);
+    a & 16 && e(b.ia, b.ha);
     d();
   });
 }
@@ -2722,19 +2722,18 @@ function nc(a) {
   a = a || {};
   var b = require("path").resolve(a.srcRootPath || "./") + "/";
   b = new ic(a.urlOrigin || "", b);
-  const c = a.allPagesPath || "", d = a.metadataOfAllPagesPath || "netadata-of-all-pages,json", e = a.allMixinsPath || "all-mixins.json", f = a.allTempletesPath || "all-templetes.json";
-  this.ma = b.$;
-  this.ha = c;
-  this.ra = d;
-  this.oa = e;
-  this.pa = f;
-  this.la = oc(f);
-  this.ia = oc(e);
+  this.pa = b.$;
+  this.ia = a.allPagesPath || "";
+  this.ra = a.metadataOfAllPagesPath || "netadata-of-all-pages.json";
+  this.fa = a.allMixinsPath || "all-mixins.json";
+  this.la = a.allTempletesPath || "all-templetes.json";
+  this.ma = oc(this.fa);
+  this.oa = oc(this.la);
   this.da = a.mixins || {};
   this.ba = a.templetes || {};
   this.$ = a.metadataOfAllPages || {};
   this.ca = {};
-  this.fa = {};
+  this.ha = {};
   this.ea = {};
   this.path = b;
 }
