@@ -2,14 +2,14 @@
  * @externs
  */
 
-var BuiltinOptions = {};
+var BuiltinMetadata = {};
 
-    BuiltinOptions.TEMPLETE    = '';
-    BuiltinOptions.MIXINS      = [ '' ];
-    BuiltinOptions.URL         = '';
-    BuiltinOptions.CREATED_AT  = 0;
-    BuiltinOptions.MODIFIED_AT = 0;
-    BuiltinOptions.UPDATED_AT  = 0;
+    BuiltinMetadata.TEMPLETE    = '';
+    BuiltinMetadata.MIXINS      = [ '' ];
+    BuiltinMetadata.URL         = '';
+    BuiltinMetadata.CREATED_AT  = 0;
+    BuiltinMetadata.MODIFIED_AT = 0;
+    BuiltinMetadata.UPDATED_AT  = 0;
 
 var nicePageBuilder = function(){};
     nicePageBuilder.html2json = function(){};

@@ -3,16 +3,16 @@ goog.provide( '__NicePageBuilder_internal__.html2json' );
 
 goog.require( 'html2json.main' );
 goog.requireType( 'NicePageBuilder.Context' );
-goog.requireType( 'NicePageBuilder.NicePageOptions' );
+goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
-goog.requireType( 'HTMLJsonWithOptions' );
+goog.requireType( 'HTMLJsonWithMetadata' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
-goog.require( 'NicePageBuilder.util.getOptions' );
+goog.require( 'NicePageBuilder.util.getMetadata' );
 goog.require( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
@@ -23,7 +23,7 @@ goog.require( 'NicePageBuilder.util.getSLotElement' );
  * @param {boolean} allowInvalidTree
  * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
- * @return {!HTMLJson | !HTMLJsonWithOptions}
+ * @return {!HTMLJson | !HTMLJsonWithMetadata}
  */
 __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree, opt_onError, opt_options ){
     const htmlJson = /** @type {!HTMLJson} */ (html2json.main( htmlString, allowInvalidTree, opt_onError, opt_options ));
@@ -45,10 +45,10 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
         // ↓
         // [ {...}, 9, '<!DOCTYPE html>', [ 'p' ] ]
         if( scriptJSONNode && scriptJSONNode.length === 3 ){
-            const options = JSON.parse( /** @type {string} */ (scriptJSONNode[ 2 ]) );
+            const metadata = JSON.parse( /** @type {string} */ (scriptJSONNode[ 2 ]) );
 
-            if( !m_isArray( options ) && m_isObject( options ) ){
-                htmlJson.unshift( options );
+            if( !m_isArray( metadata ) && m_isObject( metadata ) ){
+                htmlJson.unshift( metadata );
             };
         };
     };
@@ -117,7 +117,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                     const mixinJson = JSON.parse( contents );
 
                     if( m_isObject( mixinJson ) ){
-                        MIXIN_LIST[ rootRelativeURL ] = [ /** @type {!NicePageBuilder.NicePageOptions} */ (mixinJson), createdTimeMs, updatedTimeMs ];
+                        MIXIN_LIST[ rootRelativeURL ] = [ /** @type {!NicePageBuilder.Metadata} */ (mixinJson), createdTimeMs, updatedTimeMs ];
                     };
                     break;
                 default :
@@ -137,14 +137,14 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             for( let pageOrTempleteRootRelativeURL in PAGES_OR_TEMPLETES ){
                 const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ];
 
-                let pageOptions = NicePageBuilder.util.getOptions( pageOrTemplete );
+                let metadata = NicePageBuilder.util.getMetadata( pageOrTemplete );
 
-                if( !pageOptions ){
+                if( !metadata ){
                     continue;
                 };
 
-                checkMixins( pageOrTempleteRootRelativeURL, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
-                checkTemplete( pageOrTempleteRootRelativeURL, pageOptions.TEMPLETE, pageOptions );
+                checkMixins( pageOrTempleteRootRelativeURL, metadata.MIXINS, !!metadata.TEMPLETE );
+                checkTemplete( pageOrTempleteRootRelativeURL, metadata.TEMPLETE, metadata );
 
                 if( PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ] ){
                     pageOrTemplete.push( true ); // isPage
@@ -175,19 +175,19 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                         
                         mixinPathList[ i ] = getShortestURL( pageOrTempleteRootRelativeURL, mixinRootRelativeURL );
                         if( mixin ){
-                            const mixinOptions = /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]);
+                            const mixinMetadata = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]);
 
                             if( !skipTemplete ){
-                                checkTemplete( mixinRootRelativeURL, mixinOptions.TEMPLETE, mixinOptions );
+                                checkTemplete( mixinRootRelativeURL, mixinMetadata.TEMPLETE, mixinMetadata );
                             };
 
                             if( mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
                                 mixin.push( true ); // used
-                                if( mixinOptions.MIXINS ){
+                                if( mixinMetadata.MIXINS ){
                                     if( NicePageBuilder.DEFINE.DEBUG ){
                                         console.log( 'Mixin:"' + mixinRootRelativeURL + '" cannot have MIXINS property!' );
                                     };
-                                    delete mixinOptions.MIXINS;
+                                    delete mixinMetadata.MIXINS;
                                 };
                             };
                         } else if( NicePageBuilder.DEFINE.DEBUG ){
@@ -200,31 +200,31 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             /**
              * @param {string} rootRelativeURL
              * @param {string | void} templetePath
-             * @param {!NicePageBuilder.NicePageOptions} pageOptions
+             * @param {!NicePageBuilder.Metadata} metadata
              */
-            function checkTemplete( rootRelativeURL, templetePath, pageOptions ){
+            function checkTemplete( rootRelativeURL, templetePath, metadata ){
                 while( templetePath ){
                     const templeteRootRelativeURL = context.path.toRootRelativeURL( rootRelativeURL, templetePath );
                     const templete                = PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
 
                     if( templete ){
-                        pageOptions.TEMPLETE = getShortestURL( rootRelativeURL, templeteRootRelativeURL );
+                        metadata.TEMPLETE = getShortestURL( rootRelativeURL, templeteRootRelativeURL );
                         rootRelativeURL = templeteRootRelativeURL;
 
                         delete PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
                         TEMPLETE_LIST[ templeteRootRelativeURL ] = templete;
 
                         /** @suppress {checkTypes} */
-                        pageOptions = NicePageBuilder.util.getOptions( templete );
-                        if( pageOptions ){
-                            checkMixins( rootRelativeURL, pageOptions.MIXINS, !!pageOptions.TEMPLETE );
+                        metadata = NicePageBuilder.util.getMetadata( templete );
+                        if( metadata ){
+                            checkMixins( rootRelativeURL, metadata.MIXINS, !!metadata.TEMPLETE );
                             /** @suppress {checkTypes} */
-                            templetePath = pageOptions.TEMPLETE;
+                            templetePath = metadata.TEMPLETE;
                         } else {
                             break;
                         };
                     } else if( TEMPLETE_LIST[ templeteRootRelativeURL ] ){
-                        pageOptions.TEMPLETE = getShortestURL( rootRelativeURL, templeteRootRelativeURL );
+                        metadata.TEMPLETE = getShortestURL( rootRelativeURL, templeteRootRelativeURL );
                         break;
                     } else if( NicePageBuilder.DEFINE.DEBUG ){
                         throw 'Templete:"' + templeteRootRelativeURL + '" required by "' + rootRelativeURL + '" does not exist!';
@@ -269,23 +269,23 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
 
                 const htmlJson = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];
 
-                let pageOptions = htmlJson[ 0 ];
-                pageOptions = !m_isArray( pageOptions ) && m_isObject( pageOptions ) ? pageOptions : {};
-                pageOptions.URL         = pageRootRelativeURL;
-                pageOptions.CREATED_AT  = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.CREATED_AT ]);
-                pageOptions.MODIFIED_AT = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.UPDATED_AT ]);
+                let metadata = htmlJson[ 0 ];
+                metadata = !m_isArray( metadata ) && m_isObject( metadata ) ? metadata : {};
+                metadata.URL         = pageRootRelativeURL;
+                metadata.CREATED_AT  = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.CREATED_AT ]);
+                metadata.MODIFIED_AT = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.UPDATED_AT ]);
 
-                if( pageOptions !== htmlJson[ 0 ] ){
-                    htmlJson.unshift( pageOptions );
+                if( metadata !== htmlJson[ 0 ] ){
+                    htmlJson.unshift( metadata );
                 };
 
                 writeFile( filePath + '.json', htmlJson );
 
-                delete pageOptions.URL;
+                delete metadata.URL;
                 if( context.allPagesPath ){
-                    context.allPages[ pageRootRelativeURL ] = /** @type {!HTMLJsonWithOptions} */ (htmlJson);
+                    context.allPages[ pageRootRelativeURL ] = /** @type {!HTMLJsonWithMetadata} */ (htmlJson);
                 };
-                context.allPageOptions[ pageRootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOptions} */ (pageOptions);
+                context.metadataOfAllPages[ pageRootRelativeURL ] = /** @type {!NicePageBuilder.Metadata} */ (metadata);
             };
 
             callback();

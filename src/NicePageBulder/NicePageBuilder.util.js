@@ -1,21 +1,21 @@
 goog.provide( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.provide( 'NicePageBuilder.util' );
 goog.provide( 'NicePageBuilder.util.getHTMLJson' );
-goog.provide( 'NicePageBuilder.util.getOptions' );
-goog.provide( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
+goog.provide( 'NicePageBuilder.util.getMetadata' );
+goog.provide( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.provide( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.provide( 'NicePageBuilder.util.hasMIXINSProperty' );
-goog.provide( 'NicePageBuilder.util.mergeOptions' );
+goog.provide( 'NicePageBuilder.util.mergeMetadata' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
 goog.require( 'htmljson.base' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
-goog.requireType( 'NicePageBuilder.NicePageOptions' );
+goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.Context' );
-goog.requireType( 'HTMLJsonWithOptions' );
+goog.requireType( 'HTMLJsonWithMetadata' );
 
 /** @define {boolean} */
 NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , false );
@@ -23,10 +23,10 @@ NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , fal
 /**
  * 
  * @param {!NicePageBuilder.NicePageOrTemplete} nicePageOrTemplete 
- * @return {!HTMLJson | !HTMLJsonWithOptions}
+ * @return {!HTMLJson | !HTMLJsonWithMetadata}
  */
 NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
-    var htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (nicePageOrTemplete[ NicePageBuilder.INDEXES.HTML_JSON ]);
+    var htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (nicePageOrTemplete[ NicePageBuilder.INDEXES.HTML_JSON ]);
 
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !m_isArray( htmlJson ) ){
@@ -39,37 +39,37 @@ NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
 /**
  * 
  * @param {!NicePageBuilder.NicePageOrTemplete} nicePageOrTemplete 
- * @return {NicePageBuilder.NicePageOptions | null}
+ * @return {NicePageBuilder.Metadata | null}
  */
-NicePageBuilder.util.getOptions = function( nicePageOrTemplete ){
-    var options = /** @type {!NicePageBuilder.NicePageOptions} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
+NicePageBuilder.util.getMetadata = function( nicePageOrTemplete ){
+    var metadata = /** @type {!NicePageBuilder.Metadata} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
 
-    return !m_isArray( options ) && m_isObject( options ) ? options : null;
+    return !m_isArray( metadata ) && m_isObject( metadata ) ? metadata : null;
 };
 
 /**
  * 
- * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson 
+ * @param {!HTMLJson | !HTMLJsonWithMetadata} htmlJson 
  * @return {boolean}
  */
-NicePageBuilder.util.isHTMLJsonWithOptions = function( htmlJson ){
-    var options = htmlJson[ 0 ];
+NicePageBuilder.util.isHTMLJsonWithMetadata = function( htmlJson ){
+    var metadata = htmlJson[ 0 ];
 
-    return m_isArray( htmlJson ) && !m_isArray( options ) && m_isObject( options );
+    return m_isArray( htmlJson ) && !m_isArray( metadata ) && m_isObject( metadata );
 };
 
 /**
  * 
- * @param {!HTMLJson | !HTMLJsonWithOptions | !NicePageBuilder.NicePageOptions} htmlJsonOrOptions
+ * @param {!HTMLJson | !HTMLJsonWithMetadata | !NicePageBuilder.Metadata} htmlJsonOrMetadata
  * @return {boolean}
  */
-NicePageBuilder.util.hasTEMPLETEProperty = function( htmlJsonOrOptions ){
-    if( !m_isArray( htmlJsonOrOptions ) && m_isObject( htmlJsonOrOptions ) ){
-        return !!htmlJsonOrOptions.TEMPLETE;
+NicePageBuilder.util.hasTEMPLETEProperty = function( htmlJsonOrMetadata ){
+    if( !m_isArray( htmlJsonOrMetadata ) && m_isObject( htmlJsonOrMetadata ) ){
+        return !!htmlJsonOrMetadata.TEMPLETE;
     };
 
-    if( NicePageBuilder.util.isHTMLJsonWithOptions( /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (htmlJsonOrOptions) ) ){
-        return htmlJsonOrOptions[ 0 ].TEMPLETE || false;
+    if( NicePageBuilder.util.isHTMLJsonWithMetadata( /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (htmlJsonOrMetadata) ) ){
+        return htmlJsonOrMetadata[ 0 ].TEMPLETE || false;
     };
 
     return false;
@@ -77,16 +77,16 @@ NicePageBuilder.util.hasTEMPLETEProperty = function( htmlJsonOrOptions ){
 
 /**
  * 
- * @param {!HTMLJson | !HTMLJsonWithOptions | !NicePageBuilder.NicePageOptions} htmlJsonOrOptions
+ * @param {!HTMLJson | !HTMLJsonWithMetadata | !NicePageBuilder.Metadata} htmlJsonOrMetadata
  * @return {boolean}
  */
-NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrOptions ){
-    if( !m_isArray( htmlJsonOrOptions ) && m_isObject( htmlJsonOrOptions ) ){
-        return !!htmlJsonOrOptions.MIXINS;
+NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrMetadata ){
+    if( !m_isArray( htmlJsonOrMetadata ) && m_isObject( htmlJsonOrMetadata ) ){
+        return !!htmlJsonOrMetadata.MIXINS;
     };
 
-    if( NicePageBuilder.util.isHTMLJsonWithOptions( /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (htmlJsonOrOptions) ) ){
-        return htmlJsonOrOptions[ 0 ].MIXINS || false;
+    if( NicePageBuilder.util.isHTMLJsonWithMetadata( /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (htmlJsonOrMetadata) ) ){
+        return htmlJsonOrMetadata[ 0 ].MIXINS || false;
     };
 
     return false;
@@ -95,23 +95,23 @@ NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrOptions ){
 
 /**
  * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!NicePageBuilder.Metadata} metadata
  * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
  * @param {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
  * @param {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin> | null=} MIXIN_LIST
  * @param {!function((string | !Error))=} opt_onError
  */
-NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStack, TEMPLETE_LIST, MIXIN_LIST, opt_onError ){
-    const filePath = context.path.urlToFilePath( pageOptions.URL );
+NicePageBuilder.util.mergeMetadata = function( context, metadata, templeteStack, TEMPLETE_LIST, MIXIN_LIST, opt_onError ){
+    const filePath = context.path.urlToFilePath( metadata.URL );
 
-    if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) && !TEMPLETE_LIST ){
+    if( NicePageBuilder.util.hasTEMPLETEProperty( metadata ) && !TEMPLETE_LIST ){
         if( opt_onError ){
             return opt_onError( filePath + ' has TEMPLETE property, and no templetes found!' );
         } else if( NicePageBuilder.DEFINE.DEBUG ){
             throw filePath + ' has TEMPLETE property, and no templetes found!';
         };
     };
-    if( NicePageBuilder.util.hasMIXINSProperty( pageOptions ) && !MIXIN_LIST ){
+    if( NicePageBuilder.util.hasMIXINSProperty( metadata ) && !MIXIN_LIST ){
         if( opt_onError ){
             return opt_onError( filePath + ' has MIXINS property, and no mixins found!' );
         } else if( NicePageBuilder.DEFINE.DEBUG ){
@@ -119,14 +119,14 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
         };
     };
 
-    let updatedAt = pageOptions.MODIFIED_AT;
+    let updatedAt = metadata.MODIFIED_AT;
     let templeteRootRelativePath;
 
-    if( pageOptions.TEMPLETE ){
-        templeteRootRelativePath = context.path.toRootRelativeURL( pageOptions.URL, pageOptions.TEMPLETE );
+    if( metadata.TEMPLETE ){
+        templeteRootRelativePath = context.path.toRootRelativeURL( metadata.URL, metadata.TEMPLETE );
     };
 
-    mergeMinxins( pageOptions.URL, pageOptions.MIXINS );
+    mergeMinxins( metadata.URL, metadata.MIXINS );
 
     if( templeteRootRelativePath ){
         templeteStack[ 0 ] = templeteRootRelativePath;
@@ -138,14 +138,14 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
 
         if( NicePageBuilder.DEFINE.DEBUG ){
             if( !templete ){
-                throw 'Templete: ' + templeteRootRelativePath + ' required by ' + context.path.urlToFilePath( pageOptions.URL ) + ' not found!';
+                throw 'Templete: ' + templeteRootRelativePath + ' required by ' + context.path.urlToFilePath( metadata.URL ) + ' not found!';
             };
         };
 
-        const templeteOptions = NicePageBuilder.util.getOptions( templete );
+        const templeteMetadata = NicePageBuilder.util.getMetadata( templete );
 
-        if( templeteOptions ){
-            if( NicePageBuilder.util.hasMIXINSProperty( templeteOptions ) && !MIXIN_LIST ){
+        if( templeteMetadata ){
+            if( NicePageBuilder.util.hasMIXINSProperty( templeteMetadata ) && !MIXIN_LIST ){
                 if( opt_onError ){
                     return opt_onError( templeteRootRelativePath + ' has MIXINS property, and no mixins found!' );
                 } else if( NicePageBuilder.DEFINE.DEBUG ){
@@ -153,8 +153,8 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
                 };
             };
             templeteRootRelativePath = '';
-            mix( tmpTempleteRootRelativePath, templeteOptions, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
-            mergeMinxins( tmpTempleteRootRelativePath, templeteOptions.MIXINS );
+            mix( tmpTempleteRootRelativePath, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
+            mergeMinxins( tmpTempleteRootRelativePath, templeteMetadata.MIXINS );
             if( templeteRootRelativePath ){
                 templeteStack.push( templeteRootRelativePath );
             };
@@ -163,7 +163,7 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
         };
     };
 
-    pageOptions.UPDATED_AT = updatedAt;
+    metadata.UPDATED_AT = updatedAt;
 
     /**
      * @param {string} rootRelativePath
@@ -175,30 +175,30 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
                 const mixinRootRelativeURL = context.path.toRootRelativeURL( rootRelativePath, mixinPathList[ i ] );
                 const mixin                = MIXIN_LIST[ mixinRootRelativeURL ];
 
-                mix( mixinRootRelativeURL, /** @type {!NicePageBuilder.NicePageOptions} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
+                mix( mixinRootRelativeURL, /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
             };
         };
     };
 
     /**
      * @param {string} rootRelativePath
-     * @param {!NicePageBuilder.NicePageOptions} altPageOptions 
+     * @param {!NicePageBuilder.Metadata} altMetadata 
      * @param {number} altUpdatedAt
      * @param {boolean} isMixin
      */
-    function mix( rootRelativePath, altPageOptions, altUpdatedAt, isMixin ){
+    function mix( rootRelativePath, altMetadata, altUpdatedAt, isMixin ){
         let changed = 0;
 
-        for( const k in altPageOptions ){
+        for( const k in altMetadata ){
             if( NicePageBuilder.DEFINE.DEBUG && isMixin && k === 'MIXINS' ){
                 throw 'Mixin has MIXINS property!';
             } else if( k === 'TEMPLETE' ){
                 if( !templeteRootRelativePath ){
-                    templeteRootRelativePath = context.path.toRootRelativeURL( rootRelativePath, altPageOptions[ k ] ); // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
+                    templeteRootRelativePath = context.path.toRootRelativeURL( rootRelativePath, altMetadata[ k ] ); // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
                     ++changed;
                 };
-            } else if( pageOptions[ k ] === undefined ){
-                pageOptions[ k ] = altPageOptions[ k ];
+            } else if( metadata[ k ] === undefined ){
+                metadata[ k ] = altMetadata[ k ];
                 ++changed;
                 // TODO mixedProperties
             };
@@ -213,7 +213,7 @@ NicePageBuilder.util.mergeOptions = function( context, pageOptions, templeteStac
 
 /**
  * 
- * @param {!HTMLJson | !HTMLJsonWithOptions} rootJSONNode
+ * @param {!HTMLJson | !HTMLJsonWithMetadata} rootJSONNode
  * @return {!Array | void}
  */
 NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
@@ -229,36 +229,36 @@ NicePageBuilder.util.getJsonScriptElement = function( rootJSONNode ){
 
 /**
  * 
- * @param {!HTMLJson | !HTMLJsonWithOptions} rootJSONNode
- * @param {boolean} dropOptions
+ * @param {!HTMLJson | !HTMLJsonWithMetadata} rootJSONNode
+ * @param {boolean} dropMetadata
  * @return {!Array | void}
  */
-NicePageBuilder.util.getSLotElement = function( rootJSONNode, dropOptions ){
+NicePageBuilder.util.getSLotElement = function( rootJSONNode, dropMetadata ){
     return _getElementByFilter(
         rootJSONNode,
         function( tagName, attrs ){
             return tagName === 'SLOT' || tagName === 'slot';
         },
-        dropOptions
+        dropMetadata
     );
 };
 
 /**
  * @private
- * @param {!HTMLJson | !HTMLJsonWithOptions} rootJSONNode
+ * @param {!HTMLJson | !HTMLJsonWithMetadata} rootJSONNode
  * @param {function(string, (Attrs | null)):boolean} filter
- * @param {boolean=} opt_dropOptions
+ * @param {boolean=} opt_dropMetadata
  * @return {!Array | void} 0:target node, 1:parentnode, 3:index
  */
-function _getElementByFilter( rootJSONNode, filter, opt_dropOptions ){
-    let options = rootJSONNode[ 0 ], result;
+function _getElementByFilter( rootJSONNode, filter, opt_dropMetadata ){
+    let metadata = rootJSONNode[ 0 ], result;
 
-    if( !m_isArray( options ) && m_isObject( options ) ){
+    if( !m_isArray( metadata ) && m_isObject( metadata ) ){
         rootJSONNode.shift();
         result = walkChildNodes( /** @type {!HTMLJson} */ (rootJSONNode) );
 
-        if( !opt_dropOptions ){
-            rootJSONNode.unshift( options );
+        if( !opt_dropMetadata ){
+            rootJSONNode.unshift( metadata );
             if( result ){
                 if( result[ 1 ] === rootJSONNode ){ // if parentNode === rootNode
                     return [ result[ 0 ], rootJSONNode, ++result[ 2 ] /** increment index */ ];

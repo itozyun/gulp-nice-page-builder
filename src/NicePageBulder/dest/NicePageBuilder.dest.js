@@ -13,8 +13,8 @@ var DEST_TARGET = {
     ALL_MIXINS         :  1,
     ALL_TEMPLETS       :  2,
     ALL_PAGES_METADATA :  4,
-    ALL_PAGES_DATA     :  8,
-    ALL_APPENDIXES     : 16
+    ALL_APPENDIXES     :  8,
+    ALL_PAGES_DATA     : 16
 };
 
 /**
@@ -56,7 +56,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                 writeFile( context.allTempletesPath, context.templetes );
             };
             if( destTargets & DEST_TARGET.ALL_PAGES_METADATA ){
-                writeFile( context.allPageOptionsPath, context.allPageOptions );
+                writeFile( context.metadataOfAllPagesPath, context.metadataOfAllPages );
             };
             if( destTargets & DEST_TARGET.ALL_PAGES_DATA ){
                 writeFile( context.allPagesPath, context.allPages );

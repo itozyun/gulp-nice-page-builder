@@ -2,37 +2,37 @@ goog.provide( 'NicePageBuilder.builder' );
 goog.provide( '__NicePageBuilder_internal__.builder' );
 
 goog.require( 'htmljson.base' );
-goog.requireType( 'NicePageBuilder.NicePageOptions' );
+goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.Context' );
-goog.requireType( 'HTMLJsonWithOptions' );
-goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
+goog.requireType( 'HTMLJsonWithMetadata' );
+goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
-goog.require( 'NicePageBuilder.util.mergeOptions' );
+goog.require( 'NicePageBuilder.util.mergeMetadata' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 
 /**
  * @this {NicePageBuilder.Context}
  * 
- * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson
+ * @param {!HTMLJson | !HTMLJsonWithMetadata} htmlJson
  * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
  * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin> | null=} MIXIN_LIST 
- * @return {!HTMLJson | !HTMLJsonWithOptions}
+ * @return {!HTMLJson | !HTMLJsonWithMetadata}
  */
 __NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
-    if( !NicePageBuilder.util.isHTMLJsonWithOptions( htmlJson ) ){
+    if( !NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
         return htmlJson;
     };
 
-    const pageOptions   = htmlJson[ 0 ];
+    const metadata      = htmlJson[ 0 ];
     const templeteStack = []; // Array.<NicePageBuilder.RootRelativeURL>
 
-    NicePageBuilder.util.mergeOptions( this, pageOptions, templeteStack, TEMPLETE_LIST || this.templetes, MIXIN_LIST || this.mixins );
+    NicePageBuilder.util.mergeMetadata( this, metadata, templeteStack, TEMPLETE_LIST || this.templetes, MIXIN_LIST || this.mixins );
 
     let contentHtmlJson = htmlJson;
 
@@ -42,14 +42,14 @@ __NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_
 
         if( NicePageBuilder.DEFINE.DEBUG ){
             if( !templete ){
-                throw 'Templete: ' + templetePath + ' required by ' + this.path.urlToFilePath( pageOptions.URL ) + ' not found!';
+                throw 'Templete: ' + templetePath + ' required by ' + this.path.urlToFilePath( metadata.URL ) + ' not found!';
             };
         };
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
     };
 
-    delete pageOptions.TEMPLETE;
-    delete pageOptions.MIXINS;
+    delete metadata.TEMPLETE;
+    delete metadata.MIXINS;
 
     return contentHtmlJson;
 };
@@ -69,10 +69,10 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
         const parentJSONNode = /** @type {!HTMLJson} */ (result[ 1 ]);
 
         let myIndex = /** @type {number} */ (result[ 2 ]),
-            options;
+            metadata;
 
         if( !m_isArray( contentJSONNode[ 0 ] ) && m_isObject( contentJSONNode[ 0 ] ) ){
-            options = contentJSONNode.shift();
+            metadata = contentJSONNode.shift();
         };
 
         let i = m_getChildNodeStartIndex( contentJSONNode ),
@@ -84,8 +84,8 @@ function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
             parentJSONNode.splice( myIndex + i, 0, contentJSONNode[ i ] );
         };
 
-        if( options ){
-            templeteJSONNode.unshift( options );
+        if( metadata ){
+            templeteJSONNode.unshift( metadata );
         };
     };
     return templeteJSONNode;
@@ -102,7 +102,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @type {!Object.<NicePageBuilder.RootRelativeURL, (!HTMLJsonWithOptions)>} */
+    /** @type {!Object.<NicePageBuilder.RootRelativeURL, (!HTMLJsonWithMetadata)>} */
     const PAGE_LIST = {};
 
     /** @type {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null} */
@@ -138,7 +138,7 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                 case 'htm'   :
                 case 'xhtml' :
                 case 'php'   :
-                    PAGE_LIST[ /** @type {!NicePageBuilder.NicePageOptions} */ (json[ 0 ]).URL ] = json;
+                    PAGE_LIST[ /** @type {!NicePageBuilder.Metadata} */ (json[ 0 ]).URL ] = json;
                     return callback();
                 case context.keywordTempletes :
                     if( !m_isArray( json ) && m_isObject( json ) ){

@@ -74,7 +74,7 @@ gulp.task(
     'tutorial',
     gulp.series(
         function(){
-            let NicePageBuilder = require( './index.js' ).gulp( { srcRootPath : 'tutorial/input', allPagesPath : 'all-pages.json', allPageOptionsPath : 'all-options.json' } );
+            let NicePageBuilder = require( './index.js' ).gulp( { srcRootPath : 'tutorial/input', allPagesPath : 'all-pages.json' } );
 
             return gulp.src(
                     [
@@ -84,6 +84,8 @@ gulp.task(
                     NicePageBuilder.html2json( null, { trimWhitespaces: 'aggressive' } )
                 ).pipe(
                     NicePageBuilder.json2json( null, null, function(){console.log( this )} )
+                ).pipe(
+                    NicePageBuilder.dest( 1 + 2 + 4 + 8 )
                 ).pipe(
                     NicePageBuilder.builder()
                 ).pipe(

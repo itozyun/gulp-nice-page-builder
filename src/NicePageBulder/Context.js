@@ -5,30 +5,31 @@ goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.SourceRootRelativeFilePath' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
-goog.requireType( 'NicePageBuilder.NicePageOptions' );
-goog.requireType( 'HTMLJsonWithOptions' );
+goog.requireType( 'NicePageBuilder.Metadata' );
+goog.requireType( 'HTMLJsonWithMetadata' );
 goog.require( 'TinyPath' );
 
 /**
  * @typedef {{
- *   srcRootPath        : string,
- *   allPagesPath       : string,
- *   allPageOptionsPath : string,
- *   allMixinsPath      : string,
- *   allTempletesPath   : string,
- *   mixins             : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin>),
- *   templetes          : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>),
- *   allPageOptions     : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOptions>),
- *   _allPageOptions    : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOptions>),
- *   allPages           : (Object.<NicePageBuilder.RootRelativeURL, !HTMLJsonWithOptions>),
- *    keywordTempletes   : string,
- *   keywordMixins      : string,
- *   path               : !TinyPath,
- *   _jsonList          : !Object.<NicePageBuilder.SourceRootRelativeFilePath, !Object>,
- *   html2json          : *,
- *   builder            : *,
- *   json2json          : *,
- *   json2html          : *
+ *   srcRootPath            : string,
+ *   allPagesPath           : string,
+ *   metadataOfAllPagesPath : string,
+ *   allMixinsPath          : string,
+ *   allTempletesPath       : string,
+ *   mixins                 : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin>),
+ *   templetes              : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>),
+ *   metadataOfAllPages     : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata>),
+ *   _metadataOfAllPages    : (Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata>),
+ *   allPages               : (Object.<NicePageBuilder.RootRelativeURL, !HTMLJsonWithMetadata>),
+ *   keywordTempletes       : string,
+ *   keywordMixins          : string,
+ *   path                   : !TinyPath,
+ *   _jsonList              : !Object.<NicePageBuilder.SourceRootRelativeFilePath, !Object>,
+ *   html2json              : *,
+ *   builder                : *,
+ *   json2json              : *,
+ *   json2html              : *,
+ *   dest                   : *
  * }}
 */
 NicePageBuilder.Context;
@@ -45,26 +46,26 @@ NicePageBuilder.createContext = function( opt_options ){
           srcRootPath = Path.resolve( options[ 'srcRootPath' ] || './' ) + '/', // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
           tinyPath    = new TinyPath( options[ 'urlOrigin' ] || '', srcRootPath );
 
-    const allPagesPath       = options[ 'allPagesPath'       ] || '',
-          allPageOptionsPath = options[ 'allPageOptionsPath' ] || '',
-          allMixinsPath      = options[ 'allMixinsPath'      ] || 'all-mixins.json',
-          allTempletesPath   = options[ 'allTempletesPath'   ] || 'all-templetes.json';
+    const allPagesPath           = options[ 'allPagesPath'           ] || '',
+          metadataOfAllPagesPath = options[ 'metadataOfAllPagesPath' ] || 'netadata-of-all-pages,json',
+          allMixinsPath          = options[ 'allMixinsPath'          ] || 'all-mixins.json',
+          allTempletesPath       = options[ 'allTempletesPath'       ] || 'all-templetes.json';
 
     return {
-        srcRootPath        : tinyPath._absolutePathOfSrcRoot,
+        srcRootPath         : tinyPath._absolutePathOfSrcRoot,
         allPagesPath,
-        allPageOptionsPath,
+        metadataOfAllPagesPath,
         allMixinsPath,
         allTempletesPath,
-        keywordTempletes   : _jsonFilePathToOriginalExtname( allTempletesPath, tinyPath ),
-        keywordMixins      : _jsonFilePathToOriginalExtname( allMixinsPath   , tinyPath ),
-        mixins             : options[ 'mixins'         ] || {},
-        templetes          : options[ 'templetes'      ] || {},
-        allPageOptions     : options[ 'allPageOptions' ] || {},
-        _allPageOptions    : {},
-        allPages           : {},
-        _jsonList          : {},
-        path               : tinyPath
+        keywordTempletes    : _jsonFilePathToOriginalExtname( allTempletesPath, tinyPath ),
+        keywordMixins       : _jsonFilePathToOriginalExtname( allMixinsPath   , tinyPath ),
+        mixins              : options[ 'mixins'             ] || {},
+        templetes           : options[ 'templetes'          ] || {},
+        metadataOfAllPages  : options[ 'metadataOfAllPages' ] || {},
+        _metadataOfAllPages : {},
+        allPages            : {},
+        _jsonList           : {},
+        path                : tinyPath
     };
 };
 

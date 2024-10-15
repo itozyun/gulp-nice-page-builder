@@ -693,7 +693,7 @@ function $a(a) {
             } else {
               if (N.startsWith(x)) {
                 var G = f(K);
-                G.Ja ? (K = [G.Ka], u.apply(K, G.Ja)) : K = G.Ka;
+                G.Ia ? (K = [G.Ja], u.apply(K, G.Ia)) : K = G.Ja;
               }
               C[N] = wa(K) ? +K : K;
               ++P;
@@ -739,8 +739,8 @@ function $a(a) {
       case 7:
         A = W(w);
         G = f(A);
-        C = [7, G.Ka];
-        G.Ja && u.apply(C, G.Ja);
+        C = [7, G.Ja];
+        G.Ia && u.apply(C, G.Ia);
         y.push(C);
         break;
       case 8:
@@ -781,7 +781,7 @@ function $a(a) {
   function f(w) {
     var y = w.indexOf(t), F = w.lastIndexOf(m), D = Na(Oa(-1 === y ? w : w.substr(0, y), " "), " ");
     w = -1 === y ? [] : JSON.parse("[" + w.substring(y + t.length, F) + "]");
-    return w.length ? {Ka:D, Ja:w} : {Ka:D};
+    return w.length ? {Ja:D, Ia:w} : {Ja:D};
   }
   function g(w, y, F, D) {
     y = w.indexOf(y) + y.length;
@@ -1045,8 +1045,8 @@ function rb(a, b, c) {
 }
 ;var tb = !1, ub = !1, vb = !1, wb = !1, xb = !1, hb = 0, ob = 0, pb = 2;
 function yb(a, b) {
-  var c = a.Ua[b];
-  !c && a.Ia && (c = a.Ia[b]) && (c = JSON.parse(JSON.stringify(c)), c.URL = b, mb(a, c, [], a.ja, a.oa), c = JSON.parse(JSON.stringify(c)), a.Ua[b] = c);
+  var c = a.Va[b];
+  !c && a.Ka && (c = a.Ka[b]) && (c = JSON.parse(JSON.stringify(c)), c.URL = b, mb(a, c, [], a.ja, a.oa), c = JSON.parse(JSON.stringify(c)), a.Va[b] = c);
   return c || null;
 }
 ;tb = function(a, b, c, d) {
@@ -1158,7 +1158,7 @@ function zb(a, b) {
     }
     const x = this;
     for (const t in g) {
-      B = g[t], q = Y(t), delete g[t], n = B[hb], v = n[0], v = !Q(v) && R(v) ? v : {}, v.URL = t, v.CREATED_AT = B[1], v.MODIFIED_AT = B[pb], v !== n[0] && n.unshift(v), h(q + ".json", n), delete v.URL, c.Xa && (c.Wa[t] = n), c.Ia[t] = v;
+      B = g[t], q = Y(t), delete g[t], n = B[hb], v = n[0], v = !Q(v) && R(v) ? v : {}, v.URL = t, v.CREATED_AT = B[1], v.MODIFIED_AT = B[pb], v !== n[0] && n.unshift(v), h(q + ".json", n), delete v.URL, c.Xa && (c.Wa[t] = n), c.Ka[t] = v;
     }
     k();
   });
@@ -2034,7 +2034,7 @@ function dc(a) {
   }
 }
 function ec(a, b) {
-  a.Va || (null === b && (a.Va = !0), a.Oa.push(b), cc(a));
+  a.Ua || (null === b && (a.Ua = !0), a.Oa.push(b), cc(a));
 }
 var hc = class extends bc {
   constructor() {
@@ -2042,7 +2042,7 @@ var hc = class extends bc {
     super();
     this.gb = a;
     this.fb = b;
-    this.Za = this.paused = this.Va = this.ended = !1;
+    this.Za = this.paused = this.Ua = this.ended = !1;
     this.Ya = this.readable = this.writable = !0;
     this.Oa = [];
     this.on("end", () => {
@@ -2612,10 +2612,10 @@ function mc(a, b) {
     }
     const f = this;
     a & 1 && e(b.hb, b.oa);
-    a & 2 && e(b.jb, b.ja);
-    a & 4 && e(b.ib, b.Ia);
-    a & 8 && e(b.Xa, b.Wa);
-    if (a & 16) {
+    a & 2 && e(b.ib, b.ja);
+    a & 4 && e(b.jb, b.Ka);
+    a & 16 && e(b.Xa, b.Wa);
+    if (a & 8) {
       for (const g in b.Ga) {
         this.push(new c({path:g, contents:Buffer.from(JSON.stringify(b.Ga[g]))}));
       }
@@ -2730,7 +2730,7 @@ function nb(a, b, c) {
   var b = require("path").resolve(a.srcRootPath || "./") + "/";
   b = new oc(a.urlOrigin || "", b);
   const c = a.allMixinsPath || "all-mixins.json", d = a.allTempletesPath || "all-templetes.json";
-  return {bb:b.$, Xa:a.allPagesPath || "", ib:a.allPageOptionsPath || "", hb:c, jb:d, ab:qc(d), $a:qc(c), oa:a.mixins || {}, ja:a.templetes || {}, Ia:a.allPageOptions || {}, Ua:{}, Wa:{}, Ga:{}, path:b};
+  return {bb:b.$, Xa:a.allPagesPath || "", jb:a.metadataOfAllPagesPath || "netadata-of-all-pages,json", hb:c, ib:d, ab:qc(d), $a:qc(c), oa:a.mixins || {}, ja:a.templetes || {}, Ka:a.metadataOfAllPages || {}, Va:{}, Wa:{}, Ga:{}, path:b};
 }
 function qc(a) {
   let b = Ab(a).split(".json");

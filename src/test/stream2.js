@@ -15,7 +15,7 @@ goog.scope(
         module.exports[ 'onInstruction' ][ 2 ] = {
             /** @this {!NicePageBuilder.PageContext} */
             'title' : function(){
-                var meta = this.getOptions();
+                var meta = this.getMetadata();
         
                 return meta ? meta[ 'title' ] : '';
             },

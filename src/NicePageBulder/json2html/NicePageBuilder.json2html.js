@@ -4,21 +4,21 @@ goog.provide( '__NicePageBuilder_internal__.json2html' );
 goog.require( 'json2html.main' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
-goog.requireType( 'HTMLJsonWithOptions' );
+goog.requireType( 'HTMLJsonWithMetadata' );
 goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToErrorHandler' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
-goog.require( 'NicePageBuilder.util.isHTMLJsonWithOptions' );
+goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
 goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
 
 /**
  * @this {NicePageBuilder.Context}
  * 
- * @param {!HTMLJson | !HTMLJsonWithOptions} htmlJson 破壊
+ * @param {!HTMLJson | !HTMLJsonWithMetadata} htmlJson 破壊
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function((string | !Error))=} opt_onError
@@ -26,19 +26,19 @@ goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
  * @return {string} html string
  */
 __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
-    if( NicePageBuilder.util.isHTMLJsonWithOptions( htmlJson ) ){
+    if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
         const context     = this;
-        const pageOptions = htmlJson.shift();
+        const metadata = htmlJson.shift();
 
         if( NicePageBuilder.DEFINE.DEBUG ){
-            if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
-                throw this.path.urlToFilePath( pageOptions.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
+            if( NicePageBuilder.util.hasTEMPLETEProperty( metadata ) || NicePageBuilder.util.hasMIXINSProperty( metadata ) ){
+                throw this.path.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
             };
         };
 
-        opt_onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( context, pageOptions, opt_onInstruction, false );
-        opt_onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( context, pageOptions, opt_onEnterNode, false );
-        opt_onError       = NicePageBuilder.PageContext.bindToErrorHandler( context, pageOptions, opt_onError );
+        opt_onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( context, metadata, opt_onInstruction, false );
+        opt_onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( context, metadata, opt_onEnterNode, false );
+        opt_onError       = NicePageBuilder.PageContext.bindToErrorHandler( context, metadata, opt_onError );
     };
     
     const htmlString = json2html.main( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
@@ -104,7 +104,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                 const encoding = CONTENT_FILE_LIST.shift();
                 const originalExtname = CONTENT_FILE_LIST.shift();
 
-                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithOptions} */ (JSON.parse( file.contents.toString( encoding ) ));
+                const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (JSON.parse( file.contents.toString( encoding ) ));
                 const filePathElements = file.path.split( '.json' );
 
                 filePathElements.pop();

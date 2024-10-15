@@ -5,11 +5,11 @@ goog.provide( 'NicePageBuilder.PageContext.bindToDocumentReadyHandler' );
 goog.provide( 'NicePageBuilder.PageContext.bindToErrorHandler' );
 
 goog.requireType( 'NicePageBuilder.Context' );
-goog.requireType( 'NicePageBuilder.NicePageOptions' );
+goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
 goog.requireType( 'VNode' );
-goog.require( 'NicePageBuilder.getPageOptionsOf' );
+goog.require( 'NicePageBuilder.getMetadataOf' );
 
 /**
  * @private
@@ -24,22 +24,12 @@ NicePageBuilder.PageContext = function( context, rootRelativeURL ){
 
     /**
      * @param {string} url 
-     * @return {NicePageBuilder.NicePageOptions | null}
+     * @return {NicePageBuilder.Metadata | null}
      */
-    this.getOptionsOf = function( url ){
+    this.getMetadataOf = function( url ){
         var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
 
-        return NicePageBuilder.getPageOptionsOf( context, rootRelativeURL, false )
-    };
-
-    /**
-     * @param {string} url 
-     * @return {NicePageBuilder.NicePageOptions | null}
-     */
-    this.getRawOptionsOf = function( url ){
-        var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
-
-        return NicePageBuilder.getPageOptionsOf( context, rootRelativeURL, true )
+        return NicePageBuilder.getMetadataOf( context, rootRelativeURL, false )
     };
 };
 
@@ -49,16 +39,9 @@ NicePageBuilder.PageContext = function( context, rootRelativeURL ){
 // NicePageBuilder.PageContext.prototype.resume;
 
 /**
- * @return {NicePageBuilder.NicePageOptions | null} */
-NicePageBuilder.PageContext.prototype.getOptions = function(){
-    return this.getOptionsOf( this._baseURL );
-};
-
-
-/**
- * @return {NicePageBuilder.NicePageOptions | null} */
-NicePageBuilder.PageContext.prototype.getRawOptions = function(){
-    return this.getRawOptionsOf( this._baseURL );
+ * @return {NicePageBuilder.Metadata | null} */
+NicePageBuilder.PageContext.prototype.getMetadata = function(){
+    return this.getMetadataOf( this._baseURL );
 };
 
 /**
@@ -106,14 +89,14 @@ NicePageBuilder.PageContext.prototype.getShortestURL = function( url ){
 
 /**
  * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!NicePageBuilder.Metadata} metadata
  * @param {!InstructionHandler | void} onInstruction
  * @param {boolean} isStreamContext
  * @return {!InstructionHandler | void}
  */
-NicePageBuilder.PageContext.bindToInstructuionHandler = function( context, pageOptions, onInstruction, isStreamContext ){
+NicePageBuilder.PageContext.bindToInstructuionHandler = function( context, metadata, onInstruction, isStreamContext ){
     if( onInstruction ){
-        var nicePageContext = new NicePageBuilder.PageContext( context, pageOptions.URL ), funcName, _onInstruction;
+        var nicePageContext = new NicePageBuilder.PageContext( context, metadata.URL ), funcName, _onInstruction;
 
         if( typeof onInstruction === 'function' ){
             return _bindPageContextToHandler( isStreamContext, nicePageContext, onInstruction );
@@ -130,14 +113,14 @@ NicePageBuilder.PageContext.bindToInstructuionHandler = function( context, pageO
 
 /**
  * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!NicePageBuilder.Metadata} metadata
  * @param {!EnterNodeHandler | void} onEnterNode
  * @param {boolean} isStreamContext
  * @return {!EnterNodeHandler | void}
  */
-NicePageBuilder.PageContext.bindToEnterNodeHandler = function( context, pageOptions, onEnterNode, isStreamContext ){
+NicePageBuilder.PageContext.bindToEnterNodeHandler = function( context, metadata, onEnterNode, isStreamContext ){
     if( onEnterNode ){
-        var nicePageContext = new NicePageBuilder.PageContext( context, pageOptions.URL ), i, l, _onEnterNode;
+        var nicePageContext = new NicePageBuilder.PageContext( context, metadata.URL ), i, l, _onEnterNode;
 
         if( typeof onEnterNode === 'function' ){
             return _bindPageContextToHandler( isStreamContext, nicePageContext, onEnterNode );
@@ -155,13 +138,13 @@ NicePageBuilder.PageContext.bindToEnterNodeHandler = function( context, pageOpti
 
 /**
  * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!NicePageBuilder.Metadata} metadata
  * @param {!function(!VNode) | void} onDocumentReady
  * @return {!function(!VNode) | void}
  */
-NicePageBuilder.PageContext.bindToDocumentReadyHandler = function( context, pageOptions, onDocumentReady ){
+NicePageBuilder.PageContext.bindToDocumentReadyHandler = function( context, metadata, onDocumentReady ){
     if( onDocumentReady ){
-        var nicePageContext = new NicePageBuilder.PageContext( context, pageOptions.URL );
+        var nicePageContext = new NicePageBuilder.PageContext( context, metadata.URL );
 
         return onDocumentReady.bind( nicePageContext );
     };
@@ -170,13 +153,13 @@ NicePageBuilder.PageContext.bindToDocumentReadyHandler = function( context, page
 
 /**
  * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.NicePageOptions} pageOptions
+ * @param {!NicePageBuilder.Metadata} metadata
  * @param {!function((string | !Error)) | void} onError
  * @return {!function((string | !Error)) | void}
  */
-NicePageBuilder.PageContext.bindToErrorHandler = function( context, pageOptions, onError ){
+NicePageBuilder.PageContext.bindToErrorHandler = function( context, metadata, onError ){
     if( onError ){
-        var nicePageContext = new NicePageBuilder.PageContext( context, pageOptions.URL );
+        var nicePageContext = new NicePageBuilder.PageContext( context, metadata.URL );
 
         return onError.bind( nicePageContext );
     };

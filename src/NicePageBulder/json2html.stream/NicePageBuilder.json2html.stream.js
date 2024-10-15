@@ -6,7 +6,7 @@ goog.require( 'Parser.C' );
 goog.require( 'json2html.stream' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
-goog.requireType( 'NicePageBuilder.NicePageOptions' );
+goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
@@ -77,17 +77,17 @@ function onTokenForMeta( token, value ){
         case 2 :
             if( token === Parser.C.RIGHT_BRACE && this.jsonStack.length === 1 ){ // }
                 this._metadataPhase = 3;
-                const pageOptions = /** @type {!NicePageBuilder.NicePageOptions} */ (this.currentValue);
+                const metadata = /** @type {!NicePageBuilder.Metadata} */ (this.currentValue);
                 this.currentValue = null;
 
                 if( NicePageBuilder.DEFINE.DEBUG ){
-                    if( NicePageBuilder.util.hasTEMPLETEProperty( pageOptions ) || NicePageBuilder.util.hasMIXINSProperty( pageOptions ) ){
-                        throw this.path.urlToFilePath( pageOptions.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
+                    if( NicePageBuilder.util.hasTEMPLETEProperty( metadata ) || NicePageBuilder.util.hasMIXINSProperty( metadata ) ){
+                        throw this.path.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
                     };
                 };
-                /** @suppress {constantProperty} @const {InstructionHandler | void} */ this._onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( this._context, pageOptions, this._onInstruction, true );
-                /** @suppress {constantProperty} @const {EnterNodeHandler | void}   */ this._onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( this._context, pageOptions, this._onEnterNode, true );
-                /**                     @const {function((string | !Error)) | void} */ this._onError       = NicePageBuilder.PageContext.bindToErrorHandler( this._context, pageOptions, this._onError );
+                /** @suppress {constantProperty} @const {InstructionHandler | void} */ this._onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( this._context, metadata, this._onInstruction, true );
+                /** @suppress {constantProperty} @const {EnterNodeHandler | void}   */ this._onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( this._context, metadata, this._onEnterNode, true );
+                /**                     @const {function((string | !Error)) | void} */ this._onError       = NicePageBuilder.PageContext.bindToErrorHandler( this._context, metadata, this._onError );
             };
             this._createValue( token, value );
             break;
