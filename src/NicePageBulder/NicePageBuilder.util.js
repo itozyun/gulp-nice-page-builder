@@ -97,28 +97,9 @@ NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrMetadata ){
  * @param {!NicePageBuilder.Context} context
  * @param {!NicePageBuilder.Metadata} metadata
  * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
- * @param {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
- * @param {Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin> | null=} MIXIN_LIST
  * @param {!function((string | !Error))=} opt_onError
  */
-NicePageBuilder.util.mergeMetadata = function( context, metadata, templeteStack, TEMPLETE_LIST, MIXIN_LIST, opt_onError ){
-    const filePath = context.path.urlToFilePath( metadata.URL );
-
-    if( NicePageBuilder.util.hasTEMPLETEProperty( metadata ) && !TEMPLETE_LIST ){
-        if( opt_onError ){
-            return opt_onError( filePath + ' has TEMPLETE property, and no templetes found!' );
-        } else if( NicePageBuilder.DEFINE.DEBUG ){
-            throw filePath + ' has TEMPLETE property, and no templetes found!';
-        };
-    };
-    if( NicePageBuilder.util.hasMIXINSProperty( metadata ) && !MIXIN_LIST ){
-        if( opt_onError ){
-            return opt_onError( filePath + ' has MIXINS property, and no mixins found!' );
-        } else if( NicePageBuilder.DEFINE.DEBUG ){
-            throw filePath + ' has MIXINS property, and no mixins found!';
-        };
-    };
-
+NicePageBuilder.util.mergeMetadata = function( context, metadata, templeteStack, opt_onError ){
     let updatedAt = metadata.MODIFIED_AT;
     let templeteRootRelativePath;
 
@@ -134,10 +115,12 @@ NicePageBuilder.util.mergeMetadata = function( context, metadata, templeteStack,
 
     while( templeteRootRelativePath ){
         const tmpTempleteRootRelativePath = templeteRootRelativePath;
-        const templete                    = TEMPLETE_LIST[ templeteRootRelativePath ];
+        const templete                    = context.templetes[ templeteRootRelativePath ];
 
-        if( NicePageBuilder.DEFINE.DEBUG ){
-            if( !templete ){
+        if( !templete ){
+            if( opt_onError ){
+                opt_onError( 'Templete not found!' );
+            } else if( NicePageBuilder.DEFINE.DEBUG ){
                 throw 'Templete: ' + templeteRootRelativePath + ' required by ' + context.path.urlToFilePath( metadata.URL ) + ' not found!';
             };
         };
@@ -145,13 +128,6 @@ NicePageBuilder.util.mergeMetadata = function( context, metadata, templeteStack,
         const templeteMetadata = NicePageBuilder.util.getMetadata( templete );
 
         if( templeteMetadata ){
-            if( NicePageBuilder.util.hasMIXINSProperty( templeteMetadata ) && !MIXIN_LIST ){
-                if( opt_onError ){
-                    return opt_onError( templeteRootRelativePath + ' has MIXINS property, and no mixins found!' );
-                } else if( NicePageBuilder.DEFINE.DEBUG ){
-                    throw templeteRootRelativePath + ' has MIXINS property, and no mixins found!';
-                };
-            };
             templeteRootRelativePath = '';
             mix( tmpTempleteRootRelativePath, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
             mergeMinxins( tmpTempleteRootRelativePath, templeteMetadata.MIXINS );
@@ -173,7 +149,15 @@ NicePageBuilder.util.mergeMetadata = function( context, metadata, templeteStack,
         if( mixinPathList ){
             for( let i = 0; i < mixinPathList.length; ++i ){
                 const mixinRootRelativeURL = context.path.toRootRelativeURL( rootRelativePath, mixinPathList[ i ] );
-                const mixin                = MIXIN_LIST[ mixinRootRelativeURL ];
+                const mixin                = context.mixins[ mixinRootRelativeURL ];
+
+                if( !mixin ){
+                    if( opt_onError ){
+                        opt_onError( 'Mixin not found!' );
+                    } else if( NicePageBuilder.DEFINE.DEBUG ){
+                        throw 'Mixin: ' + mixinRootRelativeURL + ' required by ' + context.path.urlToFilePath( rootRelativePath ) + ' not found!';
+                    };
+                };
 
                 mix( mixinRootRelativeURL, /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
             };
@@ -190,7 +174,7 @@ NicePageBuilder.util.mergeMetadata = function( context, metadata, templeteStack,
         let changed = 0;
 
         for( const k in altMetadata ){
-            if( NicePageBuilder.DEFINE.DEBUG && isMixin && k === 'MIXINS' ){
+            if( NicePageBuilder.DEFINE.DEBUG && isMixin && k === 'MIXINS' ){ // TODO
                 throw 'Mixin has MIXINS property!';
             } else if( k === 'TEMPLETE' ){
                 if( !templeteRootRelativePath ){

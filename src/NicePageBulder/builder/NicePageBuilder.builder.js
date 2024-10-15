@@ -20,8 +20,6 @@ goog.require( 'NicePageBuilder.util.getSLotElement' );
  * @this {NicePageBuilder.Context}
  * 
  * @param {!HTMLJson | !HTMLJsonWithMetadata} htmlJson
- * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete> | null=} TEMPLETE_LIST 
- * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Mixin> | null=} MIXIN_LIST 
  * @return {!HTMLJson | !HTMLJsonWithMetadata}
  */
 __NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_LIST ){
@@ -32,7 +30,7 @@ __NicePageBuilder_internal__.builder = function( htmlJson, TEMPLETE_LIST, MIXIN_
     const metadata      = htmlJson[ 0 ];
     const templeteStack = []; // Array.<NicePageBuilder.RootRelativeURL>
 
-    NicePageBuilder.util.mergeMetadata( this, metadata, templeteStack, TEMPLETE_LIST || this.templetes, MIXIN_LIST || this.mixins );
+    NicePageBuilder.util.mergeMetadata( this, metadata, templeteStack );
 
     let contentHtmlJson = htmlJson;
 

@@ -112,7 +112,7 @@ NicePageBuilder.getMetadataOf = function( context, rootRelativeURL, rawMetadata 
                 metadata = NicePageBuilder.deepCopy( metadata );
 
                 metadata.URL = rootRelativeURL;
-                NicePageBuilder.util.mergeMetadata( context, metadata, [], context.templetes, context.mixins );
+                NicePageBuilder.util.mergeMetadata( context, metadata, [] );
 
                 metadata = NicePageBuilder.deepCopy( metadata ); // コピーされたメタ情報(Array, Object)を改変から保護する
 

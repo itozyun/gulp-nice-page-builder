@@ -45,7 +45,7 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
             metadata = NicePageBuilder.deepCopy( originalMetadata );
             // TEMPLETE, MIXINS がいる場合、全てのプロパティのマージが終わっていない
             if( NicePageBuilder.util.hasTEMPLETEProperty( metadata ) || NicePageBuilder.util.hasMIXINSProperty( metadata ) ){
-                NicePageBuilder.util.mergeMetadata( this, metadata, [], context.templetes, context.mixins, opt_onError );
+                NicePageBuilder.util.mergeMetadata( this, metadata, [], opt_onError );
             };
         };
 
