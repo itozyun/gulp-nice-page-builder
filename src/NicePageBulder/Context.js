@@ -222,7 +222,7 @@ function _mergeOrUnmerge( mergedProperties, context,  targetMetadata, templeteSt
 
         for( const k in metadataToMerge ){
             if( k === 'MIXINS' ){
-                mergeMinxins( baseRootRelativeURL, metadataToMerge );
+
             } else if( k === 'TEMPLETE' ){
                 if( !templeteRootRelativePath ){
                     templeteRootRelativePath = context.path.toRootRelativeURL( baseRootRelativeURL, metadataToMerge[ k ] ); // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
@@ -243,6 +243,7 @@ function _mergeOrUnmerge( mergedProperties, context,  targetMetadata, templeteSt
                 updatedAt = metadataToMergeUpatedAt;
             };
         };
+        mergeMinxins( baseRootRelativeURL, metadataToMerge );
     };
 };
 

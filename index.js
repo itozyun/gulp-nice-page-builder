@@ -2785,9 +2785,10 @@ function xb(a, b, c, d, e) {
   function h(k, l, x, g) {
     let m = 0;
     for (const q in l) {
-      "MIXINS" === q ? f(k, l) : "TEMPLETE" === q ? n || (n = b.path.sa(k, l[q]), ++m) : t && -1 !== a.indexOf(q) ? pc(c[q], l[q]) && delete c[q] : t || void 0 !== c[q] || (c[q] = l[q], ++m, a.push(q));
+      "MIXINS" !== q && ("TEMPLETE" === q ? n || (n = b.path.sa(k, l[q]), ++m) : t && -1 !== a.indexOf(q) ? pc(c[q], l[q]) && delete c[q] : t || void 0 !== c[q] || (c[q] = l[q], ++m, a.push(q)));
     }
     (m || g) && p < x && (p = x);
+    f(k, l);
   }
   const t = !!a;
   let p = c.MODIFIED_AT, n;
