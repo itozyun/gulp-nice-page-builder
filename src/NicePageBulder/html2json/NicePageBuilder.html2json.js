@@ -141,8 +141,8 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                     continue;
                 };
 
-                checkMixins( pageOrTempleteRootRelativeURL, metadata.MIXINS, !!metadata.TEMPLETE );
-                checkTemplete( pageOrTempleteRootRelativeURL, metadata.TEMPLETE, metadata );
+                checkMixins( pageOrTempleteRootRelativeURL, metadata, !!metadata.TEMPLETE ); // TODO traverse
+                checkTemplete( pageOrTempleteRootRelativeURL, metadata );
 
                 if( PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ] ){
                     pageOrTemplete.push( true ); // isPage
@@ -161,53 +161,51 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             };
 
             /**
-             * @param {string} pageOrTempleteRootRelativeURL
-             * @param {!Array.<NicePageBuilder.RootRelativeURL> | void} mixinPathList
+             * @param {string} baseRootRelativeURL
+             * @param {!NicePageBuilder.Metadata} metadata
              * @param {boolean} skipTemplete
              */
-            function checkMixins( pageOrTempleteRootRelativeURL, mixinPathList, skipTemplete ){
+            function checkMixins( baseRootRelativeURL, metadata, skipTemplete ){
+                const mixinPathList = metadata.MIXINS;
+
                 if( mixinPathList ){
                     for( let i = 0, l = mixinPathList.length; i < l; ++i ){
-                        const mixinRootRelativeURL = context.path.toRootRelativeURL( pageOrTempleteRootRelativeURL, mixinPathList[ i ] );
+                        const mixinRootRelativeURL = context.path.toRootRelativeURL( baseRootRelativeURL, mixinPathList[ i ] );
                         const mixin                = MIXIN_LIST[ mixinRootRelativeURL ];
                         
-                        mixinPathList[ i ] = getShortestURL( pageOrTempleteRootRelativeURL, mixinRootRelativeURL );
+                        mixinPathList[ i ] = getShortestURL( baseRootRelativeURL, mixinRootRelativeURL );
                         if( mixin ){
                             const mixinMetadata = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]);
 
                             if( !skipTemplete ){
-                                checkTemplete( mixinRootRelativeURL, mixinMetadata.TEMPLETE, mixinMetadata );
+                                checkTemplete( mixinRootRelativeURL, mixinMetadata );
                             };
 
                             if( mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
                                 mixin.push( true ); // used
-                                if( mixinMetadata.MIXINS ){
-                                    if( NicePageBuilder.DEFINE.DEBUG ){
-                                        console.log( 'Mixin:"' + mixinRootRelativeURL + '" cannot have MIXINS property!' );
-                                    };
-                                    delete mixinMetadata.MIXINS;
-                                };
+                                checkMixins( mixinRootRelativeURL, mixinMetadata, skipTemplete );
                             };
                         } else if( NicePageBuilder.DEFINE.DEBUG ){
-                            throw 'Mixin:"' + mixinRootRelativeURL + '" required by "' + pageOrTempleteRootRelativeURL + '" does not exist!';
+                            throw '[html2json] Mixin:"' + mixinRootRelativeURL + '" required by "' + baseRootRelativeURL + '" does not exist!';
                         };
                     };
                 };
             };
 
             /**
-             * @param {string} rootRelativeURL
-             * @param {string | void} templetePath
+             * @param {string} baseRootRelativeURL
              * @param {!NicePageBuilder.Metadata} metadata
              */
-            function checkTemplete( rootRelativeURL, templetePath, metadata ){
+            function checkTemplete( baseRootRelativeURL, metadata ){
+                let templetePath = metadata.TEMPLETE;
+
                 while( templetePath ){
-                    const templeteRootRelativeURL = context.path.toRootRelativeURL( rootRelativeURL, templetePath );
+                    const templeteRootRelativeURL = context.path.toRootRelativeURL( baseRootRelativeURL, templetePath );
                     const templete                = PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
 
                     if( templete ){
-                        metadata.TEMPLETE = getShortestURL( rootRelativeURL, templeteRootRelativeURL );
-                        rootRelativeURL = templeteRootRelativeURL;
+                        metadata.TEMPLETE = getShortestURL( baseRootRelativeURL, templeteRootRelativeURL );
+                        baseRootRelativeURL = templeteRootRelativeURL;
 
                         delete PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
                         TEMPLETE_LIST[ templeteRootRelativeURL ] = templete;
@@ -215,17 +213,17 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                         /** @suppress {checkTypes} */
                         metadata = NicePageBuilder.util.getMetadata( templete );
                         if( metadata ){
-                            checkMixins( rootRelativeURL, metadata.MIXINS, !!metadata.TEMPLETE );
+                            checkMixins( baseRootRelativeURL, metadata, !!metadata.TEMPLETE );
                             /** @suppress {checkTypes} */
                             templetePath = metadata.TEMPLETE;
                         } else {
                             break;
                         };
                     } else if( TEMPLETE_LIST[ templeteRootRelativeURL ] ){
-                        metadata.TEMPLETE = getShortestURL( rootRelativeURL, templeteRootRelativeURL );
+                        metadata.TEMPLETE = getShortestURL( baseRootRelativeURL, templeteRootRelativeURL );
                         break;
                     } else if( NicePageBuilder.DEFINE.DEBUG ){
-                        throw 'Templete:"' + templeteRootRelativeURL + '" required by "' + rootRelativeURL + '" does not exist!';
+                        throw '[html2json] Templete:"' + templeteRootRelativeURL + '" required by "' + baseRootRelativeURL + '" does not exist!';
                     };
                 };
             };

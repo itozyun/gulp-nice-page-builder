@@ -118,7 +118,7 @@ NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
     const _metadata        = _deepCopyMetadata( metadata );
 
     if( mergedProperties ){
-        _mergeOrUnmerge( mergedProperties, this,  _metadata, [], undefined, this.metadataOfAllPages[ rootRelativeURL ] );
+        _mergeOrUnmerge( mergedProperties, this,  _metadata, [] );
     };
 
     delete _metadata.UPDATED_AT;
@@ -138,33 +138,30 @@ NicePageBuilder.Context.prototype.mergeMetadata = function( metadata, templeteSt
 /**
  * @param {Array.<string> | null} mergedProperties for unmerge
  * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.Metadata} metadata
+ * @param {!NicePageBuilder.Metadata} targetMetadata
  * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
  * @param {!function((string | !Error))=} opt_onError
- * @param {!NicePageBuilder.Metadata=} opt_otiginalMetadata
  * @return {!Array.<string>} merged properties
  */
-function _mergeOrUnmerge( mergedProperties, context,  metadata, templeteStack, opt_onError, opt_otiginalMetadata ){
+function _mergeOrUnmerge( mergedProperties, context,  targetMetadata, templeteStack, opt_onError ){ // TODO traverse
     const isUnmerge = !!mergedProperties;
+
+    let updatedAt = targetMetadata.MODIFIED_AT;
+    let templeteRootRelativePath;
 
     if( !isUnmerge ){
         mergedProperties = [];
     };
 
-    let updatedAt = metadata.MODIFIED_AT;
-    let templeteRootRelativePath;
-
-    if( metadata.TEMPLETE ){
-        templeteRootRelativePath = context.path.toRootRelativeURL( metadata.URL, metadata.TEMPLETE );
+    if( targetMetadata.TEMPLETE ){
+        templeteRootRelativePath = context.path.toRootRelativeURL( targetMetadata.URL, targetMetadata.TEMPLETE );
     };
 
-    mergeMinxins( metadata.URL, metadata.MIXINS );
-
-    if( templeteRootRelativePath ){
-        templeteStack[ 0 ] = templeteRootRelativePath;
-    };
+    mergeMinxins( targetMetadata.URL, targetMetadata );
 
     while( templeteRootRelativePath ){
+        templeteStack.push( templeteRootRelativePath );
+
         const tmpTempleteRootRelativePath = templeteRootRelativePath;
         const templete                    = context.templetes[ templeteRootRelativePath ];
 
@@ -172,7 +169,7 @@ function _mergeOrUnmerge( mergedProperties, context,  metadata, templeteStack, o
             if( opt_onError ){
                 opt_onError( 'Templete not found!' );
             } else if( NicePageBuilder.DEFINE.DEBUG ){
-                throw 'Templete: ' + templeteRootRelativePath + ' required by ' + context.path.urlToFilePath( metadata.URL ) + ' not found!';
+                throw '[merge] Templete: ' + templeteRootRelativePath + ' required by ' + context.path.urlToFilePath( targetMetadata.URL ) + ' not found!';
             };
         };
 
@@ -180,71 +177,70 @@ function _mergeOrUnmerge( mergedProperties, context,  metadata, templeteStack, o
         templeteRootRelativePath = '';
 
         if( templeteMetadata ){
-            mix( tmpTempleteRootRelativePath, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
-            mergeMinxins( tmpTempleteRootRelativePath, templeteMetadata.MIXINS );
-            if( templeteRootRelativePath ){
-                templeteStack.push( templeteRootRelativePath );
-            };
+            mix( tmpTempleteRootRelativePath, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
+            mergeMinxins( tmpTempleteRootRelativePath, templeteMetadata );
         };
     };
 
-    metadata.UPDATED_AT = updatedAt;
+    targetMetadata.UPDATED_AT = updatedAt;
 
     return /** @type {!Array.<string>} */ (mergedProperties);
 
     /**
-     * @param {string} rootRelativePath
-     * @param {!Array.<NicePageBuilder.RootRelativeURL> | void} mixinPathList
+     * @param {string} baseRootRelativeURL
+     * @param {!NicePageBuilder.Metadata | void} metadata
      */
-    function mergeMinxins( rootRelativePath, mixinPathList ){
+    function mergeMinxins( baseRootRelativeURL, metadata ){
+        const mixinPathList = metadata.MIXINS;
+
         if( mixinPathList ){
             for( let i = 0; i < mixinPathList.length; ++i ){
-                const mixinRootRelativeURL = context.path.toRootRelativeURL( rootRelativePath, mixinPathList[ i ] );
+                const mixinRootRelativeURL = context.path.toRootRelativeURL( baseRootRelativeURL, mixinPathList[ i ] );
                 const mixin                = context.mixins[ mixinRootRelativeURL ];
 
                 if( !mixin ){
                     if( opt_onError ){
                         opt_onError( 'Mixin not found!' );
                     } else if( NicePageBuilder.DEFINE.DEBUG ){
-                        throw 'Mixin: ' + mixinRootRelativeURL + ' required by ' + context.path.urlToFilePath( rootRelativePath ) + ' not found!';
+                        throw '[merge] Mixin: ' + mixinRootRelativeURL + ' required by ' + context.path.urlToFilePath( baseRootRelativeURL ) + ' not found!';
                     };
                 };
 
-                mix( mixinRootRelativeURL, /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), true );
+                mix( mixinRootRelativeURL, /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]), /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]), false );
             };
         };
     };
 
     /**
-     * @param {string} rootRelativePath
-     * @param {!NicePageBuilder.Metadata} altMetadata 
-     * @param {number} altUpdatedAt
-     * @param {boolean} isMixin
+     * @param {string} baseRootRelativeURL
+     * @param {!NicePageBuilder.Metadata} metadataToMerge
+     * @param {number} metadataToMergeUpatedAt
+     * @param {boolean} isTemplete
      */
-    function mix( rootRelativePath, altMetadata, altUpdatedAt, isMixin ){
+    function mix( baseRootRelativeURL, metadataToMerge, metadataToMergeUpatedAt, isTemplete ){
         let changed = 0;
 
-        for( const k in altMetadata ){
-            if( isUnmerge && mergedProperties.indexOf( k ) !== -1 ){
-                if( ( opt_otiginalMetadata ? opt_otiginalMetadata : metadata )[ k ] === altMetadata[ k ] ){ // TODO deepEqual
-                    delete metadata[ k ];
-                };
-            } else if( NicePageBuilder.DEFINE.DEBUG && isMixin && k === 'MIXINS' ){ // TODO
-                throw 'Mixin has MIXINS property!';
+        for( const k in metadataToMerge ){
+            if( k === 'MIXINS' ){
+                mergeMinxins( baseRootRelativeURL, metadataToMerge );
             } else if( k === 'TEMPLETE' ){
                 if( !templeteRootRelativePath ){
-                    templeteRootRelativePath = context.path.toRootRelativeURL( rootRelativePath, altMetadata[ k ] ); // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
+                    templeteRootRelativePath = context.path.toRootRelativeURL( baseRootRelativeURL, metadataToMerge[ k ] ); // page.html や templete.html にある TEMPLETE が優勢、mixin の中の TEMPLETE は劣勢
                     ++changed;
                 };
-            } else if( !isUnmerge && metadata[ k ] === undefined ){
-                metadata[ k ] = altMetadata[ k ];
+            } else if( isUnmerge && mergedProperties.indexOf( k ) !== -1 ){
+                if( _deepEquals( targetMetadata[ k ], metadataToMerge[ k ] ) ){
+                    delete targetMetadata[ k ];
+                };
+            } else if( !isUnmerge && targetMetadata[ k ] === undefined ){
+                targetMetadata[ k ] = metadataToMerge[ k ];
                 ++changed;
                 mergedProperties.push( k );
             };
         };
-        if( changed || !isMixin ){
-            if( updatedAt < altUpdatedAt ){
-                updatedAt = altUpdatedAt;
+        if( changed || isTemplete ){
+            if( updatedAt < metadataToMergeUpatedAt ){
+                updatedAt = metadataToMergeUpatedAt;
             };
         };
     };
@@ -279,4 +275,71 @@ function _jsonFilePathToOriginalExtname( filePath, path ){
     filePathElements = filePathElements.join( '.json' ).split( '/' );
 
     return filePathElements.pop().split( '.' ).pop();
+};
+
+/**
+ * @private
+ *   original:
+ *     https://qiita.com/dojyorin/items/a5eb096c195aa1377737
+ * @param {*} d1 
+ * @param {*} d2 
+ * @return {boolean}
+ */
+function _deepEquals( d1, d2 ){
+    function toKV( obj ){
+        var keyList = [], i = -1, key;
+
+        for( key in obj  ){
+            keyList[ ++i ] = key;
+        };
+        return keyList.sort();
+    };
+
+    var isArray, l, i, keyList1, keyList2, keyList1Len, k1, k2;
+
+    if( d1 === d2 ){
+        return true;
+    };
+
+    if( !m_isObject( d1 ) || !m_isObject( d2 ) ){
+        return false;
+    };
+
+    isArray = m_isArray( d1 );
+
+    if( isArray !== m_isArray( d2 ) ){
+        return false;
+    };
+
+    if( isArray ){
+        l = d1.length;
+
+        if( l !== d2.length ){
+            return false;
+        };
+
+        for( i = 0; i < l; ++i ){
+            if( !_deepEquals( d1[ i ], d2[ i ] ) ){
+                return false;
+            };
+        };
+    } else {
+        keyList1 = toKV( d1 ),
+        keyList2 = toKV( d2 ),
+        keyList1Len = keyList1.length;
+
+        if( keyList1Len !== keyList2.length ){
+            return false;
+        };
+
+        for( i = 0; i < keyList1Len; ++i ){
+            k1 = keyList1[ i ];
+            k2 = keyList2[ i ];
+
+            if( k1 !== k2 || !_deepEquals( d1[ k1 ], d2[ k1 ] ) ){
+                return false;
+            };
+        };
+    };
+    return true;
 };

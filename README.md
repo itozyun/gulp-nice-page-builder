@@ -33,12 +33,14 @@
       * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
       * `onDocumentReady(rootVNode)` で VDOM を使った文書ツリーの変更ができる
    3. nicePageBuilder.builder
-      * 参照する Mixin とテンプレートのメタ情報をコンテンツページのメタ情報にコピーする
-      * *.html.json をテンプレートに埋め込んで完全な HTML を作成する
+      * 参照する Mixin とテンプレートのメタ情報をページのメタ情報にコピーする
+      * *.html.json をテンプレートに埋め込んで完全な html.json 文書にする
    4. nicePageBuilder.json2html
       * *.html.json(HTMLJsonWithMetadata 形式) を *.html に変換する
       * `<? ?>` と動的属性(`<a :href="">`) を置き換える
       * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
+   5. nicePageBuilder.json2html.stream
+      * Streaming SSR
 
 ## Install
 
@@ -78,33 +80,39 @@ gulp.task('html', function(){
 
 ## 用語解説
 
-| 名称            | 拡張子                    | 説明                                                                                                  |
-|:----------------|:--------------------------|:------------------------------------------------------------------------------------------------------|
-| メタ情報 *1     |                           | コンテンツ、テンプレート内 `<script type="application/json">{...}</script>` または Mixin に書いておく |
-| コンテンツ *2   | .html, .htm, .xhtml, .php | コンテンツとメタ情報だけが書かれた HTML                                                               |
-| テンプレート *3 | .html, .htm, .xhtml, .php | コンテンツ HTML、Mixin から参照される．必ず単一の `<slot></slot>` を持つこと                          |
-| Mixin *4        | .json                     | 複数ページで共通のメタ情報を記述した json ファイル．コンテンツ(.html), テンプレートから参照される     |
+| 名称            | 拡張子                    | 説明                                                                                                       |
+|:----------------|:--------------------------|:-----------------------------------------------------------------------------------------------------------|
+| メタ情報 *1     |                           | ページ、テンプレート内 `<script type="application/json">{...}</script>` または Mixin に書いておく          |
+| ページ *2       | .html, .htm, .xhtml, .php | コンテンツとメタ情報だけが書かれた HTML                                                                    |
+| テンプレート *3 | .html, .htm, .xhtml, .php | ページ、Mixin から参照される．必ず単一の `<slot></slot>` を持つ                                            |
+| Mixin *4        | .json                     | 複数ページで共通のメタ情報を記述した json ファイル．ページ(.html), テンプレート, 他の Mixin から参照される |
 
-1. メタ情報の各プロパティの優先度は、コンテンツ > コンテンツの MIXINS\[0] > コンテンツの MIXINS\[z] > テンプレート > テンプレートの MIXINS\[0] > テンプレートの MIXINS\[z] の順番です．
-2. テンプレート、メタ情報、Mixin を使用せず完全なドキュメントだけのプロジェクトも可能だが、その場合 [html.json](https://github.com/itozyun/html.json) だけで事足りる．
+1. メタ情報の各プロパティの優先度
+   1. ページ
+   2. ページの MIXINS\[0]
+      * ページの MIXINS\[0] の MIXINS\[0] ~ MIXINS\[z] (MIXIN は入れ子にできる)
+   3. ページの MIXINS\[z]
+   4. テンプレート
+   5. テンプレートの MIXINS\[0]
+      * テンプレートの MIXINS\[0] の MIXINS\[0] ~ MIXINS\[z] (MIXIN は入れ子にできる)
+   6. テンプレートの MIXINS\[z]
+2. テンプレート、メタ情報、Mixin を使用しないプロジェクトも可能だが、その場合 [html.json](https://github.com/itozyun/html.json) だけで事足りる．
 3. テンプレートは入れ子にできます
-4. Mixin は MIXINS プロパティを持つことが出来ません！
 
 ## メタ情報の定義積みプロパティ
 
-| 名称        | 型               | 説明                         | コンテンツ(.html) | テンプレート | Mixin |
+| 名称        | 型               | 説明                         | ページ(.html)     | テンプレート | Mixin |
 |:------------|:-----------------|:-----------------------------|:------------------|:-------------|:------|
 | TEMPLETE    | `string`         | テンプレート(.html) へのパス | ✓                | ✓           | ✓    |
 | MIXINS      | `Array.<string>` |                              | ✓                | ✓           | - *2  |
 | URL         | `string`         | `"/contact/"`                | ✓                | -            | -     |
 | CREATED_AT  | `number`         |  `file.stat.birthtimeMs`     | ✓                | -            | -     |
 | MODIFIED_AT | `number`         |  `file.stat.ctimeMs`         | ✓                | -            | -     |
-| UPDATED_AT  | `number`         | コンテンツとそれが参照する Mixin 及びテンプレートの MODIFIED_AT の内の最大の値．*1 | ✓ | - | - |
+| UPDATED_AT  | `number`         | ページとそれが参照する Mixin 及びテンプレートの MODIFIED_AT の内の最大の値．*1 | ✓ | - | - |
 
-1. Mixin のメタ情報がコンテンツ(.html)にコピーされなかった場合、コンテンツ(.html)の UPDATED_AT は更新されません
-2. Mixin(.json) はこのプロパティを持てません
+1. Mixin のメタ情報がページ(.html)にコピーされなかった場合、ページ(.html)の UPDATED_AT は更新されません．
 
-### コンテンツの例
+### ページの例
 
 `src/index.html`
 

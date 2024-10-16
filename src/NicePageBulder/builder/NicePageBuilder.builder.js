@@ -39,7 +39,7 @@ __NicePageBuilder_internal__.builder = function( htmlJson ){
 
         if( NicePageBuilder.DEFINE.DEBUG ){
             if( !templete ){
-                throw 'Templete: ' + templetePath + ' required by ' + this.path.urlToFilePath( metadata.URL ) + ' not found!';
+                throw '[builder] Templete: ' + templetePath + ' required by ' + this.path.urlToFilePath( metadata.URL ) + ' not found!';
             };
         };
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
