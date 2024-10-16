@@ -22,13 +22,15 @@ var DEST_TARGET = {
  * @this {NicePageBuilder.Context}
  * 
  * @param {number} destTargets
+ * @param {boolean=} opt_prettify
  */
-__NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
+__NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_prettify ){
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.dest',
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
+
     return through.obj(
         /**
          * @this {stream.Writable}
@@ -59,7 +61,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                 const file = new _Vinyl(
                     {
                         path     : filePath,
-                        contents : Buffer.from( JSON.stringify( json ) )
+                        contents : Buffer.from( JSON.stringify( json, null, opt_prettify ? '    ' : '' ) )
                     }
                 );
                 file.extname = '.json';
