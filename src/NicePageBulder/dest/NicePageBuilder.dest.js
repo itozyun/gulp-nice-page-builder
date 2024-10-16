@@ -27,7 +27,6 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.dest',
-          PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
     return through.obj(
@@ -38,13 +37,6 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
          * @param {function(Error=, Vinyl=)} callback
          */
         function( file, encoding, callback ){
-            if( file.isNull() ) return callback();
-    
-            if( file.isStream() ){
-                this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
-                return callback();
-            };
-
             return callback( null, file );
         },
         /**
@@ -52,6 +44,17 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
          * @param {function()} callback
          */
         function( callback ){
+            function sortByURL( obj ){
+                const _obj = {};
+                const urlList = Object.keys( obj ).sort();
+
+                while( urlList.length ){
+                    const rootRelativeURL = urlList.shift();
+
+                    _obj[ rootRelativeURL ] = obj[ rootRelativeURL ];
+                };
+                return _obj;
+            };
             function writeFile( filePath, json ){
                 const file = new _Vinyl(
                     {
@@ -66,19 +69,20 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
             const self = this;
 
             if( destTargets & DEST_TARGET.ALL_MIXINS ){
-                writeFile( context.allMixinsPath, context.mixins );
+                writeFile( context.allMixinsPath, sortByURL( context.mixins ) );
             };
             if( destTargets & DEST_TARGET.ALL_TEMPLETS ){
-                writeFile( context.allTempletesPath, context.templetes );
+                writeFile( context.allTempletesPath, sortByURL( context.templetes ) );
             };
             if( destTargets & DEST_TARGET.ALL_PAGES_METADATA ){
                 const metadataOfAllPages = {};
 
                 for( const rootRelativeURL in context.metadataOfAllPages ){
-                    metadataOfAllPages[ rootRelativeURL ] = context.unmergeMetadata( context.metadataOfAllPages[ rootRelativeURL ] );
-                    delete metadataOfAllPages[ rootRelativeURL ].URL;
+                    const metadata = metadataOfAllPages[ rootRelativeURL ] = context.unmergeMetadata( context.metadataOfAllPages[ rootRelativeURL ] );
+
+                    delete metadata.URL;
                 };
-                writeFile( context.metadataOfAllPagesPath, metadataOfAllPages );
+                writeFile( context.metadataOfAllPagesPath, sortByURL( metadataOfAllPages ) );
             };
             if( destTargets & DEST_TARGET.ALL_APPENDIXES ){
                 for( const filePath in context.allAppendixes ){
@@ -101,7 +105,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets ){
                         delete htmlJson[ 0 ].URL;
                     };
                 };
-                writeFile( context.allPagesPath, context.allPages );
+                writeFile( context.allPagesPath, sortByURL( context.allPages ) );
             };
             callback();
         }
