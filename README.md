@@ -39,8 +39,12 @@
       * *.html.json(HTMLJsonWithMetadata 形式) を *.html に変換する
       * `<? ?>` と動的属性(`<a :href="">`) を置き換える
       * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
-   5. nicePageBuilder.json2html.stream
+   5. nicePageBuilder.builder.stream
+      * TODO
+   6. nicePageBuilder.json2html.stream
       * Streaming SSR
+   7. nicePageBuilder.dest
+      * gulp plugin only
 
 ## Install
 
