@@ -132,7 +132,11 @@ NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
  * @param {!function((string | !Error))=} opt_onError
  */
 NicePageBuilder.Context.prototype.mergeMetadata = function( metadata, templeteStack, opt_onError ){
-    this.mergedPropertiesOf[ metadata.URL ] = _mergeOrUnmerge( null, this,  metadata, templeteStack, opt_onError );
+    const mergedProperties = _mergeOrUnmerge( null, this,  metadata, templeteStack, opt_onError );
+
+    if( mergedProperties.length ){
+        this.mergedPropertiesOf[ metadata.URL ] = mergedProperties;
+    };
 };
 
 /**

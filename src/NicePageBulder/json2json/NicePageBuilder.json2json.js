@@ -32,8 +32,7 @@ goog.require( 'NicePageBuilder.util.getHTMLJson' );
  * @return {boolean|void} isStaticWebPage
  */
 __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
-    const context = this,
-          isTemplete = !!NicePageBuilder.util.getSLotElement( htmlJson, false );
+    const isTemplete = !!NicePageBuilder.util.getSLotElement( htmlJson, false );
 
     let metadata;
 
@@ -42,11 +41,11 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
 
         metadata = htmlJson.shift();
 
-        if( !isTemplete ){
-            metadata = context.getMergedMetadata( metadata, opt_onError );
-            pageContext = new NicePageBuilder.PageContext( this, metadata.URL );
-        } else {
+        if( isTemplete ){
             pageContext = new NicePageBuilder.PageContext( this, metadata.URL, metadata );
+        } else {
+            metadata = this.getMergedMetadata( metadata, opt_onError );
+            pageContext = new NicePageBuilder.PageContext( this, metadata.URL );
         };
 
         opt_onInstruction   = NicePageBuilder.PageContext.bindToInstructuionHandler( pageContext, opt_onInstruction, false );
@@ -62,7 +61,7 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
             delete metadata.URL;
             htmlJson.unshift( metadata );
         } else {
-            htmlJson.unshift( context.unmergeMetadata( metadata ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
+            htmlJson.unshift( this.unmergeMetadata( metadata ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
         };
     };
 

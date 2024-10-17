@@ -29,7 +29,6 @@ goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
  */
 __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
-        const context     = this;
         const metadata = htmlJson.shift();
 
         if( NicePageBuilder.DEFINE.DEBUG ){
