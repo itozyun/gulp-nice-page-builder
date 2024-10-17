@@ -33,11 +33,18 @@ goog.require( 'NicePageBuilder.util.getHTMLJson' );
  */
 __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
     const context = this;
+    const processTempletes = opt_options && opt_options[ 'processTempletes' ];
 
     let metadata;
 
     if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
-        metadata = context.getMergedMetadata( htmlJson.shift(), opt_onError );
+        metadata = htmlJson.shift();
+
+        if( processTempletes ){
+            this.mergeMetadata( metadata, [], opt_onError );
+        } else {
+            metadata = context.getMergedMetadata( metadata, opt_onError );
+        };
 
         opt_onInstruction   = NicePageBuilder.PageContext.bindToInstructuionHandler( context, metadata, opt_onInstruction, false );
         opt_onEnterNode     = NicePageBuilder.PageContext.bindToEnterNodeHandler( context, metadata, opt_onEnterNode, false );
@@ -48,7 +55,10 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
     const isStaticWebPage = json2json.main( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
     if( metadata ){
-        htmlJson.unshift( context.unmergeMetadata( metadata ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
+        if( processTempletes ){
+            delete metadata.URL;
+        };
+        htmlJson.unshift( context.unmergeMetadata( metadata, processTempletes ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
     };
 
     return isStaticWebPage;
@@ -71,7 +81,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    const processTemplets = opt_options && opt_options[ 'processTemplets' ];
+    const processTempletes = opt_options && opt_options[ 'processTempletes' ];
 
     /** @const {!Array.<string | !HTMLJson | !HTMLJsonWithMetadata>} */
     const PAGE_FILE_LIST = [];
@@ -137,6 +147,17 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
         function( callback ){
             context.storeMetadataOfNewPages( PAGE_FILE_LIST );
 
+            if( processTempletes ){
+                for( const rootRelativePath in context.templetes ){
+                    const htmlJson = NicePageBuilder.util.getHTMLJson( context.templetes[ rootRelativePath ] );
+
+                    if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
+                        htmlJson[ 0 ].URL = rootRelativePath;
+                    };
+                    __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
+                };
+            };
+
             while( PAGE_FILE_LIST.length ){
                 const filePath = PAGE_FILE_LIST.shift();
                 const htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (PAGE_FILE_LIST.shift());
@@ -152,13 +173,6 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
                         }
                     )
                 );
-            };
-            if( processTemplets ){
-                for( const rootRelativePath in context.templetes ){
-                    const htmlJson = NicePageBuilder.util.getHTMLJson( context.templetes[ rootRelativePath ] );
-
-                    __NicePageBuilder_internal__.json2json.call( context, htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
-                };
             };
             callback();
         }

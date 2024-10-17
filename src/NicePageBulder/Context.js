@@ -111,11 +111,12 @@ NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt
 
 /**
  * @param {!NicePageBuilder.Metadata} metadata
+ * @param {boolean} skipDeepcopy
  */
-NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
+NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata, skipDeepcopy ){
     const rootRelativeURL  = metadata.URL;
     const mergedProperties = this.mergedPropertiesOf[ rootRelativeURL ];
-    const _metadata        = _deepCopyMetadata( metadata );
+    const _metadata        = skipDeepcopy ? metadata : _deepCopyMetadata( metadata );
 
     if( mergedProperties ){
         _mergeOrUnmerge( mergedProperties, this,  _metadata, [] );

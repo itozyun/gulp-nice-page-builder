@@ -45,7 +45,7 @@ __NicePageBuilder_internal__.builder = function( htmlJson ){
         contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
     };
 
-    this.unmergeMetadata( metadata );
+    this.unmergeMetadata( metadata, false );
 
     delete metadata.TEMPLETE;
     delete metadata.MIXINS;
