@@ -102,9 +102,9 @@ NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt
     let metadata = this.metadataOfAllPages[ rootRelativeURL ] || null;
 
     if( metadata ){
-        if( !this.mergedPropertiesOf[ rootRelativeURL ] ){
+        // if( !this.mergedPropertiesOf[ rootRelativeURL ] ){
             this.mergeMetadata( metadata, [], opt_onError );
-        };
+        // };
     };
     return metadata;
 };
@@ -132,10 +132,18 @@ NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
  * @param {!function((string | !Error))=} opt_onError
  */
 NicePageBuilder.Context.prototype.mergeMetadata = function( metadata, templeteStack, opt_onError ){
-    const mergedProperties = _mergeOrUnmerge( null, this,  metadata, templeteStack, opt_onError );
+    // MIXINS が更新されているかもしれないので unmerge して merge する
+    const rootRelativeURL  = metadata.URL;
+    let mergedProperties = this.mergedPropertiesOf[ rootRelativeURL ];
+
+    if( mergedProperties ){
+        _mergeOrUnmerge( mergedProperties, this,  metadata, [] );
+    };
+
+    mergedProperties = _mergeOrUnmerge( null, this,  metadata, templeteStack, opt_onError );
 
     if( mergedProperties.length ){
-        this.mergedPropertiesOf[ metadata.URL ] = mergedProperties;
+        this.mergedPropertiesOf[ rootRelativeURL ] = mergedProperties;
     };
 };
 
@@ -233,7 +241,7 @@ function _mergeOrUnmerge( mergedProperties, context,  targetMetadata, templeteSt
                     ++changed;
                 };
             } else if( isUnmerge && mergedProperties.indexOf( k ) !== -1 ){
-                if( _deepEquals( targetMetadata[ k ], metadataToMerge[ k ] ) ){
+                if( true || _deepEquals( targetMetadata[ k ], metadataToMerge[ k ] ) ){
                     delete targetMetadata[ k ];
                 };
             } else if( !isUnmerge && targetMetadata[ k ] === undefined ){
