@@ -27,7 +27,7 @@ NicePageBuilder.PageContext = function( context, rootRelativeURL, opt_templeteMe
      * @return {NicePageBuilder.Metadata | null}
      */
     this.getMetadataOf = function( url ){
-        var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
+        var rootRelativeURL = this.toRootRelativeURL( url );
 
         return context.getMetadataOf( rootRelativeURL )
     };

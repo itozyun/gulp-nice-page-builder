@@ -99,6 +99,8 @@ NicePageBuilder.Context.prototype.getMergedMetadata = function( metadata, opt_on
  * @return {NicePageBuilder.Metadata | null} 
  */
 NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt_onError ){
+    rootRelativeURL = this.path.clearHash( rootRelativeURL );
+
     let metadata = this.metadataOfAllPages[ rootRelativeURL ] || null;
 
     if( metadata ){
@@ -137,7 +139,7 @@ NicePageBuilder.Context.prototype.mergeMetadata = function( metadata, templeteSt
     let mergedProperties = this.mergedPropertiesOf[ rootRelativeURL ];
 
     if( mergedProperties ){
-        _mergeOrUnmerge( mergedProperties, this,  metadata, [] );
+        _mergeOrUnmerge( mergedProperties, this,  metadata, [], opt_onError );
     };
 
     mergedProperties = _mergeOrUnmerge( null, this,  metadata, templeteStack, opt_onError );
