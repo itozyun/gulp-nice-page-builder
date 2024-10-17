@@ -71,6 +71,8 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
+    const processTemplets = opt_options && opt_options[ 'processTemplets' ];
+
     /** @const {!Array.<string | !HTMLJson | !HTMLJsonWithMetadata>} */
     const PAGE_FILE_LIST = [];
 
@@ -151,7 +153,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
                     )
                 );
             };
-            if( opt_options && opt_options[ 'processedTemplets' ] ){
+            if( processTemplets ){
                 for( const rootRelativePath in context.templetes ){
                     const htmlJson = NicePageBuilder.util.getHTMLJson( context.templetes[ rootRelativePath ] );
 
