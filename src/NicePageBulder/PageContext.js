@@ -11,12 +11,13 @@ goog.requireType( 'EnterNodeHandler' );
 goog.requireType( 'VNode' );
 
 /**
- * @private
  * @constructor
  *
  * @param {!NicePageBuilder.Context} context
- * @param {string} rootRelativeURL */
-NicePageBuilder.PageContext = function( context, rootRelativeURL ){
+ * @param {string} rootRelativeURL
+ * @param {!NicePageBuilder.Metadata=} opt_templeteMetadata
+ */
+NicePageBuilder.PageContext = function( context, rootRelativeURL, opt_templeteMetadata ){
     this.path = context.path;
     /** @private */ this._allAppendixes = context.allAppendixes;
     /** @private */ this._baseURL       = rootRelativeURL;
@@ -29,6 +30,12 @@ NicePageBuilder.PageContext = function( context, rootRelativeURL ){
         var rootRelativeURL = this.toRootRelativeURL( this.path.clearHash( url ) );
 
         return context.getMetadataOf( rootRelativeURL )
+    };
+
+    if( opt_templeteMetadata ){
+        this.getMetadata = function(){
+            return /** @type {!NicePageBuilder.Metadata} */ (opt_templeteMetadata);
+        };
     };
 };
 
@@ -87,23 +94,20 @@ NicePageBuilder.PageContext.prototype.getShortestURL = function( url ){
  */
 
 /**
- * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.Metadata} metadata
+ * @param {!NicePageBuilder.PageContext} pageContext
  * @param {!InstructionHandler | void} onInstruction
  * @param {boolean} isStreamContext
  * @return {!InstructionHandler | void}
  */
-NicePageBuilder.PageContext.bindToInstructuionHandler = function( context, metadata, onInstruction, isStreamContext ){
+NicePageBuilder.PageContext.bindToInstructuionHandler = function( pageContext, onInstruction, isStreamContext ){
     if( onInstruction ){
-        var nicePageContext = new NicePageBuilder.PageContext( context, metadata.URL ), funcName, _onInstruction;
-
         if( typeof onInstruction === 'function' ){
-            return _bindPageContextToHandler( isStreamContext, nicePageContext, onInstruction );
+            return _bindPageContextToHandler( isStreamContext, pageContext, onInstruction );
         } else {
-            _onInstruction = {};
+            var _onInstruction = {}, funcName;
 
             for( funcName in onInstruction ){
-                _onInstruction[ funcName ] = _bindPageContextToHandler( isStreamContext, nicePageContext, onInstruction[ funcName ] );
+                _onInstruction[ funcName ] = _bindPageContextToHandler( isStreamContext, pageContext, onInstruction[ funcName ] );
             };
             return _onInstruction;
         };
@@ -111,24 +115,21 @@ NicePageBuilder.PageContext.bindToInstructuionHandler = function( context, metad
 };
 
 /**
- * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.Metadata} metadata
+ * @param {!NicePageBuilder.PageContext} pageContext
  * @param {!EnterNodeHandler | void} onEnterNode
  * @param {boolean} isStreamContext
  * @return {!EnterNodeHandler | void}
  */
-NicePageBuilder.PageContext.bindToEnterNodeHandler = function( context, metadata, onEnterNode, isStreamContext ){
+NicePageBuilder.PageContext.bindToEnterNodeHandler = function( pageContext, onEnterNode, isStreamContext ){
     if( onEnterNode ){
-        var nicePageContext = new NicePageBuilder.PageContext( context, metadata.URL ), i, l, _onEnterNode;
-
         if( typeof onEnterNode === 'function' ){
-            return _bindPageContextToHandler( isStreamContext, nicePageContext, onEnterNode );
+            return _bindPageContextToHandler( isStreamContext, pageContext, onEnterNode );
         } else {
-            _onEnterNode = [];
+            var i = 0, l = onEnterNode.length, _onEnterNode = [];
 
-            for( i = 0, l = onEnterNode.length; i < l; i += 2 ){
+            for( ; i < l; i += 2 ){
                 _onEnterNode[ i     ] = onEnterNode[ i ];
-                _onEnterNode[ i + 1 ] = _bindPageContextToHandler( isStreamContext, nicePageContext, /** @type {!Function} */ (onEnterNode[ i + 1 ]) );
+                _onEnterNode[ i + 1 ] = _bindPageContextToHandler( isStreamContext, pageContext, /** @type {!Function} */ (onEnterNode[ i + 1 ]) );
             };
             return _onEnterNode;
         };
@@ -136,31 +137,25 @@ NicePageBuilder.PageContext.bindToEnterNodeHandler = function( context, metadata
 };
 
 /**
- * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.Metadata} metadata
+ * @param {!NicePageBuilder.PageContext} pageContext
  * @param {!function(!VNode) | void} onDocumentReady
  * @return {!function(!VNode) | void}
  */
-NicePageBuilder.PageContext.bindToDocumentReadyHandler = function( context, metadata, onDocumentReady ){
+NicePageBuilder.PageContext.bindToDocumentReadyHandler = function( pageContext, onDocumentReady ){
     if( onDocumentReady ){
-        var nicePageContext = new NicePageBuilder.PageContext( context, metadata.URL );
-
-        return onDocumentReady.bind( nicePageContext );
+        return onDocumentReady.bind( pageContext );
     };
 };
 
 
 /**
- * @param {!NicePageBuilder.Context} context
- * @param {!NicePageBuilder.Metadata} metadata
+ * @param {!NicePageBuilder.PageContext} pageContext
  * @param {!function((string | !Error)) | void} onError
  * @return {!function((string | !Error)) | void}
  */
-NicePageBuilder.PageContext.bindToErrorHandler = function( context, metadata, onError ){
+NicePageBuilder.PageContext.bindToErrorHandler = function( pageContext, onError ){
     if( onError ){
-        var nicePageContext = new NicePageBuilder.PageContext( context, metadata.URL );
-
-        return onError.bind( nicePageContext );
+        return onError.bind( pageContext );
     };
 };
 

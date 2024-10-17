@@ -32,33 +32,38 @@ goog.require( 'NicePageBuilder.util.getHTMLJson' );
  * @return {boolean|void} isStaticWebPage
  */
 __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
-    const context = this;
-    const processTempletes = opt_options && opt_options[ 'processTempletes' ];
+    const context = this,
+          isTemplete = !!NicePageBuilder.util.getSLotElement( htmlJson, false );
 
     let metadata;
 
     if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
+        let pageContext;
+
         metadata = htmlJson.shift();
 
-        if( processTempletes ){
-            this.mergeMetadata( metadata, [], opt_onError );
-        } else {
+        if( !isTemplete ){
             metadata = context.getMergedMetadata( metadata, opt_onError );
+            pageContext = new NicePageBuilder.PageContext( this, metadata.URL );
+        } else {
+            pageContext = new NicePageBuilder.PageContext( this, metadata.URL, metadata );
         };
 
-        opt_onInstruction   = NicePageBuilder.PageContext.bindToInstructuionHandler( context, metadata, opt_onInstruction, false );
-        opt_onEnterNode     = NicePageBuilder.PageContext.bindToEnterNodeHandler( context, metadata, opt_onEnterNode, false );
-        opt_onDocumentReady = NicePageBuilder.PageContext.bindToDocumentReadyHandler( context, metadata, opt_onDocumentReady );
-        opt_onError         = NicePageBuilder.PageContext.bindToErrorHandler( context, metadata, opt_onError );
+        opt_onInstruction   = NicePageBuilder.PageContext.bindToInstructuionHandler( pageContext, opt_onInstruction, false );
+        opt_onEnterNode     = NicePageBuilder.PageContext.bindToEnterNodeHandler( pageContext, opt_onEnterNode, false );
+        opt_onDocumentReady = NicePageBuilder.PageContext.bindToDocumentReadyHandler( pageContext, opt_onDocumentReady );
+        opt_onError         = NicePageBuilder.PageContext.bindToErrorHandler( pageContext, opt_onError );
     };
 
     const isStaticWebPage = json2json.main( /** @type {!HTMLJson} */ (htmlJson), opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
     if( metadata ){
-        if( processTempletes ){
+        if( isTemplete ){
             delete metadata.URL;
+            htmlJson.unshift( metadata );
+        } else {
+            htmlJson.unshift( context.unmergeMetadata( metadata ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
         };
-        htmlJson.unshift( context.unmergeMetadata( metadata, processTempletes ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
     };
 
     return isStaticWebPage;

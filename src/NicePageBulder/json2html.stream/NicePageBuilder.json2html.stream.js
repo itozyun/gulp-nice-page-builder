@@ -85,9 +85,12 @@ function onTokenForMeta( token, value ){
                         throw this._context.path.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
                     };
                 };
-                /** @suppress {constantProperty} @const {InstructionHandler | void} */ this._onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( this._context, metadata, this._onInstruction, true );
-                /** @suppress {constantProperty} @const {EnterNodeHandler | void}   */ this._onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( this._context, metadata, this._onEnterNode, true );
-                /**                     @const {function((string | !Error)) | void} */ this._onError       = NicePageBuilder.PageContext.bindToErrorHandler( this._context, metadata, this._onError );
+
+                const pageContext = new NicePageBuilder.PageContext( this._context, metadata.URL );
+
+                /** @suppress {constantProperty} @const {InstructionHandler | void} */ this._onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( pageContext, this._onInstruction, true );
+                /** @suppress {constantProperty} @const {EnterNodeHandler | void}   */ this._onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( pageContext, this._onEnterNode, true );
+                /**                     @const {function((string | !Error)) | void} */ this._onError       = NicePageBuilder.PageContext.bindToErrorHandler( pageContext, this._onError );
             };
             this._createValue( token, value );
             break;

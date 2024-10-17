@@ -38,9 +38,11 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
             };
         };
 
-        opt_onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( context, metadata, opt_onInstruction, false );
-        opt_onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( context, metadata, opt_onEnterNode, false );
-        opt_onError       = NicePageBuilder.PageContext.bindToErrorHandler( context, metadata, opt_onError );
+        const pageContext = new NicePageBuilder.PageContext( this, metadata.URL );
+
+        opt_onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( pageContext, opt_onInstruction, false );
+        opt_onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( pageContext, opt_onEnterNode, false );
+        opt_onError       = NicePageBuilder.PageContext.bindToErrorHandler( pageContext, opt_onError );
     };
     
     const htmlString = json2html.main( htmlJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );

@@ -80,7 +80,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
                 const metadataOfAllPages = {};
 
                 for( const rootRelativeURL in context.metadataOfAllPages ){
-                    const metadata = metadataOfAllPages[ rootRelativeURL ] = context.unmergeMetadata( context.metadataOfAllPages[ rootRelativeURL ], false );
+                    const metadata = metadataOfAllPages[ rootRelativeURL ] = context.unmergeMetadata( context.metadataOfAllPages[ rootRelativeURL ] );
 
                     delete metadata.URL;
                 };
@@ -103,7 +103,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
                     const htmlJson = context.allPages[ rootRelativeURL ];
 
                     if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
-                        htmlJson[ 0 ] = context.unmergeMetadata( htmlJson[ 0 ], false );
+                        htmlJson[ 0 ] = context.unmergeMetadata( htmlJson[ 0 ] );
                         delete htmlJson[ 0 ].URL;
                     };
                 };
