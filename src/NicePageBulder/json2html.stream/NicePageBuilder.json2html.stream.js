@@ -27,6 +27,7 @@ goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
  */
 __NicePageBuilder_internal__.json2htmlStream = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     const stream = json2html.stream( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
+    /** @suppress {missingProperties} */
     const parser = stream._parser;
 
     parser._onTokenForHTMLJson = parser.onToken;
