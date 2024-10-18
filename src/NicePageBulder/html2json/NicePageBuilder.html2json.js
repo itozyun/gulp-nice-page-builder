@@ -281,7 +281,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 if( context.allPagesPath ){
                     context.allPages[ pageRootRelativeURL ] = /** @type {!HTMLJsonWithMetadata} */ (htmlJson);
                 };
-                context.metadataOfAllPages[ pageRootRelativeURL ] = /** @type {!NicePageBuilder.Metadata} */ (metadata);
+                context.allPageMetadata[ pageRootRelativeURL ] = /** @type {!NicePageBuilder.Metadata} */ (metadata);
             };
 
             callback();

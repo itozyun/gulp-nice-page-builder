@@ -22,20 +22,21 @@ NicePageBuilder.Context = function( opt_options ){
           srcRootPath = Path.resolve( options[ 'srcRootPath' ] || './' ) + '/', // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
           tinyPath    = new TinyPath( options[ 'urlOrigin' ] || '', srcRootPath );
 
-    this.srcRootPath            = tinyPath._absolutePathOfSrcRoot,
-    this.allPagesPath           = options[ 'allPagesPath'           ] || '';
-    this.metadataOfAllPagesPath = options[ 'metadataOfAllPagesPath' ] || 'metadata-of-all-pages.json';
-    this.allMixinsPath          = options[ 'allMixinsPath'          ] || 'all-mixins.json';
-    this.allTempletesPath       = options[ 'allTempletesPath'       ] || 'all-templetes.json';
-    this.keywordMixins          = _jsonFilePathToOriginalExtname( this.allMixinsPath   , tinyPath ),
-    this.keywordTempletes       = _jsonFilePathToOriginalExtname( this.allTempletesPath, tinyPath ),
-    this.mixins                 = options[ 'mixins'             ] || {},
-    this.templetes              = options[ 'templetes'          ] || {},
-    this.metadataOfAllPages     = options[ 'metadataOfAllPages' ] || {},
-    this.mergedPropertiesOf     = {},
-    this.allPages               = {},
-    this.allAppendixes          = {},
-    this.path                   = tinyPath;
+    this.srcRootPath         = tinyPath._absolutePathOfSrcRoot;
+    this.allPagesPath        = options[ 'allPagesPath'           ] || '';
+    this.allPageMetadataPath = options[ 'allPageMetadataPath' ] || 'metadata-of-all-pages.json';
+    this.allMixinsPath       = options[ 'allMixinsPath'          ] || 'all-mixins.json';
+    this.allTempletesPath    = options[ 'allTempletesPath'       ] || 'all-templetes.json';
+    this.keywordMixins       = _jsonFilePathToOriginalExtname( this.allMixinsPath   , tinyPath );
+    this.keywordTempletes    = _jsonFilePathToOriginalExtname( this.allTempletesPath, tinyPath );
+    this.mixins              = options[ 'mixins'             ] || {};
+    this.templetes           = options[ 'templetes'          ] || {};
+    this.allPageMetadata     = options[ 'allPageMetadata' ] || {};
+    this.mergedPropertiesOf  = {};
+    this.allPages            = {};
+    /** @const {!Object.<string, (!Object | !Array)>} */
+    this.additionalJsons     = options[ 'additionalJsons'    ] || {};
+    this.path                = tinyPath;
 
     /** @type {*} */ this.html2json;
     /** @type {*} */ this.builder;
@@ -69,10 +70,10 @@ NicePageBuilder.Context.prototype.storeMetadataOfNewPages = function( PAGE_FILE_
 NicePageBuilder.Context.prototype.storeMetadata = function( metadata ){
     const rootRelativeURL = metadata.URL;
 
-    if( !this.metadataOfAllPages[ rootRelativeURL ] ){
-        this.metadataOfAllPages[ rootRelativeURL ] = _deepCopyMetadata( metadata );
+    if( !this.allPageMetadata[ rootRelativeURL ] ){
+        this.allPageMetadata[ rootRelativeURL ] = _deepCopyMetadata( metadata );
     };
-    return this.metadataOfAllPages[ rootRelativeURL ];
+    return this.allPageMetadata[ rootRelativeURL ];
 };
 
 /**
@@ -86,7 +87,7 @@ NicePageBuilder.Context.prototype.getMergedMetadata = function( metadata, opt_on
 
     this.storeMetadata( metadata );
 
-    metadata = this.metadataOfAllPages[ rootRelativeURL ];
+    metadata = this.allPageMetadata[ rootRelativeURL ];
 
     this.mergeMetadata( metadata, [], opt_onError );
 
@@ -101,7 +102,7 @@ NicePageBuilder.Context.prototype.getMergedMetadata = function( metadata, opt_on
 NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt_onError ){
     rootRelativeURL = this.path.clearHash( rootRelativeURL );
 
-    let metadata = this.metadataOfAllPages[ rootRelativeURL ] || null;
+    let metadata = this.allPageMetadata[ rootRelativeURL ] || null;
 
     if( metadata ){
         // if( !this.mergedPropertiesOf[ rootRelativeURL ] ){

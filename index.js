@@ -2751,17 +2751,17 @@ function mc(a) {
   b = new hc(a.urlOrigin || "", b);
   this.pa = b.$;
   this.ma = a.allPagesPath || "";
-  this.ra = a.metadataOfAllPagesPath || "metadata-of-all-pages.json";
+  this.ra = a.allPageMetadataPath || "metadata-of-all-pages.json";
   this.la = a.allMixinsPath || "all-mixins.json";
   this.oa = a.allTempletesPath || "all-templetes.json";
   this.ea = nc(this.la);
   this.fa = nc(this.oa);
   this.ba = a.mixins || {};
   this.$ = a.templetes || {};
-  this.da = a.metadataOfAllPages || {};
+  this.da = a.allPageMetadata || {};
   this.ga = {};
   this.ca = {};
-  this.ia = {};
+  this.ia = a.additionalJsons || {};
   this.path = b;
 }
 function Ab(a, b) {

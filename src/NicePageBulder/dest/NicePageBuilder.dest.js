@@ -1,6 +1,7 @@
 // .dest( ALL_OPTIONS | MIXINS | TEMPLETES )
 
 goog.provide( 'NicePageBuilder.dest' );
+goog.provide( 'NicePageBuilder.DEST_TARGET' );
 
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
@@ -11,12 +12,14 @@ goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
  * @enum {number}
  */
 var DEST_TARGET = {
-    ALL_MIXINS         :  1,
-    ALL_TEMPLETS       :  2,
-    ALL_PAGES_METADATA :  4,
-    ALL_APPENDIXES     :  8,
-    ALL_PAGES_DATA     : 16
+    ALL_MIXINS           :  1,
+    ALL_TEMPLETS         :  2,
+    ALL_PAGE_METADATA    :  4,
+    ALL_ADDITIONAL_JSONS :  8,
+    ALL_PAGES_DATA       : 16
 };
+
+NicePageBuilder.DEST_TARGET = DEST_TARGET;
 
 /**
  * @this {NicePageBuilder.Context}
@@ -76,23 +79,23 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
             if( destTargets & DEST_TARGET.ALL_TEMPLETS ){
                 writeFile( context.allTempletesPath, sortByURL( context.templetes ) );
             };
-            if( destTargets & DEST_TARGET.ALL_PAGES_METADATA ){
-                const metadataOfAllPages = {};
+            if( destTargets & DEST_TARGET.ALL_PAGE_METADATA ){
+                const allPageMetadata = {};
 
-                for( const rootRelativeURL in context.metadataOfAllPages ){
-                    const metadata = metadataOfAllPages[ rootRelativeURL ] = context.unmergeMetadata( context.metadataOfAllPages[ rootRelativeURL ] );
+                for( const rootRelativeURL in context.allPageMetadata ){
+                    const metadata = allPageMetadata[ rootRelativeURL ] = context.unmergeMetadata( context.allPageMetadata[ rootRelativeURL ] );
 
                     delete metadata.URL;
                 };
-                writeFile( context.metadataOfAllPagesPath, sortByURL( metadataOfAllPages ) );
+                writeFile( context.allPageMetadataPath, sortByURL( allPageMetadata ) );
             };
-            if( destTargets & DEST_TARGET.ALL_APPENDIXES ){
-                for( const filePath in context.allAppendixes ){
+            if( destTargets & DEST_TARGET.ALL_ADDITIONAL_JSONS ){
+                for( const filePath in context.additionalJsons ){
                     this.push(
                         new _Vinyl(
                             {
                                 path     : filePath,
-                                contents : Buffer.from( JSON.stringify( context.allAppendixes[ filePath ] ) )
+                                contents : Buffer.from( JSON.stringify( context.additionalJsons[ filePath ] ) )
                             }
                         )
                     );
@@ -113,9 +116,3 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
         }
     );
 };
-
-__NicePageBuilder_internal__._destGulpPlugin.ALL_MIXINS         = DEST_TARGET.ALL_MIXINS;
-__NicePageBuilder_internal__._destGulpPlugin.ALL_TEMPLETS       = DEST_TARGET.ALL_TEMPLETS;
-__NicePageBuilder_internal__._destGulpPlugin.ALL_PAGES_METADATA = DEST_TARGET.ALL_PAGES_METADATA;
-__NicePageBuilder_internal__._destGulpPlugin.ALL_PAGES_DATA     = DEST_TARGET.ALL_PAGES_DATA;
-__NicePageBuilder_internal__._destGulpPlugin.ALL_APPENDIXES     = DEST_TARGET.ALL_APPENDIXES;
