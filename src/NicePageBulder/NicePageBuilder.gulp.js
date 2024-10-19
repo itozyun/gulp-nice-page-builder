@@ -28,6 +28,7 @@ module.exports.gulp = function( opt_options ){
         if( !context.json2html ){
             context.json2html = {};
         };
+        /** @suppress {checkTypes} */
         context.json2html.stream = __NicePageBuilder_internal__.json2htmlStream.bind( context );
     };
     if( __NicePageBuilder_internal__._destGulpPlugin ){

@@ -193,8 +193,11 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                         function( templeteRootRelativeURL, metadataTemplete, updatedAt ){
                             metadataTemplete && toShortestURL( templeteRootRelativeURL, metadataTemplete );
 
-                            TEMPLETE_LIST[ templeteRootRelativeURL ] = PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
-                            delete PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
+                            const templete = PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
+                            if( templete ){
+                                TEMPLETE_LIST[ templeteRootRelativeURL ] = templete;
+                                delete PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
+                            };
                         },
                         opt_onError,
                         PAGES_OR_TEMPLETES
