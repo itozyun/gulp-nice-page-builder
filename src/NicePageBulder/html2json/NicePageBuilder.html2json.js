@@ -114,10 +114,40 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                     PAGES_OR_TEMPLETES[ rootRelativeURL ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
                     break;
                 case '.json' :
-                    const mixinJson = JSON.parse( contents );
+                    const json = JSON.parse( contents );
 
-                    if( !m_isArray( mixinJson ) && m_isObject( mixinJson ) ){
-                        MIXIN_LIST[ rootRelativeURL ] = [ /** @type {!NicePageBuilder.Metadata} */ (mixinJson), createdTimeMs, updatedTimeMs ];
+                    switch( file.stem ){
+                        case context.keywordTempletes :
+                            if( !m_isArray( json ) && m_isObject( json ) ){
+                                for( const rootRelativeURL in json ){
+                                    if( !context.templetes[ rootRelativeURL ] ){
+                                        context.templetes[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplete} */ (json[ rootRelativeURL ]);
+                                    };
+                                };
+                                this.push( file );
+                            } else if( NicePageBuilder.DEFINE.DEBUG ){
+                                console.log( 'Invalid templetes ' + file.path );
+                            };
+                            break;
+                        case context.keywordMixins :
+                            if( !m_isArray( json ) && m_isObject( json ) ){
+                                for( const rootRelativeURL in json ){
+                                    if( !context.mixins[ rootRelativeURL ] ){
+                                        context.mixins[ rootRelativeURL ] = /** @type {!NicePageBuilder.Mixin} */ (json[ rootRelativeURL ]);
+                                    };
+                                };
+                                this.push( file );
+                            } else if( NicePageBuilder.DEFINE.DEBUG ){
+                                console.log( 'Invalid mixins ' + file.path );
+                            };
+                            break;
+                        default :
+                            if( !m_isArray( json ) && m_isObject( json ) ){
+                                MIXIN_LIST[ rootRelativeURL ] = [ /** @type {!NicePageBuilder.Metadata} */ (json), createdTimeMs, updatedTimeMs ];
+                            } else {
+                                this.push( file );
+                            };
+                            break;
                     };
                     break;
                 default :
