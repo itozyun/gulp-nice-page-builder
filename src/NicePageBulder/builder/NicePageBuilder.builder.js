@@ -2,18 +2,13 @@ goog.provide( 'NicePageBuilder.builder' );
 goog.provide( '__NicePageBuilder_internal__.builder' );
 
 goog.require( 'htmljson.base' );
-goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
 goog.requireType( 'NicePageBuilder.Mixin' );
-goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'HTMLJsonWithMetadata' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
-goog.require( 'NicePageBuilder.INDEXES' );
 goog.require( '__NicePageBuilder_internal__' );
-goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
-goog.require( 'NicePageBuilder.util.getHTMLJson' );
-goog.require( 'NicePageBuilder.util.getSLotElement' );
+goog.require( 'NicePageBuilder.util.completePage' );
 
 /**
  * @this {NicePageBuilder.Context}
@@ -26,68 +21,7 @@ __NicePageBuilder_internal__.builder = function( htmlJson ){
         return htmlJson;
     };
 
-    const metadata      = htmlJson[ 0 ];
-    const templeteStack = []; // Array.<NicePageBuilder.RootRelativeURL>
-
-    this.getMergedMetadata( metadata, undefined, templeteStack );
-
-    let contentHtmlJson = htmlJson;
-
-    while( templeteStack.length ){
-        const templetePath = templeteStack.shift();
-        const templete = this.templetes[ templetePath ];
-
-        if( NicePageBuilder.DEFINE.DEBUG ){
-            if( !templete ){
-                throw '[builder] Templete: ' + templetePath + ' required by ' + this.path.urlToFilePath( metadata.URL ) + ' not found!';
-            };
-        };
-        contentHtmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), contentHtmlJson );
-    };
-
-    this.unmergeMetadata( metadata );
-
-    delete metadata.TEMPLETE;
-    delete metadata.MIXINS;
-
-    return contentHtmlJson;
-};
-
-/**
- * @private
- * @param {!HTMLJson} templeteJSONNode 
- * @param {!HTMLJson} contentJSONNode
- * @return {!HTMLJson}
- */
-function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
-    templeteJSONNode = /** @type {!HTMLJson} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
-
-    let result = NicePageBuilder.util.getSLotElement( templeteJSONNode, true );
-
-    if( result ){
-        const parentJSONNode = /** @type {!HTMLJson} */ (result[ 1 ]);
-
-        let myIndex = /** @type {number} */ (result[ 2 ]),
-            metadata;
-
-        if( !m_isArray( contentJSONNode[ 0 ] ) && m_isObject( contentJSONNode[ 0 ] ) ){
-            metadata = contentJSONNode.shift();
-        };
-
-        let i = m_getChildNodeStartIndex( contentJSONNode ),
-            l = contentJSONNode.length;
-
-        parentJSONNode.splice( myIndex, 1 ); // remove <slot/>
-
-        for( myIndex -= i; i < l; ++i ){
-            parentJSONNode.splice( myIndex + i, 0, contentJSONNode[ i ] );
-        };
-
-        if( metadata ){
-            templeteJSONNode.unshift( metadata );
-        };
-    };
-    return templeteJSONNode;
+    return NicePageBuilder.util.completePage( this, htmlJson );
 };
 
 /**

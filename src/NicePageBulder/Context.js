@@ -82,17 +82,16 @@ NicePageBuilder.Context.prototype.storeMetadata = function( metadata ){
  * @this {!NicePageBuilder.Context}
  * @param {!NicePageBuilder.Metadata} metadata
  * @param {!function((string | !Error))=} opt_onError
- * @param {!Array.<NicePageBuilder.RootRelativeURL>=} opt_templeteStack
  * @return {!NicePageBuilder.Metadata}
  */
-NicePageBuilder.Context.prototype.getMergedMetadata = function( metadata, opt_onError, opt_templeteStack ){
+NicePageBuilder.Context.prototype.getMergedMetadata = function( metadata, opt_onError ){
     const rootRelativeURL = metadata.URL;
 
     this.storeMetadata( metadata );
 
     metadata = this.allPageMetadata[ rootRelativeURL ];
 
-    _mergeMetadata( this, metadata, opt_templeteStack || [], opt_onError );
+    _mergeMetadata( this, metadata, opt_onError );
 
     return metadata;
 };
@@ -108,7 +107,7 @@ NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt
     let metadata = this.allPageMetadata[ rootRelativeURL ] || null;
 
     if( metadata ){
-        _mergeMetadata( this, metadata, [], opt_onError );
+        _mergeMetadata( this, metadata, opt_onError );
     };
     return metadata;
 };
@@ -132,10 +131,9 @@ NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
  * @private
  * @param {!NicePageBuilder.Context} context
  * @param {!NicePageBuilder.Metadata} metadata
- * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
  * @param {!function((string | !Error))=} opt_onError
  */
-function _mergeMetadata( context, metadata, templeteStack, opt_onError ){
+function _mergeMetadata( context, metadata, opt_onError ){
     if( NicePageBuilder.util.isPrebuild( metadata ) ){
         // MIXINS が更新されているかもしれないので unmerge して merge する
         const rootRelativeURL = metadata.URL;
@@ -144,7 +142,7 @@ function _mergeMetadata( context, metadata, templeteStack, opt_onError ){
         if( mergedProperties ){
             _unmerge( mergedProperties, metadata );
         };
-        context.mergedPropertiesOf[ rootRelativeURL ] = _merge( context, metadata, templeteStack, opt_onError );
+        context.mergedPropertiesOf[ rootRelativeURL ] = _merge( context, metadata, opt_onError );
     };
 };
 
@@ -165,10 +163,9 @@ function _unmerge( mergedProperties, targetMetadata ){
  * @private
  * @param {!NicePageBuilder.Context} context
  * @param {!NicePageBuilder.Metadata} targetMetadata
- * @param {!Array.<NicePageBuilder.RootRelativeURL>} templeteStack
  * @param {!function((string | !Error))=} opt_onError
  */
-function _merge( context, targetMetadata, templeteStack, opt_onError ){
+function _merge( context, targetMetadata, opt_onError ){
     /**
      * @param {!NicePageBuilder.Metadata} metadataToMerge
      * @param {number} metadataToMergeUpatedAt
@@ -212,7 +209,6 @@ function _merge( context, targetMetadata, templeteStack, opt_onError ){
          * @param {number} updatedAt
          */
         function( templeteRootRelativeURL, metadataTemplete, updatedAt ){
-            templeteStack.push( templeteRootRelativeURL );
             metadataTemplete && mix( metadataTemplete, updatedAt, true );
         },
         opt_onError
@@ -225,7 +221,6 @@ function _merge( context, targetMetadata, templeteStack, opt_onError ){
 };
 
 /**
- * @private
  * @param {!NicePageBuilder.Metadata} metadata
  * @return {!NicePageBuilder.Metadata}
  */

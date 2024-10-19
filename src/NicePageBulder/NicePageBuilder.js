@@ -14,6 +14,8 @@ __NicePageBuilder_internal__.html2json = false;
 /** @suppress {checkTypes} */
 __NicePageBuilder_internal__.builder   = false;
 /** @suppress {checkTypes} */
+__NicePageBuilder_internal__.builderStream  = false;
+/** @suppress {checkTypes} */
 __NicePageBuilder_internal__.json2json = false;
 /** @suppress {checkTypes} */
 __NicePageBuilder_internal__.json2html = false;

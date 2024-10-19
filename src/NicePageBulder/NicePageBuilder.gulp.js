@@ -18,6 +18,13 @@ module.exports.gulp = function( opt_options ){
     if( __NicePageBuilder_internal__.builder ){
         context.builder = __NicePageBuilder_internal__._builderGulpPlugin;
     };
+    if( __NicePageBuilder_internal__.builderStream ){
+        if( !context.builder ){
+            context.builder = {};
+        };
+        /** @suppress {checkTypes} */
+        context.builder.stream = __NicePageBuilder_internal__.builderStream.bind( context );
+    };
     if( __NicePageBuilder_internal__.json2json ){
         context.json2json = __NicePageBuilder_internal__._json2jsonGulpPlugin;
     };

@@ -5,6 +5,7 @@ goog.provide( 'NicePageBuilder.util.getMetadata' );
 goog.provide( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.provide( 'NicePageBuilder.util.isPrebuild' );
 goog.provide( 'NicePageBuilder.util.traverseMetadataStack' );
+goog.provide( 'NicePageBuilder.util.completePage' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
@@ -138,6 +139,76 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
             traverseMixins( tmpTempleteRootRelativeURL, templeteMetadata );
         };
     };
+};
+
+/**
+ * @param {NicePageBuilder.Context} context
+ * @param {!HTMLJsonWithMetadata} htmlJson
+ * @param {!function((string | !Error))=} opt_onError
+ * @return {!HTMLJsonWithMetadata}
+ */
+NicePageBuilder.util.completePage = function( context, htmlJson, opt_onError ){
+    /**
+     * @param {!HTMLJson | !HTMLJsonWithMetadata} templeteJSONNode 
+     * @param {!HTMLJson | !HTMLJsonWithMetadata} contentJSONNode
+     * @return {!HTMLJson | !HTMLJsonWithMetadata}
+     */
+    function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
+        templeteJSONNode = /** @type {!HTMLJson} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
+
+        let result = NicePageBuilder.util.getSLotElement( templeteJSONNode, true );
+
+        if( result ){
+            const parentJSONNode = /** @type {!HTMLJson} */ (result[ 1 ]);
+
+            let myIndex = /** @type {number} */ (result[ 2 ]),
+                metadata;
+
+            if( NicePageBuilder.util.isHTMLJsonWithMetadata( contentJSONNode ) ){
+                metadata = contentJSONNode.shift();
+            };
+
+            let i = m_getChildNodeStartIndex( contentJSONNode ),
+                l = contentJSONNode.length;
+
+            parentJSONNode.splice( myIndex, 1 ); // remove <slot/>
+
+            for( myIndex -= i; i < l; ++i ){
+                parentJSONNode.splice( myIndex + i, 0, contentJSONNode[ i ] );
+            };
+
+            if( metadata ){
+                templeteJSONNode.unshift( metadata );
+            };
+        };
+        return templeteJSONNode;
+    };
+
+    const metadata = _deepCopyMetadata( context.getMergedMetadata( /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]) ) );
+
+    NicePageBuilder.util.traverseMetadataStack(
+        context, metadata,
+        function( mixinRootRelativeURL, metadataMixin, updatedAt ){},
+        /**
+         * 
+         * @param {NicePageBuilder.RootRelativeURL} templeteRootRelativeURL 
+         * @param {NicePageBuilder.Metadata | null} metadataTemplete
+         * @param {number} updatedAt
+         */
+        function( templeteRootRelativeURL, metadataTemplete, updatedAt ){
+            const templete = context.templetes[ templeteRootRelativeURL ];
+
+            htmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), htmlJson );
+        },
+        opt_onError
+    );
+
+    delete metadata.TEMPLETE;
+    delete metadata.MIXINS;
+
+    htmlJson[ 0 ] = metadata;
+
+    return htmlJson;
 };
 
 /**
