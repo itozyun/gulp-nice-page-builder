@@ -53,10 +53,10 @@ NicePageBuilder.PageContext.prototype.getMetadata = function(){
 /**
  * 
  * @param {string} filePath
- * @param {boolean} isArray
+ * @param {boolean=} opt_isArray
  * @return {!Object | !Array} */
-NicePageBuilder.PageContext.prototype.getAdditionalJson = function( filePath, isArray ){
-    return this._additionalJsons[ filePath ] = this._additionalJsons[ filePath ] || ( isArray ? [] : {} );
+NicePageBuilder.PageContext.prototype.getAdditionalJson = function( filePath, opt_isArray ){
+    return this._additionalJsons[ filePath ] = this._additionalJsons[ filePath ] || ( opt_isArray ? [] : {} );
 };
 
 /**

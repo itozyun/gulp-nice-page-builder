@@ -72,7 +72,7 @@ NicePageBuilder.util.isPrebuild = function( htmlJsonOrMetadata ){
  * @param {!function(NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata, number)} onReachMixin 
  * @param {!function(NicePageBuilder.RootRelativeURL, (NicePageBuilder.Metadata | null ), number)} onReachTemplete
  * @param {!function((string | !Error))=} opt_onError
- * @param {!NicePageBuilder.NicePageOrTemplete=} opt_altTempletes for html2json
+ * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>=} opt_altTempletes for html2json
  */
 NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, onReachMixin, onReachTemplete, opt_onError, opt_altTempletes ){
     function traverseMixins( baseRootRelativeURL, metadata ){
