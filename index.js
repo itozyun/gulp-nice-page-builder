@@ -2278,7 +2278,7 @@ function ec(a) {
   this.ta = this.ta.da = null;
 }
 function gc(a, b) {
-  10 === a && (b = '"' + b.split('"').join('\\"') + '"');
+  10 === a && (b = '"' + b.split('"').join('\\"').split("\b").join("\\b").split("\f").join("\\f").split("\n").join("\\n").split("\r").join("\\r").split("\t").join("\\t") + '"');
   Z(this.da, "" + b);
 }
 function fc(a, b) {

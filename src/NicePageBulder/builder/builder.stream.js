@@ -66,7 +66,13 @@ function endHandler( data ){
  */
 function onTokenAfterLeaveMetadata( token, value ){
     if( token === Parser.C.STRING ){
-        value = '"' + value.split( '"' ).join( '\\"' ) + '"';
+        value = '"' + value.split( '"' ).join( '\\"' )
+                           .split( '\b' ).join( '\\b' )
+                           .split( '\f' ).join( '\\f' )
+                           .split( '\n' ).join( '\\n' )
+                           .split( '\r' ).join( '\\r' )
+                           .split( '\t' ).join( '\\t' ) +
+                '"';
     };
     // console.log( '>> ', token, value )
     this._stream.queue( '' + value );
