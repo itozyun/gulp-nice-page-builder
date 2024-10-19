@@ -15,6 +15,8 @@ goog.require( 'NicePageBuilder.util.getHTMLJson' );
 goog.require( 'NicePageBuilder.util.getMetadata' );
 goog.require( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
+goog.require( 'NicePageBuilder.util.isPrebuild' );
+goog.require( 'NicePageBuilder.util.traverseMetadataStack' );
 
 /**
  * @this {NicePageBuilder.Context}
@@ -129,6 +131,31 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
          * @param {function()} callback
          */
         function( callback ){
+            /**
+             * @param {string} baseRootRelativeURL
+             * @param {!NicePageBuilder.Metadata} metadata
+             */
+            function toShortestURL( baseRootRelativeURL, metadata ){
+                function getShortestURL( baseURL, uriOrFilePath ){
+                    var relativeURL     = context.path.toRelativeURL( baseURL, context.path.filePathToURL( uriOrFilePath ) ),
+                        rootRelativeURL = context.path.toRootRelativeURL( baseURL, context.path.filePathToURL( uriOrFilePath ) );
+
+                    return relativeURL.length < rootRelativeURL.length ? relativeURL : rootRelativeURL;
+                };
+
+                const mixinPathList = metadata.MIXINS;
+                const templetePath  = metadata.TEMPLETE;
+
+                if( mixinPathList ){
+                    for( let i = 0, l = mixinPathList.length; i < l; ++i ){
+                        mixinPathList[ i ] = getShortestURL( baseRootRelativeURL, mixinPathList[ i ] );
+                    };
+                };
+                if( templetePath ){
+                    metadata.TEMPLETE = getShortestURL( baseRootRelativeURL, templetePath );
+                };
+            };
+
             const PAGE_LIST = PAGES_OR_TEMPLETES;
 
         // 使用している TEMPLETE と MIXIN のチェック
@@ -141,90 +168,46 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                     continue;
                 };
 
-                checkMixins( pageOrTempleteRootRelativeURL, metadata, !!metadata.TEMPLETE ); // TODO traverse
-                checkTemplete( pageOrTempleteRootRelativeURL, metadata );
+                if( NicePageBuilder.util.isPrebuild( metadata ) ){
+                    metadata.URL = pageOrTempleteRootRelativeURL;
+
+                    toShortestURL( pageOrTempleteRootRelativeURL, metadata ); // TODO traverse
+
+                    NicePageBuilder.util.traverseMetadataStack(
+                        context, metadata,
+                        /**
+                         * 
+                         * @param {NicePageBuilder.RootRelativeURL} mixinRootRelativeURL 
+                         * @param {!NicePageBuilder.Metadata} metadataMixin
+                         * @param {number} updatedAt
+                         */
+                        function( mixinRootRelativeURL, metadataMixin, updatedAt ){
+                            toShortestURL( mixinRootRelativeURL, metadataMixin );
+
+                            const mixin = MIXIN_LIST[ mixinRootRelativeURL ];
+                            if( mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
+                                mixin.push( true ); // used
+                            };
+                        },
+                        /**
+                         * 
+                         * @param {NicePageBuilder.RootRelativeURL} templeteRootRelativeURL 
+                         * @param {NicePageBuilder.Metadata | null} metadataTemplete
+                         * @param {number} updatedAt
+                         */
+                        function( templeteRootRelativeURL, metadataTemplete, updatedAt ){
+                            metadataTemplete && toShortestURL( templeteRootRelativeURL, metadataTemplete );
+
+                            TEMPLETE_LIST[ templeteRootRelativeURL ] = PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
+                            delete PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
+                        },
+                        opt_onError,
+                        PAGES_OR_TEMPLETES
+                    );
+                };
 
                 if( PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ] ){
                     pageOrTemplete.push( true ); // isPage
-                };
-            };
-
-            /**
-             * @param {string} baseURL root relative url
-             * @param {string} url 
-             * @return {string} */
-            function getShortestURL( baseURL, url ){
-                var relativeURL     = context.path.toRelativeURL( baseURL, url ),
-                    rootRelativeURL = context.path.toRootRelativeURL( baseURL, url );
-
-                return relativeURL.length < rootRelativeURL.length ? relativeURL : rootRelativeURL;
-            };
-
-            /**
-             * @param {string} baseRootRelativeURL
-             * @param {!NicePageBuilder.Metadata} metadata
-             * @param {boolean} skipTemplete
-             */
-            function checkMixins( baseRootRelativeURL, metadata, skipTemplete ){
-                const mixinPathList = metadata.MIXINS;
-
-                if( mixinPathList ){
-                    for( let i = 0, l = mixinPathList.length; i < l; ++i ){
-                        const mixinRootRelativeURL = context.path.toRootRelativeURL( baseRootRelativeURL, mixinPathList[ i ] );
-                        const mixin                = MIXIN_LIST[ mixinRootRelativeURL ];
-                        
-                        mixinPathList[ i ] = getShortestURL( baseRootRelativeURL, mixinRootRelativeURL );
-                        if( mixin ){
-                            const mixinMetadata = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_METADATA ]);
-
-                            if( !skipTemplete ){
-                                checkTemplete( mixinRootRelativeURL, mixinMetadata );
-                            };
-
-                            if( mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
-                                mixin.push( true ); // used
-                                checkMixins( mixinRootRelativeURL, mixinMetadata, skipTemplete );
-                            };
-                        } else if( NicePageBuilder.DEFINE.DEBUG ){
-                            throw '[html2json] Mixin:"' + mixinRootRelativeURL + '" required by "' + baseRootRelativeURL + '" does not exist!';
-                        };
-                    };
-                };
-            };
-
-            /**
-             * @param {string} baseRootRelativeURL
-             * @param {!NicePageBuilder.Metadata} metadata
-             */
-            function checkTemplete( baseRootRelativeURL, metadata ){
-                let templetePath = metadata.TEMPLETE;
-
-                while( templetePath ){
-                    const templeteRootRelativeURL = context.path.toRootRelativeURL( baseRootRelativeURL, templetePath );
-                    const templete                = PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
-
-                    if( templete ){
-                        metadata.TEMPLETE = getShortestURL( baseRootRelativeURL, templeteRootRelativeURL );
-                        baseRootRelativeURL = templeteRootRelativeURL;
-
-                        delete PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
-                        TEMPLETE_LIST[ templeteRootRelativeURL ] = templete;
-
-                        /** @suppress {checkTypes} */
-                        metadata = NicePageBuilder.util.getMetadata( templete );
-                        if( metadata ){
-                            checkMixins( baseRootRelativeURL, metadata, !!metadata.TEMPLETE );
-                            /** @suppress {checkTypes} */
-                            templetePath = metadata.TEMPLETE;
-                        } else {
-                            break;
-                        };
-                    } else if( TEMPLETE_LIST[ templeteRootRelativeURL ] ){
-                        metadata.TEMPLETE = getShortestURL( baseRootRelativeURL, templeteRootRelativeURL );
-                        break;
-                    } else if( NicePageBuilder.DEFINE.DEBUG ){
-                        throw '[html2json] Templete:"' + templeteRootRelativeURL + '" required by "' + baseRootRelativeURL + '" does not exist!';
-                    };
                 };
             };
 
@@ -267,7 +250,6 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
 
                 let metadata = htmlJson[ 0 ];
                 metadata = !m_isArray( metadata ) && m_isObject( metadata ) ? metadata : {};
-                metadata.URL         = pageRootRelativeURL;
                 metadata.CREATED_AT  = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.CREATED_AT ]);
                 metadata.MODIFIED_AT = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.UPDATED_AT ]);
 

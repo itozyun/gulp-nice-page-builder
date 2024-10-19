@@ -72,8 +72,9 @@ NicePageBuilder.util.isPrebuild = function( htmlJsonOrMetadata ){
  * @param {!function(NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata, number)} onReachMixin 
  * @param {!function(NicePageBuilder.RootRelativeURL, (NicePageBuilder.Metadata | null ), number)} onReachTemplete
  * @param {!function((string | !Error))=} opt_onError
+ * @param {!NicePageBuilder.NicePageOrTemplete=} opt_altTempletes for html2json
  */
-NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, onReachMixin, onReachTemplete, opt_onError ){
+NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, onReachMixin, onReachTemplete, opt_onError, opt_altTempletes ){
     function traverseMixins( baseRootRelativeURL, metadata ){
         const mixinPathList = metadata.MIXINS;
 
@@ -92,8 +93,8 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
                 const metadataMixin = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_METADATA ]);
 
                 onReachMixin( mixinRootRelativeURL, metadataMixin, /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
-                if( !templeteRootRelativePath && metadataMixin.TEMPLETE ){
-                    templeteRootRelativePath = context.path.toRootRelativeURL( mixinRootRelativeURL, metadataMixin.TEMPLETE );
+                if( !templeteRootRelativeURL && metadataMixin.TEMPLETE ){
+                    templeteRootRelativeURL = context.path.toRootRelativeURL( mixinRootRelativeURL, metadataMixin.TEMPLETE );
                     requiredBy = mixinRootRelativeURL;
                 };
                 // MIXINS[i].MIXINS
@@ -102,39 +103,39 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
         };
     };
 
-    let templeteRootRelativePath, requiredBy;
+    let templeteRootRelativeURL, requiredBy;
 
     if( baseMetadata.TEMPLETE ){
-        templeteRootRelativePath = context.path.toRootRelativeURL( baseMetadata.URL, baseMetadata.TEMPLETE );
+        templeteRootRelativeURL = context.path.toRootRelativeURL( baseMetadata.URL, baseMetadata.TEMPLETE );
         requiredBy = baseMetadata.URL;
     };
 
     // MIXINS
     traverseMixins( baseMetadata.URL, baseMetadata );
 
-    while( templeteRootRelativePath ){
-        const tmpTempleteRootRelativePath = templeteRootRelativePath;
-        const templete                    = context.templetes[ templeteRootRelativePath ];
+    while( templeteRootRelativeURL ){
+        const tmpTempleteRootRelativeURL = templeteRootRelativeURL;
+        const templete = opt_altTempletes && opt_altTempletes[ templeteRootRelativeURL ] || context.templetes[ templeteRootRelativeURL ];
 
         if( !templete ){
             if( opt_onError ){
                 opt_onError( 'Templete not found!' );
             } else if( NicePageBuilder.DEFINE.DEBUG ){
-                throw '[merge] Templete: ' + tmpTempleteRootRelativePath + ' required by ' + context.path.urlToFilePath( requiredBy ) + ' not found!';
+                throw '[merge] Templete: ' + context.path.urlToFilePath( tmpTempleteRootRelativeURL ) + ' required by ' + context.path.urlToFilePath( requiredBy ) + ' not found!';
             };
         };
-        templeteRootRelativePath = requiredBy = '';
+        templeteRootRelativeURL = requiredBy = '';
 
         const templeteMetadata = NicePageBuilder.util.getMetadata( templete );
 
-        onReachTemplete( tmpTempleteRootRelativePath, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
+        onReachTemplete( tmpTempleteRootRelativeURL, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
 
         if( templeteMetadata ){
             if( templeteMetadata.TEMPLETE ){
-                templeteRootRelativePath = context.path.toRootRelativeURL( tmpTempleteRootRelativePath, templeteMetadata.TEMPLETE );
-                requiredBy = tmpTempleteRootRelativePath;
+                templeteRootRelativeURL = context.path.toRootRelativeURL( tmpTempleteRootRelativeURL, templeteMetadata.TEMPLETE );
+                requiredBy = tmpTempleteRootRelativeURL;
             };
-            traverseMixins( tmpTempleteRootRelativePath, templeteMetadata );
+            traverseMixins( tmpTempleteRootRelativeURL, templeteMetadata );
         };
     };
 };

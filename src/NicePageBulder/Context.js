@@ -207,12 +207,12 @@ function _merge( context, targetMetadata, templeteStack, opt_onError ){
         },
         /**
          * 
-         * @param {NicePageBuilder.RootRelativeURL} templeteRootRelativePath 
+         * @param {NicePageBuilder.RootRelativeURL} templeteRootRelativeURL 
          * @param {NicePageBuilder.Metadata | null} metadataTemplete
          * @param {number} updatedAt
          */
-        function( templeteRootRelativePath, metadataTemplete, updatedAt ){
-            templeteStack.push( templeteRootRelativePath );
+        function( templeteRootRelativeURL, metadataTemplete, updatedAt ){
+            templeteStack.push( templeteRootRelativeURL );
             metadataTemplete && mix( metadataTemplete, updatedAt, true );
         },
         opt_onError
