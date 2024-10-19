@@ -102,7 +102,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             const contents        = file.contents.toString( encoding ),
                   createdTimeMs   = parseInt( file.stat.birthtimeMs, 10 ),
                   updatedTimeMs   = parseInt( file.stat.ctimeMs, 10 ),
-                  rootRelativeURL = context.path.filePathToURL( context.path.absoluteFilePathToSrcRootRelativeFilePath( filePath ) );
+                  rootRelativeURL = context.path.filePathToURL( context.path.isAbsoluteFilePath( filePath ) ? context.path.absoluteFilePathToSrcRootRelativeFilePath( filePath ) : filePath );
 
             switch( file.extname ){
                 case '.html'  :

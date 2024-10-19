@@ -71,9 +71,12 @@ NicePageBuilder.Context.prototype.storeMetadataOfNewPages = function( PAGE_FILE_
  */
 NicePageBuilder.Context.prototype.storeMetadata = function( metadata ){
     const rootRelativeURL = metadata.URL;
+    const metadataStored = this.allPageMetadata[ rootRelativeURL ];
 
-    if( !this.allPageMetadata[ rootRelativeURL ] ){
+    if( !metadataStored ){
         this.allPageMetadata[ rootRelativeURL ] = _deepCopyMetadata( metadata );
+    } else if( !metadataStored.URL ){
+        metadataStored.URL = rootRelativeURL;
     };
     return this.allPageMetadata[ rootRelativeURL ];
 };

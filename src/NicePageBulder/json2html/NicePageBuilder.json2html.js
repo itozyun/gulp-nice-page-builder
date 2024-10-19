@@ -86,6 +86,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                 return callback( null, file );
             };
 
+            const filePath = context.path.normalizeFilePath( file.path );
             const originalExtname = file.stem.split( '.' ).pop(); // _jsonFilePathToOriginalExtname
             const json = JSON.parse( file.contents.toString( encoding ) );
 
@@ -95,7 +96,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                 case 'xhtml' :
                 case 'php'   :
                     if( m_isArray( json ) ){
-                        PAGE_FILE_LIST.push( file.path, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (json) );
+                        PAGE_FILE_LIST.push( context.path.isAbsoluteFilePath( filePath ) ? context.path.absoluteFilePathToSrcRootRelativeFilePath( filePath ) : filePath, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (json) );
                         return callback();
                     };
                     break;
