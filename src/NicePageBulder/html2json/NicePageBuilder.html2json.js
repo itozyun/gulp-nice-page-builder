@@ -161,14 +161,9 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
         // 使用している TEMPLETE と MIXIN のチェック
             for( let pageOrTempleteRootRelativeURL in PAGES_OR_TEMPLETES ){
                 const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ];
+                const metadata       = NicePageBuilder.util.getMetadata( pageOrTemplete );
 
-                let metadata = NicePageBuilder.util.getMetadata( pageOrTemplete );
-
-                if( !metadata ){
-                    continue;
-                };
-
-                if( NicePageBuilder.util.isPrebuild( metadata ) ){
+                if( metadata && NicePageBuilder.util.isPrebuild( metadata ) ){
                     metadata.URL = pageOrTempleteRootRelativeURL;
 
                     toShortestURL( pageOrTempleteRootRelativeURL, metadata ); // TODO traverse
