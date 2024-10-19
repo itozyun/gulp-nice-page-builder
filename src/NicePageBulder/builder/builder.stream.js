@@ -38,10 +38,10 @@ __NicePageBuilder_internal__.builderStream = function(){
 /**
  * @private
  * @this {!Through}
- * @param {(Buffer | string | null)=} data 
+ * @param {(Buffer | string | number | boolean | null)=} data 
  */
 function endHandler( data ){
-    if( data ){
+    if( data != null ){
         this.write( data );
     };
     /** @suppress {checkTypes} */
@@ -73,9 +73,11 @@ function onTokenAfterLeaveMetadata( token, value ){
                            .split( '\r' ).join( '\\r' )
                            .split( '\t' ).join( '\\t' ) +
                 '"';
+    } else if( token === Parser.C.NULL ){
+        value += ';'
     };
     // console.log( '>> ', token, value )
-    this._stream.queue( '' + value );
+    this._stream.queue( value );
 };
 
 /**
@@ -154,24 +156,25 @@ function onTokenBeforeLeaveMetadata( token, value ){
             break;
         case 4 :
             if( value === 9 || value === 11 ){
-                // console.log( 4, token, value )
                 if( self._noTemplete ){
-                    this._metadataPhase = 5;
-                    // console.log( 4, token, value )
-                    this._stream.queue( '' + value );
+                    this._metadataPhase = 8;
+                    this._stream.queue( value );
                 } else {
-                    this._metadataPhase = 6;
+                    this._metadataPhase = value === 11 ? 9 : 5;
                 };
             } else if( NicePageBuilder.DEFINE.DEBUG ){
                 this._onError( 'Not HTMLJsonWithMetadata!' );
                 this._stream.emit( 'error', 'Not HTMLJsonWithMetadata!' );
             };
             break;
-        case 5 :
-            // console.log( 5, token, value )
+        case 5 : // skip ,
+        case 6 : // skip "<!DOCTYPE html>"
+        case 7 : // skip ,
+            ++this._metadataPhase;
+            break;
+        case 8 : // ,
             this._stream.queue( value );
-        case 6 :
-            // console.log( token, value )
+        case 9 : // skip ,
             this.onToken = onTokenAfterLeaveMetadata;
             break;
     };

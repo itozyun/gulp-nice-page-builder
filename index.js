@@ -1256,7 +1256,7 @@ function Nb() {
   this.ba = void 0;
   this.Fa = Lb(65536);
   this.ia = 0;
-  this.pa = this.sa = this.ua = this.Ca = void 0;
+  this.qa = this.sa = this.ua = this.Ca = void 0;
   this.na = 113;
   this.fa = this.za = 0;
   this.Ka = {2:Lb(2), 3:Lb(3), 4:Lb(4)};
@@ -1533,18 +1533,18 @@ function Rb(a, b, c) {
   a.Ea(Error("Unexpected " + Ob(b) + (c ? "(" + JSON.stringify(c) + ")" : "") + " in state " + Ob(a.na)));
 }
 function Sb(a) {
-  a.ga.push({ha:a.ha, sa:a.sa, pa:a.pa});
+  a.ga.push({ha:a.ha, sa:a.sa, qa:a.qa});
 }
 function Tb(a) {
   var b = a.ha, c = a.ga.pop();
   a.ha = c.ha;
   a.sa = c.sa;
-  a.pa = c.pa;
+  a.qa = c.qa;
   a.emit(b);
-  a.pa || (a.na = 113);
+  a.qa || (a.na = 113);
 }
 Nb.prototype.emit = function() {
-  this.pa && (this.na = 6);
+  this.qa && (this.na = 6);
 };
 Nb.prototype.ja = function(a, b) {
   switch(this.na) {
@@ -1563,24 +1563,24 @@ Nb.prototype.ja = function(a, b) {
           this.ha = this.ha ? this.ha[this.sa] = {} : {};
           this.sa = void 0;
           this.na = 114;
-          this.pa = 129;
+          this.qa = 129;
           break;
         case 3:
           Sb(this);
           this.ha = this.ha ? this.ha[this.sa] = [] : [];
           this.sa = 0;
-          this.pa = 130;
+          this.qa = 130;
           this.na = 113;
           break;
         case 2:
-          if (129 === this.pa) {
+          if (129 === this.qa) {
             Tb(this);
           } else {
             return Rb(this, a, b);
           }
           break;
         case 4:
-          if (130 === this.pa) {
+          if (130 === this.qa) {
             Tb(this);
           } else {
             return Rb(this, a, b);
@@ -1607,8 +1607,8 @@ Nb.prototype.ja = function(a, b) {
       break;
     case 6:
       if (6 === a) {
-        130 === this.pa ? (this.sa++, this.na = 113) : 129 === this.pa && (this.na = 114);
-      } else if (4 === a && 130 === this.pa || 2 === a && 129 === this.pa) {
+        130 === this.qa ? (this.sa++, this.na = 113) : 129 === this.qa && (this.na = 114);
+      } else if (4 === a && 130 === this.qa || 2 === a && 129 === this.qa) {
         Tb(this);
       } else {
         return Rb(this, a, b);
@@ -1791,11 +1791,14 @@ function Zb(a, b, c, d) {
   return f;
 }
 function Xb(a) {
-  "string" === typeof a && (a = Kb(a));
+  if (a === +a || a === !!a) {
+    a = "" + a;
+  }
+  S(a) && (a = Kb(a));
   this.ta.write(a);
 }
 function $b(a) {
-  a && this.write(a);
+  null != a && this.write(a);
   43 !== this.ta.Ma && this.emit("error", "Invalid html.json");
   Z(this, null);
   this.ta = this.ta.da = null;
@@ -2266,11 +2269,11 @@ function bc(a, b) {
   a.ca = a.ja;
   a.ja = fc;
   a.Aa = this;
-  a.qa = 0;
+  a.pa = 0;
   return b;
 };
 function ec(a) {
-  a && this.write(a);
+  null != a && this.write(a);
   if (a = this.ta.Ua) {
     Z(this, a), delete this.ta.Ua;
   }
@@ -2278,8 +2281,8 @@ function ec(a) {
   this.ta = this.ta.da = null;
 }
 function gc(a, b) {
-  10 === a && (b = '"' + b.split('"').join('\\"').split("\b").join("\\b").split("\f").join("\\f").split("\n").join("\\n").split("\r").join("\\r").split("\t").join("\\t") + '"');
-  Z(this.da, "" + b);
+  10 === a ? b = '"' + b.split('"').join('\\"').split("\b").join("\\b").split("\f").join("\\f").split("\n").join("\\n").split("\r").join("\\r").split("\t").join("\\t") + '"' : 9 === a && (b += ";");
+  Z(this.da, b);
 }
 function fc(a, b) {
   function c(e) {
@@ -2299,31 +2302,36 @@ function fc(a, b) {
     delete d.Sa;
   }
   const d = this;
-  switch(this.qa) {
+  switch(this.pa) {
     case 0:
-      3 === a ? (this.qa = 1, Z(this.da, b)) : this.da.emit("error", "Not html.json format!");
+      3 === a ? (this.pa = 1, Z(this.da, b)) : this.da.emit("error", "Not html.json format!");
       break;
     case 1:
-      1 === a ? (this.qa = 2, this.ca(a, b)) : (this.qa = 5, Z(this.da, b));
+      1 === a ? (this.pa = 2, this.ca(a, b)) : (this.pa = 5, Z(this.da, b));
       break;
     case 2:
       if (2 === a && 1 === this.ga.length) {
         const e = this.ha;
-        this.qa = 3;
+        this.pa = 3;
         this.Sa = e;
         this.ha = null;
       }
       this.ca(a, b);
       break;
     case 3:
-      6 === a ? (this.qa = 4, c("--- page insert position ---")) : (this.ma("Not HTMLJsonWithMetadata!"), this.da.emit("error", "Not HTMLJsonWithMetadata!"));
+      6 === a ? (this.pa = 4, c("--- page insert position ---")) : (this.ma("Not HTMLJsonWithMetadata!"), this.da.emit("error", "Not HTMLJsonWithMetadata!"));
       break;
     case 4:
-      9 === b || 11 === b ? d.Ya ? (this.qa = 5, Z(this.da, "" + b)) : this.qa = 6 : (this.ma("Not HTMLJsonWithMetadata!"), this.da.emit("error", "Not HTMLJsonWithMetadata!"));
+      9 === b || 11 === b ? d.Ya ? (this.pa = 8, Z(this.da, b)) : this.pa = 11 === b ? 9 : 5 : (this.ma("Not HTMLJsonWithMetadata!"), this.da.emit("error", "Not HTMLJsonWithMetadata!"));
       break;
     case 5:
-      Z(this.da, b);
     case 6:
+    case 7:
+      ++this.pa;
+      break;
+    case 8:
+      Z(this.da, b);
+    case 9:
       this.ja = gc;
   }
 }
@@ -2684,7 +2692,7 @@ function rc(a, b, c, d) {
   b.Na = b.ja;
   b.ja = sc;
   b.Aa = this;
-  b.qa = 0;
+  b.pa = 0;
   return a;
 };
 function sc(a, b) {
@@ -2694,16 +2702,16 @@ function sc(a, b) {
     delete d.Aa;
   }
   const d = this;
-  switch(this.qa) {
+  switch(this.pa) {
     case 0:
-      3 === a ? (this.qa = 1, this.Na(a, b)) : (this.ma("Not html.json format!"), this.da.emit("error", "Not html.json format!"));
+      3 === a ? (this.pa = 1, this.Na(a, b)) : (this.ma("Not html.json format!"), this.da.emit("error", "Not html.json format!"));
       break;
     case 1:
-      1 === a ? (this.qa = 2, this.ca(a, b)) : (c(), this.ja(a, b));
+      1 === a ? (this.pa = 2, this.ca(a, b)) : (c(), this.ja(a, b));
       break;
     case 2:
       if (2 === a && 1 === this.ga.length) {
-        this.qa = 3;
+        this.pa = 3;
         var e = this.ha;
         this.ha = null;
         if (e.MIXINS || e.TEMPLETE) {
