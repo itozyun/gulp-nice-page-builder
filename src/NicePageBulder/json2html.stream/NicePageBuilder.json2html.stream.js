@@ -13,8 +13,7 @@ goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToErrorHandler' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
-goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
-goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
+goog.require( 'NicePageBuilder.util.isPrebuild' );
 
 /**
  * @this {NicePageBuilder.Context}
@@ -82,7 +81,7 @@ function onTokenForMeta( token, value ){
                 this.currentValue = null;
 
                 if( NicePageBuilder.DEFINE.DEBUG ){
-                    if( NicePageBuilder.util.hasTEMPLETEProperty( metadata ) || NicePageBuilder.util.hasMIXINSProperty( metadata ) ){
+                    if( NicePageBuilder.util.isPrebuild( metadata ) ){
                         throw this._context.path.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
                     };
                 };

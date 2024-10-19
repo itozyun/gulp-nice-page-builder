@@ -3,8 +3,8 @@ goog.provide( 'NicePageBuilder.util' );
 goog.provide( 'NicePageBuilder.util.getHTMLJson' );
 goog.provide( 'NicePageBuilder.util.getMetadata' );
 goog.provide( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
-goog.provide( 'NicePageBuilder.util.hasTEMPLETEProperty' );
-goog.provide( 'NicePageBuilder.util.hasMIXINSProperty' );
+goog.provide( 'NicePageBuilder.util.isPrebuild' );
+goog.provide( 'NicePageBuilder.util.traverseMetadataStack' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
@@ -59,36 +59,84 @@ NicePageBuilder.util.isHTMLJsonWithMetadata = function( htmlJson ){
 
 /**
  * 
- * @param {!HTMLJson | !HTMLJsonWithMetadata | !NicePageBuilder.Metadata} htmlJsonOrMetadata
+ * @param {!NicePageBuilder.Metadata} htmlJsonOrMetadata
  * @return {boolean}
  */
-NicePageBuilder.util.hasTEMPLETEProperty = function( htmlJsonOrMetadata ){
-    if( !m_isArray( htmlJsonOrMetadata ) && m_isObject( htmlJsonOrMetadata ) ){
-        return !!htmlJsonOrMetadata.TEMPLETE;
-    };
-
-    if( NicePageBuilder.util.isHTMLJsonWithMetadata( /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (htmlJsonOrMetadata) ) ){
-        return htmlJsonOrMetadata[ 0 ].TEMPLETE || false;
-    };
-
-    return false;
+NicePageBuilder.util.isPrebuild = function( htmlJsonOrMetadata ){
+    return !!htmlJsonOrMetadata.MIXINS || !!htmlJsonOrMetadata.TEMPLETE;
 };
 
 /**
- * 
- * @param {!HTMLJson | !HTMLJsonWithMetadata | !NicePageBuilder.Metadata} htmlJsonOrMetadata
- * @return {boolean}
+ * @param {!NicePageBuilder.Context} context
+ * @param {!NicePageBuilder.Metadata} baseMetadata
+ * @param {!function(NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata, number)} onReachMixin 
+ * @param {!function(NicePageBuilder.RootRelativeURL, (NicePageBuilder.Metadata | null ), number)} onReachTemplete
+ * @param {!function((string | !Error))=} opt_onError
  */
-NicePageBuilder.util.hasMIXINSProperty = function( htmlJsonOrMetadata ){
-    if( !m_isArray( htmlJsonOrMetadata ) && m_isObject( htmlJsonOrMetadata ) ){
-        return !!htmlJsonOrMetadata.MIXINS;
+NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, onReachMixin, onReachTemplete, opt_onError ){
+    function traverseMixins( baseRootRelativeURL, metadata ){
+        const mixinPathList = metadata.MIXINS;
+
+        if( mixinPathList ){
+            for( let i = 0; i < mixinPathList.length; ++i ){
+                const mixinRootRelativeURL = context.path.toRootRelativeURL( baseRootRelativeURL, mixinPathList[ i ] );
+                const mixin                = context.mixins[ mixinRootRelativeURL ];
+
+                if( !mixin ){
+                    if( opt_onError ){
+                        opt_onError( 'Mixin not found!' );
+                    } else if( NicePageBuilder.DEFINE.DEBUG ){
+                        throw '[merge] Mixin: ' + mixinRootRelativeURL + ' required by ' + context.path.urlToFilePath( baseRootRelativeURL ) + ' not found!';
+                    };
+                };
+                const metadataMixin = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_METADATA ]);
+
+                onReachMixin( mixinRootRelativeURL, metadataMixin, /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
+                if( !templeteRootRelativePath && metadataMixin.TEMPLETE ){
+                    templeteRootRelativePath = context.path.toRootRelativeURL( mixinRootRelativeURL, metadataMixin.TEMPLETE );
+                    requiredBy = mixinRootRelativeURL;
+                };
+                // MIXINS[i].MIXINS
+                traverseMixins( mixinRootRelativeURL, metadataMixin );
+            };
+        };
     };
 
-    if( NicePageBuilder.util.isHTMLJsonWithMetadata( /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (htmlJsonOrMetadata) ) ){
-        return htmlJsonOrMetadata[ 0 ].MIXINS || false;
+    let templeteRootRelativePath, requiredBy;
+
+    if( baseMetadata.TEMPLETE ){
+        templeteRootRelativePath = context.path.toRootRelativeURL( baseMetadata.URL, baseMetadata.TEMPLETE );
+        requiredBy = baseMetadata.URL;
     };
 
-    return false;
+    // MIXINS
+    traverseMixins( baseMetadata.URL, baseMetadata );
+
+    while( templeteRootRelativePath ){
+        const tmpTempleteRootRelativePath = templeteRootRelativePath;
+        const templete                    = context.templetes[ templeteRootRelativePath ];
+
+        if( !templete ){
+            if( opt_onError ){
+                opt_onError( 'Templete not found!' );
+            } else if( NicePageBuilder.DEFINE.DEBUG ){
+                throw '[merge] Templete: ' + tmpTempleteRootRelativePath + ' required by ' + context.path.urlToFilePath( requiredBy ) + ' not found!';
+            };
+        };
+        templeteRootRelativePath = requiredBy = '';
+
+        const templeteMetadata = NicePageBuilder.util.getMetadata( templete );
+
+        onReachTemplete( tmpTempleteRootRelativePath, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
+
+        if( templeteMetadata ){
+            if( templeteMetadata.TEMPLETE ){
+                templeteRootRelativePath = context.path.toRootRelativeURL( tmpTempleteRootRelativePath, templeteMetadata.TEMPLETE );
+                requiredBy = tmpTempleteRootRelativePath;
+            };
+            traverseMixins( tmpTempleteRootRelativePath, templeteMetadata );
+        };
+    };
 };
 
 /**

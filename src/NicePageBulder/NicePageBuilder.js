@@ -24,10 +24,10 @@ __NicePageBuilder_internal__.json2htmlStream = false;
  * @enum {number}
  */
 NicePageBuilder.INDEXES = {
-    HTML_JSON     : 0,
-    MIXIN_OPTIONS : 0,
-    CREATED_AT    : 1,
-    UPDATED_AT    : 2
+    HTML_JSON      : 0,
+    MIXIN_METADATA : 0,
+    CREATED_AT     : 1,
+    UPDATED_AT     : 2
 };
 
 /**

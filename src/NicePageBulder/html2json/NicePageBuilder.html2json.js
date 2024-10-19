@@ -175,7 +175,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                         
                         mixinPathList[ i ] = getShortestURL( baseRootRelativeURL, mixinRootRelativeURL );
                         if( mixin ){
-                            const mixinMetadata = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_OPTIONS ]);
+                            const mixinMetadata = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_METADATA ]);
 
                             if( !skipTemplete ){
                                 checkTemplete( mixinRootRelativeURL, mixinMetadata );

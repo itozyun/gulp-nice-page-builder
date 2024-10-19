@@ -16,8 +16,6 @@ goog.require( 'NicePageBuilder.PageContext.bindToDocumentReadyHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToErrorHandler' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
-goog.require( 'NicePageBuilder.util.hasTEMPLETEProperty' );
-goog.require( 'NicePageBuilder.util.hasMIXINSProperty' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
 
 /**
