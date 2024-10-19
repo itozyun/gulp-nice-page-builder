@@ -65,18 +65,11 @@ function endHandler( data ){
  * @param {*} value 
  */
 function onTokenAfterLeaveMetadata( token, value ){
-    switch( token ){
-        case Parser.C.TRUE:
-        case Parser.C.FALSE:
-        case Parser.C.NULL:
-            value += '';
-            break;
-        case Parser.C.STRING:
-            value = '"' + value.split( '"' ).join( '\\"' ) + '"';
-            break;
+    if( token === Parser.C.STRING ){
+        value = '"' + value.split( '"' ).join( '\\"' ) + '"';
     };
     // console.log( '>> ', token, value )
-    this._stream.queue( value );
+    this._stream.queue( '' + value );
 };
 
 /**
@@ -106,14 +99,13 @@ function onTokenBeforeLeaveMetadata( token, value ){
             };
         } else {
             self._stream.queue( JSON.stringify( completeHTMLJson[ 0 ] ) + ',' );
+            self._noTemplete = true;
         };
         delete self._context;
         delete self._metadata;
     };
 
     const self = this;
-
-    // console.log( this._metadataPhase, value, this.jsonStack.length )
 
     switch( this._metadataPhase ){
         case 0 :
@@ -139,13 +131,8 @@ function onTokenBeforeLeaveMetadata( token, value ){
             if( token === Parser.C.RIGHT_BRACE && this.jsonStack.length === 1 ){ // }
                 const metadata = /** @type {!NicePageBuilder.Metadata} */ (this.currentValue);
 
-                if( NicePageBuilder.util.isPrebuild( metadata ) ){
-                    this._metadataPhase = 3;
-                    this._metadata = metadata;
-                } else {
-                    this._stream.queue( JSON.stringify( metadata ) );
-                    this._metadataPhase = 5;
-                };
+                this._metadataPhase = 3;
+                this._metadata = metadata;
                 this.currentValue = null;
             };
             this._createValue( token, value );
@@ -160,16 +147,25 @@ function onTokenBeforeLeaveMetadata( token, value ){
             };
             break;
         case 4 :
-            if( value === 9 || value === 11 ){ // ,
-                this._metadataPhase = 6;
+            if( value === 9 || value === 11 ){
+                // console.log( 4, token, value )
+                if( self._noTemplete ){
+                    this._metadataPhase = 5;
+                    // console.log( 4, token, value )
+                    this._stream.queue( '' + value );
+                } else {
+                    this._metadataPhase = 6;
+                };
             } else if( NicePageBuilder.DEFINE.DEBUG ){
                 this._onError( 'Not HTMLJsonWithMetadata!' );
                 this._stream.emit( 'error', 'Not HTMLJsonWithMetadata!' );
             };
             break;
         case 5 :
+            // console.log( 5, token, value )
             this._stream.queue( value );
         case 6 :
+            // console.log( token, value )
             this.onToken = onTokenAfterLeaveMetadata;
             break;
     };
