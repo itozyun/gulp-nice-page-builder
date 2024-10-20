@@ -106,7 +106,7 @@ gulp.task('html', function(){
 
 | 名称        | 型               | 説明                         | ページ(.html)     | テンプレート | Mixin |
 |:------------|:-----------------|:-----------------------------|:------------------|:-------------|:------|
-| TEMPLETE    | `string`         | テンプレート(.html) へのパス | ✓                | ✓           | ✓    |
+| TEMPLATE    | `string`         | テンプレート(.html) へのパス | ✓                | ✓           | ✓    |
 | MIXINS      | `Array.<string>` |                              | ✓                | ✓           | - *2  |
 | URL         | `string`         | `"/contact/"`                | ✓                | -            | -     |
 | CREATED_AT  | `number`         |  `file.stat.birthtimeMs`     | ✓                | -            | -     |
@@ -124,7 +124,7 @@ gulp.task('html', function(){
 ~~~html
 <script type="application/json">
 {
-     "TEMPLETE" : "/templete.html"
+     "TEMPLATE" : "/template.html"
 }
 </script>
 <p>Hello, World!
@@ -132,7 +132,7 @@ gulp.task('html', function(){
 
 ### テンプレートの例
 
-`src/templete.html`
+`src/template.html`
 
 `<slot>` 要素を持つファイルはテンプレートとして扱われます．テンプレートにひとつです．
 

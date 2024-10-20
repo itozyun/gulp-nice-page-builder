@@ -1,4 +1,4 @@
-// .dest( ALL_OPTIONS | MIXINS | TEMPLETES )
+// .dest( ALL_OPTIONS | MIXINS | TEMPLATES )
 
 goog.provide( 'NicePageBuilder.dest' );
 goog.provide( 'NicePageBuilder.DEST_TARGET' );
@@ -77,7 +77,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
                 writeFile( context.allMixinsPath, sortByURL( context.mixins ) );
             };
             if( destTargets & DEST_TARGET.ALL_TEMPLETS ){
-                writeFile( context.allTempletesPath, sortByURL( context.templetes ) );
+                writeFile( context.allTemplatesPath, sortByURL( context.templates ) );
             };
             if( destTargets & DEST_TARGET.ALL_PAGE_METADATA ){
                 const allPageMetadata = {};

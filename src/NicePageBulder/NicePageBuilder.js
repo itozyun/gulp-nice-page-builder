@@ -4,7 +4,7 @@ goog.provide( 'NicePageBuilder.RootRelativeURL' );
 goog.provide( 'NicePageBuilder.SourceRootRelativeFilePath' );
 goog.provide( 'NicePageBuilder.Metadata' );
 goog.provide( 'HTMLJsonWithMetadata' );
-goog.provide( 'NicePageBuilder.NicePageOrTemplete' );
+goog.provide( 'NicePageBuilder.NicePageOrTemplate' );
 goog.provide( 'NicePageBuilder.Mixin' );
 
 var __NicePageBuilder_internal__ = {};
@@ -44,7 +44,7 @@ NicePageBuilder.RootRelativeURL;
 
 /**
  * @typedef {{
- *   TEMPLETE    : (NicePageBuilder.RootRelativeURL | void),
+ *   TEMPLATE    : (NicePageBuilder.RootRelativeURL | void),
  *   MIXINS      : (!Array.<NicePageBuilder.RootRelativeURL> | void),
  *   URL         : NicePageBuilder.RootRelativeURL,
  *   CREATED_AT  : number,
@@ -67,7 +67,7 @@ var HTMLJsonWithMetadata;
  * 
  * @typedef {!Array.<(!HTMLJson | !HTMLJsonWithMetadata | number | boolean)>}
  */
-NicePageBuilder.NicePageOrTemplete;
+NicePageBuilder.NicePageOrTemplate;
 
 /**
  * [0] {Object} NicePageBuilder.Metadata

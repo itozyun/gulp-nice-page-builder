@@ -3,7 +3,7 @@ goog.provide( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.SourceRootRelativeFilePath' );
 goog.requireType( 'NicePageBuilder.Mixin' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
+goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'HTMLJsonWithMetadata' );
 goog.require( 'TinyPath' );
@@ -28,11 +28,11 @@ NicePageBuilder.Context = function( opt_options ){
     this.allPagesPath        = options[ 'allPagesPath'           ] || '';
     this.allPageMetadataPath = options[ 'allPageMetadataPath' ] || 'metadata-of-all-pages.json';
     this.allMixinsPath       = options[ 'allMixinsPath'          ] || 'all-mixins.json';
-    this.allTempletesPath    = options[ 'allTempletesPath'       ] || 'all-templetes.json';
+    this.allTemplatesPath    = options[ 'allTemplatesPath'       ] || 'all-templates.json';
     this.keywordMixins       = _jsonFilePathToOriginalExtname( this.allMixinsPath   , tinyPath );
-    this.keywordTempletes    = _jsonFilePathToOriginalExtname( this.allTempletesPath, tinyPath );
+    this.keywordTemplates    = _jsonFilePathToOriginalExtname( this.allTemplatesPath, tinyPath );
     this.mixins              = options[ 'mixins'             ] || {};
-    this.templetes           = options[ 'templetes'          ] || {};
+    this.templates           = options[ 'templates'          ] || {};
     this.allPageMetadata     = options[ 'allPageMetadata' ] || {};
     this.mergedPropertiesOf  = {};
     this.allPages            = {};
@@ -172,19 +172,19 @@ function _merge( context, targetMetadata, opt_onError ){
     /**
      * @param {!NicePageBuilder.Metadata} metadataToMerge
      * @param {number} metadataToMergeUpatedAt
-     * @param {boolean} isTemplete
+     * @param {boolean} isTemplate
      */
-    function mix( metadataToMerge, metadataToMergeUpatedAt, isTemplete ){
+    function mix( metadataToMerge, metadataToMergeUpatedAt, isTemplate ){
         let changed = false;
 
         for( const k in metadataToMerge ){
-            if( k !== 'MIXINS' && k !== 'TEMPLETE' && targetMetadata[ k ] === undefined ){
+            if( k !== 'MIXINS' && k !== 'TEMPLATE' && targetMetadata[ k ] === undefined ){
                 targetMetadata[ k ] = metadataToMerge[ k ];
                 changed = true;
                 mergedProperties.push( k );
             };
         };
-        if( changed || isTemplete ){
+        if( changed || isTemplate ){
             if( updatedAt < metadataToMergeUpatedAt ){
                 updatedAt = metadataToMergeUpatedAt;
             };
@@ -207,12 +207,12 @@ function _merge( context, targetMetadata, opt_onError ){
         },
         /**
          * 
-         * @param {NicePageBuilder.RootRelativeURL} templeteRootRelativeURL 
-         * @param {NicePageBuilder.Metadata | null} metadataTemplete
+         * @param {NicePageBuilder.RootRelativeURL} templateRootRelativeURL 
+         * @param {NicePageBuilder.Metadata | null} metadataTemplate
          * @param {number} updatedAt
          */
-        function( templeteRootRelativeURL, metadataTemplete, updatedAt ){
-            metadataTemplete && mix( metadataTemplete, updatedAt, true );
+        function( templateRootRelativeURL, metadataTemplate, updatedAt ){
+            metadataTemplate && mix( metadataTemplate, updatedAt, true );
         },
         opt_onError
     );

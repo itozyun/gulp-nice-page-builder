@@ -8,8 +8,8 @@ test('builder.stream', async t => {
 
     const nicePageBuilder = NicePageBuilder(
         {
-            'templetes' : {"/main.php":[[{"TEMPLETE":"templete.html"},11,["MAIN",["SLOT"]]],1726546571712,1728347634656],"/templete.html":[[9,"<!DOCTYPE html>",["HTML",["BODY",["SLOT"]]]],1726278627669,1726550082644]},
-            'mixins': {"/mixin.json":[{"TEMPLETE":"main.php","MIXINS":["mixin.pen.json"],"apple":1,"TOC":[1,"intro"]},1726221888590,1729081829932],"/mixin.pen.json":[{"MIXINS":["mixin.pineapple.json"],"pen":2},1729081817854,1729082148282],"/mixin.pineapple.json":[{"pinapple":3},1729081860777,1729081886161]}
+            'templates' : {"/main.php":[[{"TEMPLATE":"template.html"},11,["MAIN",["SLOT"]]],1726546571712,1728347634656],"/template.html":[[9,"<!DOCTYPE html>",["HTML",["BODY",["SLOT"]]]],1726278627669,1726550082644]},
+            'mixins': {"/mixin.json":[{"TEMPLATE":"main.php","MIXINS":["mixin.pen.json"],"apple":1,"TOC":[1,"intro"]},1726221888590,1729081829932],"/mixin.pen.json":[{"MIXINS":["mixin.pineapple.json"],"pen":2},1729081817854,1729082148282],"/mixin.pineapple.json":[{"pinapple":3},1729081860777,1729081886161]}
         }
     );
 
@@ -29,7 +29,7 @@ test('builder.stream - 11', async t => {
 
     const nicePageBuilder = NicePageBuilder(
         {
-            'templetes' : {},
+            'templates' : {},
             'mixins': {"/mixin.json":[{"MIXINS":["mixin.pen.json"],"apple":1,"TOC":[1,"intro"]},1726221888590,1729081829932],"/mixin.pen.json":[{"MIXINS":["mixin.pineapple.json"],"pen":2},1729081817854,1729082148282],"/mixin.pineapple.json":[{"pinapple":3},1729081860777,1729081886161]}
         }
     );
@@ -50,7 +50,7 @@ test('builder.stream - null false', async t => {
 
     const nicePageBuilder = NicePageBuilder(
         {
-            'templetes' : {},
+            'templates' : {},
             'mixins': {"/mixin.json":[{"MIXINS":["mixin.pen.json"],"apple":false,"TOC":[1,"intro"]},1726221888590,1729081829932],"/mixin.pen.json":[{"MIXINS":["mixin.pineapple.json"],"pen":null},1729081817854,1729082148282],"/mixin.pineapple.json":[{"pinapple":0},1729081860777,1729081886161]}
         }
     );

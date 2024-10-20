@@ -11,7 +11,7 @@ goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
 goog.require( 'htmljson.base' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
+goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.Context' );
@@ -22,11 +22,11 @@ NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , fal
 
 /**
  * 
- * @param {!NicePageBuilder.NicePageOrTemplete} nicePageOrTemplete 
+ * @param {!NicePageBuilder.NicePageOrTemplate} nicePageOrTemplate 
  * @return {!HTMLJson | !HTMLJsonWithMetadata}
  */
-NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
-    var htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (nicePageOrTemplete[ NicePageBuilder.INDEXES.HTML_JSON ]);
+NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplate ){
+    var htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (nicePageOrTemplate[ NicePageBuilder.INDEXES.HTML_JSON ]);
 
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !m_isArray( htmlJson ) ){
@@ -38,11 +38,11 @@ NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplete ){
 
 /**
  * 
- * @param {!NicePageBuilder.NicePageOrTemplete} nicePageOrTemplete 
+ * @param {!NicePageBuilder.NicePageOrTemplate} nicePageOrTemplate 
  * @return {NicePageBuilder.Metadata | null}
  */
-NicePageBuilder.util.getMetadata = function( nicePageOrTemplete ){
-    var metadata = /** @type {!NicePageBuilder.Metadata} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplete )[ 0 ]);
+NicePageBuilder.util.getMetadata = function( nicePageOrTemplate ){
+    var metadata = /** @type {!NicePageBuilder.Metadata} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplate )[ 0 ]);
 
     return !m_isArray( metadata ) && m_isObject( metadata ) ? metadata : null;
 };
@@ -64,18 +64,18 @@ NicePageBuilder.util.isHTMLJsonWithMetadata = function( htmlJson ){
  * @return {boolean}
  */
 NicePageBuilder.util.isPrebuild = function( htmlJsonOrMetadata ){
-    return !!htmlJsonOrMetadata.MIXINS || !!htmlJsonOrMetadata.TEMPLETE;
+    return !!htmlJsonOrMetadata.MIXINS || !!htmlJsonOrMetadata.TEMPLATE;
 };
 
 /**
  * @param {!NicePageBuilder.Context} context
  * @param {!NicePageBuilder.Metadata} baseMetadata
  * @param {!function(NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata, number)} onReachMixin 
- * @param {!function(NicePageBuilder.RootRelativeURL, (NicePageBuilder.Metadata | null ), number)} onReachTemplete
+ * @param {!function(NicePageBuilder.RootRelativeURL, (NicePageBuilder.Metadata | null ), number)} onReachTemplate
  * @param {!function((string | !Error))=} opt_onError
- * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>=} opt_altTempletes for html2json
+ * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplate>=} opt_altTemplates for html2json
  */
-NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, onReachMixin, onReachTemplete, opt_onError, opt_altTempletes ){
+NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, onReachMixin, onReachTemplate, opt_onError, opt_altTemplates ){
     function traverseMixins( baseRootRelativeURL, metadata ){
         const mixinPathList = metadata.MIXINS;
 
@@ -94,8 +94,8 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
                 const metadataMixin = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_METADATA ]);
 
                 onReachMixin( mixinRootRelativeURL, metadataMixin, /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
-                if( !templeteRootRelativeURL && metadataMixin.TEMPLETE ){
-                    templeteRootRelativeURL = context.path.toRootRelativeURL( mixinRootRelativeURL, metadataMixin.TEMPLETE );
+                if( !templateRootRelativeURL && metadataMixin.TEMPLATE ){
+                    templateRootRelativeURL = context.path.toRootRelativeURL( mixinRootRelativeURL, metadataMixin.TEMPLATE );
                     requiredBy = mixinRootRelativeURL;
                 };
                 // MIXINS[i].MIXINS
@@ -104,39 +104,39 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
         };
     };
 
-    let templeteRootRelativeURL, requiredBy;
+    let templateRootRelativeURL, requiredBy;
 
-    if( baseMetadata.TEMPLETE ){
-        templeteRootRelativeURL = context.path.toRootRelativeURL( baseMetadata.URL, baseMetadata.TEMPLETE );
+    if( baseMetadata.TEMPLATE ){
+        templateRootRelativeURL = context.path.toRootRelativeURL( baseMetadata.URL, baseMetadata.TEMPLATE );
         requiredBy = baseMetadata.URL;
     };
 
     // MIXINS
     traverseMixins( baseMetadata.URL, baseMetadata );
 
-    while( templeteRootRelativeURL ){
-        const tmpTempleteRootRelativeURL = templeteRootRelativeURL;
-        const templete = opt_altTempletes && opt_altTempletes[ templeteRootRelativeURL ] || context.templetes[ templeteRootRelativeURL ];
+    while( templateRootRelativeURL ){
+        const tmpTemplateRootRelativeURL = templateRootRelativeURL;
+        const template = opt_altTemplates && opt_altTemplates[ templateRootRelativeURL ] || context.templates[ templateRootRelativeURL ];
 
-        if( !templete ){
+        if( !template ){
             if( opt_onError ){
-                opt_onError( 'Templete not found!' );
+                opt_onError( 'Template not found!' );
             } else if( NicePageBuilder.DEFINE.DEBUG ){
-                throw '[merge] Templete: ' + context.path.urlToFilePath( tmpTempleteRootRelativeURL ) + ' required by ' + context.path.urlToFilePath( requiredBy ) + ' not found!';
+                throw '[merge] Template: ' + context.path.urlToFilePath( tmpTemplateRootRelativeURL ) + ' required by ' + context.path.urlToFilePath( requiredBy ) + ' not found!';
             };
         };
-        templeteRootRelativeURL = requiredBy = '';
+        templateRootRelativeURL = requiredBy = '';
 
-        const templeteMetadata = NicePageBuilder.util.getMetadata( templete );
+        const templateMetadata = NicePageBuilder.util.getMetadata( template );
 
-        onReachTemplete( tmpTempleteRootRelativeURL, templeteMetadata, /** @type {number} */ (templete[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
+        onReachTemplate( tmpTemplateRootRelativeURL, templateMetadata, /** @type {number} */ (template[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
 
-        if( templeteMetadata ){
-            if( templeteMetadata.TEMPLETE ){
-                templeteRootRelativeURL = context.path.toRootRelativeURL( tmpTempleteRootRelativeURL, templeteMetadata.TEMPLETE );
-                requiredBy = tmpTempleteRootRelativeURL;
+        if( templateMetadata ){
+            if( templateMetadata.TEMPLATE ){
+                templateRootRelativeURL = context.path.toRootRelativeURL( tmpTemplateRootRelativeURL, templateMetadata.TEMPLATE );
+                requiredBy = tmpTemplateRootRelativeURL;
             };
-            traverseMixins( tmpTempleteRootRelativeURL, templeteMetadata );
+            traverseMixins( tmpTemplateRootRelativeURL, templateMetadata );
         };
     };
 };
@@ -149,14 +149,14 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
  */
 NicePageBuilder.util.completePage = function( context, htmlJson, opt_onError ){
     /**
-     * @param {!HTMLJson | !HTMLJsonWithMetadata} templeteJSONNode 
+     * @param {!HTMLJson | !HTMLJsonWithMetadata} templateJSONNode 
      * @param {!HTMLJson | !HTMLJsonWithMetadata} contentJSONNode
      * @return {!HTMLJson | !HTMLJsonWithMetadata}
      */
-    function _insertContentToTemplete( templeteJSONNode, contentJSONNode ){
-        templeteJSONNode = /** @type {!HTMLJson} */ (JSON.parse( JSON.stringify( templeteJSONNode ) )); // deep copy
+    function _insertContentToTemplate( templateJSONNode, contentJSONNode ){
+        templateJSONNode = /** @type {!HTMLJson} */ (JSON.parse( JSON.stringify( templateJSONNode ) )); // deep copy
 
-        let result = NicePageBuilder.util.getSLotElement( templeteJSONNode, true );
+        let result = NicePageBuilder.util.getSLotElement( templateJSONNode, true );
 
         if( result ){
             const parentJSONNode = /** @type {!HTMLJson} */ (result[ 1 ]);
@@ -178,10 +178,10 @@ NicePageBuilder.util.completePage = function( context, htmlJson, opt_onError ){
             };
 
             if( metadata ){
-                templeteJSONNode.unshift( metadata );
+                templateJSONNode.unshift( metadata );
             };
         };
-        return templeteJSONNode;
+        return templateJSONNode;
     };
 
     const metadata = _deepCopyMetadata( context.getMergedMetadata( /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]) ) );
@@ -191,19 +191,19 @@ NicePageBuilder.util.completePage = function( context, htmlJson, opt_onError ){
         function( mixinRootRelativeURL, metadataMixin, updatedAt ){},
         /**
          * 
-         * @param {NicePageBuilder.RootRelativeURL} templeteRootRelativeURL 
-         * @param {NicePageBuilder.Metadata | null} metadataTemplete
+         * @param {NicePageBuilder.RootRelativeURL} templateRootRelativeURL 
+         * @param {NicePageBuilder.Metadata | null} metadataTemplate
          * @param {number} updatedAt
          */
-        function( templeteRootRelativeURL, metadataTemplete, updatedAt ){
-            const templete = context.templetes[ templeteRootRelativeURL ];
+        function( templateRootRelativeURL, metadataTemplate, updatedAt ){
+            const template = context.templates[ templateRootRelativeURL ];
 
-            htmlJson = _insertContentToTemplete( NicePageBuilder.util.getHTMLJson( templete ), htmlJson );
+            htmlJson = _insertContentToTemplate( NicePageBuilder.util.getHTMLJson( template ), htmlJson );
         },
         opt_onError
     );
 
-    delete metadata.TEMPLETE;
+    delete metadata.TEMPLATE;
     delete metadata.MIXINS;
 
     htmlJson[ 0 ] = metadata;

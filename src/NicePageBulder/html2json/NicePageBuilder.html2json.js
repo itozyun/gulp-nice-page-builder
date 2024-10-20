@@ -4,7 +4,7 @@ goog.provide( '__NicePageBuilder_internal__.html2json' );
 goog.require( 'html2json.main' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.Metadata' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
+goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'HTMLJsonWithMetadata' );
@@ -71,10 +71,10 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
-    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplete>} */
-    const PAGES_OR_TEMPLETES = {};
+    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplate>} */
+    const PAGES_OR_TEMPLATES = {};
 
-    const TEMPLETE_LIST = context.templetes;
+    const TEMPLATE_LIST = context.templates;
 
     const MIXIN_LIST = context.mixins;
 
@@ -111,22 +111,22 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 case '.php'   :
                     const htmlJson = __NicePageBuilder_internal__.html2json.call( context, contents, false, opt_onError, opt_options );
 
-                    PAGES_OR_TEMPLETES[ rootRelativeURL ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
+                    PAGES_OR_TEMPLATES[ rootRelativeURL ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
                     break;
                 case '.json' :
                     const json = JSON.parse( contents );
 
                     switch( file.stem ){
-                        case context.keywordTempletes :
+                        case context.keywordTemplates :
                             if( !m_isArray( json ) && m_isObject( json ) ){
                                 for( const rootRelativeURL in json ){
-                                    if( !context.templetes[ rootRelativeURL ] ){
-                                        context.templetes[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplete} */ (json[ rootRelativeURL ]);
+                                    if( !context.templates[ rootRelativeURL ] ){
+                                        context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplate} */ (json[ rootRelativeURL ]);
                                     };
                                 };
                                 this.push( file );
                             } else if( NicePageBuilder.DEFINE.DEBUG ){
-                                console.log( 'Invalid templetes ' + file.path );
+                                console.log( 'Invalid templates ' + file.path );
                             };
                             break;
                         case context.keywordMixins :
@@ -174,29 +174,29 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 };
 
                 const mixinPathList = metadata.MIXINS;
-                const templetePath  = metadata.TEMPLETE;
+                const templatePath  = metadata.TEMPLATE;
 
                 if( mixinPathList ){
                     for( let i = 0, l = mixinPathList.length; i < l; ++i ){
                         mixinPathList[ i ] = getShortestURL( baseRootRelativeURL, mixinPathList[ i ] );
                     };
                 };
-                if( templetePath ){
-                    metadata.TEMPLETE = getShortestURL( baseRootRelativeURL, templetePath );
+                if( templatePath ){
+                    metadata.TEMPLATE = getShortestURL( baseRootRelativeURL, templatePath );
                 };
             };
 
-            const PAGE_LIST = PAGES_OR_TEMPLETES;
+            const PAGE_LIST = PAGES_OR_TEMPLATES;
 
-        // 使用している TEMPLETE と MIXIN のチェック
-            for( let pageOrTempleteRootRelativeURL in PAGES_OR_TEMPLETES ){
-                const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ];
-                const metadata       = NicePageBuilder.util.getMetadata( pageOrTemplete );
+        // 使用している TEMPLATE と MIXIN のチェック
+            for( let pageOrTemplateRootRelativeURL in PAGES_OR_TEMPLATES ){
+                const pageOrTemplate = PAGES_OR_TEMPLATES[ pageOrTemplateRootRelativeURL ];
+                const metadata       = NicePageBuilder.util.getMetadata( pageOrTemplate );
 
                 if( metadata && NicePageBuilder.util.isPrebuild( metadata ) ){
-                    metadata.URL = pageOrTempleteRootRelativeURL;
+                    metadata.URL = pageOrTemplateRootRelativeURL;
 
-                    toShortestURL( pageOrTempleteRootRelativeURL, metadata ); // TODO traverse
+                    toShortestURL( pageOrTemplateRootRelativeURL, metadata ); // TODO traverse
 
                     NicePageBuilder.util.traverseMetadataStack(
                         context, metadata,
@@ -216,30 +216,30 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                         },
                         /**
                          * 
-                         * @param {NicePageBuilder.RootRelativeURL} templeteRootRelativeURL 
-                         * @param {NicePageBuilder.Metadata | null} metadataTemplete
+                         * @param {NicePageBuilder.RootRelativeURL} templateRootRelativeURL 
+                         * @param {NicePageBuilder.Metadata | null} metadataTemplate
                          * @param {number} updatedAt
                          */
-                        function( templeteRootRelativeURL, metadataTemplete, updatedAt ){
-                            metadataTemplete && toShortestURL( templeteRootRelativeURL, metadataTemplete );
+                        function( templateRootRelativeURL, metadataTemplate, updatedAt ){
+                            metadataTemplate && toShortestURL( templateRootRelativeURL, metadataTemplate );
 
-                            const templete = PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
-                            if( templete ){
-                                TEMPLETE_LIST[ templeteRootRelativeURL ] = templete;
-                                delete PAGES_OR_TEMPLETES[ templeteRootRelativeURL ];
+                            const template = PAGES_OR_TEMPLATES[ templateRootRelativeURL ];
+                            if( template ){
+                                TEMPLATE_LIST[ templateRootRelativeURL ] = template;
+                                delete PAGES_OR_TEMPLATES[ templateRootRelativeURL ];
                             };
                         },
                         opt_onError,
-                        PAGES_OR_TEMPLETES
+                        PAGES_OR_TEMPLATES
                     );
                 };
 
-                if( PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ] ){
-                    pageOrTemplete.push( true ); // isPage
+                if( PAGES_OR_TEMPLATES[ pageOrTemplateRootRelativeURL ] ){
+                    pageOrTemplate.push( true ); // isPage
                 };
             };
 
-        // 使用していない TEMPLETE と MIXIN を削除
+        // 使用していない TEMPLATE と MIXIN を削除
             for( const mixinRootRelativeURL in MIXIN_LIST ){
                 const mixin = MIXIN_LIST[ mixinRootRelativeURL ];
                 if( mixin.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){
@@ -252,16 +252,16 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 };
             };
 
-            for( const pageOrTempleteRootRelativeURL in PAGES_OR_TEMPLETES ){
-                const pageOrTemplete = PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ];
-                const htmlJson       = NicePageBuilder.util.getHTMLJson( pageOrTemplete );
+            for( const pageOrTemplateRootRelativeURL in PAGES_OR_TEMPLATES ){
+                const pageOrTemplate = PAGES_OR_TEMPLATES[ pageOrTemplateRootRelativeURL ];
+                const htmlJson       = NicePageBuilder.util.getHTMLJson( pageOrTemplate );
 
-                if( pageOrTemplete.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){ // NicePageBuilder.NicePageOrTemplete[4] use templete == false
+                if( pageOrTemplate.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){ // NicePageBuilder.NicePageOrTemplate[4] use template == false
                     if( NicePageBuilder.util.getSLotElement( htmlJson, false ) ){
                         if( NicePageBuilder.DEFINE.DEBUG ){
-                            console.log( 'Unused templete found! ' + pageOrTempleteRootRelativeURL );
+                            console.log( 'Unused template found! ' + pageOrTemplateRootRelativeURL );
                         };
-                        delete PAGES_OR_TEMPLETES[ pageOrTempleteRootRelativeURL ];
+                        delete PAGES_OR_TEMPLATES[ pageOrTemplateRootRelativeURL ];
                     };
                 };
             };

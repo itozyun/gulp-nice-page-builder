@@ -45,12 +45,12 @@ function endHandler( data ){
         this.write( data );
     };
     /** @suppress {checkTypes} */
-    var templeteAfter = this._parser._templeteAfter;
+    var templateAfter = this._parser._templateAfter;
 
-    if( templeteAfter ){
-        this.queue( templeteAfter );
+    if( templateAfter ){
+        this.queue( templateAfter );
         /** @suppress {missingProperties} */
-        delete this._parser._templeteAfter;
+        delete this._parser._templateAfter;
     };
     this.queue( null );
 
@@ -103,11 +103,11 @@ function onTokenBeforeLeaveMetadata( token, value ){
             } else {
                 // console.log( htmlJsonBeforeAndAfter )
                 self._stream.queue( htmlJsonBeforeAndAfter[ 0 ].substr( 1 ) ); // [ を除く
-                self._templeteAfter = htmlJsonBeforeAndAfter[ 1 ].substr( 0, htmlJsonBeforeAndAfter[ 1 ].length - 1 );
+                self._templateAfter = htmlJsonBeforeAndAfter[ 1 ].substr( 0, htmlJsonBeforeAndAfter[ 1 ].length - 1 );
             };
         } else {
             self._stream.queue( JSON.stringify( completeHTMLJson[ 0 ] ) + ',' );
-            self._noTemplete = true;
+            self._noTemplate = true;
         };
         delete self._context;
         delete self._metadata;
@@ -156,7 +156,7 @@ function onTokenBeforeLeaveMetadata( token, value ){
             break;
         case 4 :
             if( value === 9 || value === 11 ){
-                if( self._noTemplete ){
+                if( self._noTemplate ){
                     this._metadataPhase = 8;
                     this._stream.queue( value );
                 } else {

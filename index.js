@@ -250,7 +250,7 @@ function Aa(a, b, c, d, e, f) {
     d = d.slice(1);
     "function" === typeof b ? h = d.length ? b.call(f, m, d) : b.call(f, m) : b[m] && (h = d.length ? b[m].apply(f || b, d) : b[m].call(f || b));
   } else {
-    S(d) ? "function" === typeof b ? h = b(d) : h = b[d]() : e("Invalid InstructionAttr value! [" + c + "=" + d + "]");
+    S(d) ? "function" === typeof b ? h = b.call(f, d) : b[d] && (h = b[d].call(f || b)) : e("Invalid InstructionAttr value! [" + c + "=" + d + "]");
   }
   return a && Q(h) ? Aa(!0, b, c, h, e, f) : h;
 }
@@ -975,27 +975,27 @@ function zb(a, b, c, d, e, f) {
         }
         const q = g[0];
         c(r, q, g[2]);
-        !m && q.TEMPLETE && (m = a.path.va(r, q.TEMPLETE), p = r);
+        !m && q.TEMPLATE && (m = a.path.va(r, q.TEMPLATE), p = r);
         h(r, q);
       }
     }
   }
   let m, p;
-  b.TEMPLETE && (m = a.path.va(b.URL, b.TEMPLETE), p = b.URL);
+  b.TEMPLATE && (m = a.path.va(b.URL, b.TEMPLATE), p = b.URL);
   for (h(b.URL, b); m;) {
     b = m;
     const k = f && f[m] || a.$[m];
     if (!k) {
       if (e) {
-        e("Templete not found!");
+        e("Template not found!");
       } else {
-        throw "[merge] Templete: " + X(b) + " required by " + X(p) + " not found!";
+        throw "[merge] Template: " + X(b) + " required by " + X(p) + " not found!";
       }
     }
     m = p = "";
     const l = xb(k);
     d(b, l, k[2]);
-    l && (l.TEMPLETE && (m = a.path.va(b, l.TEMPLETE), p = b), h(b, l));
+    l && (l.TEMPLATE && (m = a.path.va(b, l.TEMPLATE), p = b), h(b, l));
   }
 }
 function Ab(a, b) {
@@ -1020,7 +1020,7 @@ function Ab(a, b) {
     }
     b = d;
   });
-  delete c.TEMPLETE;
+  delete c.TEMPLATE;
   delete c.MIXINS;
   b[0] = c;
   return b;
@@ -1119,7 +1119,7 @@ function Fb(a, b) {
               }
               this.push(k);
             } else {
-              console.log("Invalid templetes " + k.path);
+              console.log("Invalid templates " + k.path);
             }
             break;
           case c.fa:
@@ -1146,13 +1146,13 @@ function Fb(a, b) {
         t = c.path.va(t, Hb(y));
         return E.length < t.length ? E : t;
       }
-      const x = v.MIXINS, F = v.TEMPLETE;
+      const x = v.MIXINS, F = v.TEMPLATE;
       if (x) {
         for (let t = 0, y = x.length; t < y; ++t) {
           x[t] = A(z, x[t]);
         }
       }
-      F && (v.TEMPLETE = A(z, F));
+      F && (v.TEMPLATE = A(z, F));
     }
     function n(z, v) {
       z = new e({path:z, contents:Buffer.from(JSON.stringify(v))});
@@ -1162,7 +1162,7 @@ function Fb(a, b) {
     for (var r in h) {
       var g = h[r];
       const z = xb(g);
-      z && (z.MIXINS || z.TEMPLETE) && (z.URL = r, l(r, z), zb(c, z, function(v, A) {
+      z && (z.MIXINS || z.TEMPLATE) && (z.URL = r, l(r, z), zb(c, z, function(v, A) {
         l(v, A);
         v = p[v];
         3 === v.length && v.push(!0);
@@ -1178,7 +1178,7 @@ function Fb(a, b) {
       r = p[q], 3 === r.length ? (console.log("Unused mixin found! " + q), delete p[q]) : r.pop();
     }
     for (var u in h) {
-      q = h[u], r = wb(q), 3 === q.length && Cb(r, !1) && (console.log("Unused templete found! " + u), delete h[u]);
+      q = h[u], r = wb(q), 3 === q.length && Cb(r, !1) && (console.log("Unused template found! " + u), delete h[u]);
     }
     const w = this;
     for (const z in h) {
@@ -2564,7 +2564,7 @@ function oc(a, b, c) {
   return b;
 };
 function sc(a, b, c, d, e) {
-  const f = this, h = require("plugin-error"), m = require("vinyl"), p = require("through2"), k = e && e.processTempletes, l = [];
+  const f = this, h = require("plugin-error"), m = require("vinyl"), p = require("through2"), k = e && e.processTemplates, l = [];
   return p.obj(function(n, r, g) {
     if (n.isNull()) {
       return g();
@@ -2619,7 +2619,7 @@ function sc(a, b, c, d, e) {
 ;ub = function(a, b, c, d, e) {
   if (yb(a)) {
     var f = a.shift();
-    if (f.MIXINS || f.TEMPLETE) {
+    if (f.MIXINS || f.TEMPLATE) {
       throw X(f.URL) + " is not complete document! Use nicePageBuilder.builder() before json2html().";
     }
     f = new lc(this, f.URL);
@@ -2706,7 +2706,7 @@ function uc(a, b) {
         this.pa = 3;
         var e = this.ha;
         this.ha = null;
-        if (e.MIXINS || e.TEMPLETE) {
+        if (e.MIXINS || e.TEMPLATE) {
           throw X(e.URL) + " is not complete document! Use nicePageBuilder.builder() before json2html().";
         }
         e = new lc(this.Aa, e.URL);
@@ -2894,11 +2894,11 @@ function Bc(a) {
   this.ma = a.allPagesPath || "";
   this.ra = a.allPageMetadataPath || "metadata-of-all-pages.json";
   this.la = a.allMixinsPath || "all-mixins.json";
-  this.na = a.allTempletesPath || "all-templetes.json";
+  this.na = a.allTemplatesPath || "all-templates.json";
   this.fa = Cc(this.la);
   this.ga = Cc(this.na);
   this.ba = a.mixins || {};
-  this.$ = a.templetes || {};
+  this.$ = a.templates || {};
   this.ea = a.allPageMetadata || {};
   this.ia = {};
   this.ca = {};
@@ -2929,7 +2929,7 @@ function rc(a, b) {
   return b;
 }
 function mc(a, b, c) {
-  if (b.MIXINS || b.TEMPLETE) {
+  if (b.MIXINS || b.TEMPLATE) {
     const d = b.URL;
     let e = a.ia[d];
     e && Ec(e, b);
@@ -2945,7 +2945,7 @@ function Fc(a, b, c) {
   function d(h, m, p) {
     let k = !1;
     for (const l in h) {
-      "MIXINS" !== l && "TEMPLETE" !== l && void 0 === b[l] && (b[l] = h[l], k = !0, e.push(l));
+      "MIXINS" !== l && "TEMPLATE" !== l && void 0 === b[l] && (b[l] = h[l], k = !0, e.push(l));
     }
     (k || p) && f < m && (f = m);
   }

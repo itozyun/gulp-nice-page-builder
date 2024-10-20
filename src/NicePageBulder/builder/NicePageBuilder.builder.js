@@ -2,7 +2,7 @@ goog.provide( 'NicePageBuilder.builder' );
 goog.provide( '__NicePageBuilder_internal__.builder' );
 
 goog.require( 'htmljson.base' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
+goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'HTMLJsonWithMetadata' );
@@ -70,11 +70,11 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
                         return callback();
                     };
                     break;
-                case context.keywordTempletes :
+                case context.keywordTemplates :
                     if( !m_isArray( json ) && m_isObject( json ) ){
                         for( const rootRelativeURL in json ){
-                            if( !context.templetes[ rootRelativeURL ] ){
-                                context.templetes[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplete} */ (json[ rootRelativeURL ]);
+                            if( !context.templates[ rootRelativeURL ] ){
+                                context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplate} */ (json[ rootRelativeURL ]);
                             };
                         };
                     };

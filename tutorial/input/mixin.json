@@ -1,5 +1,5 @@
 {
-    "TEMPLETE" : "main.php",
+    "TEMPLATE" : "main.php",
     "MIXINS" : ["/mixin.pen.json"],
     "apple" : 1,
     "TOC" : [ 1, "intro"]

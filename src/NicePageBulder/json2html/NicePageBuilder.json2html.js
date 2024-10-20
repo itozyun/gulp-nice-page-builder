@@ -7,7 +7,7 @@ goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'HTMLJsonWithMetadata' );
 goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplete' );
+goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToEnterNodeHandler' );
@@ -100,11 +100,11 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
                         return callback();
                     };
                     break;
-                case context.keywordTempletes :
+                case context.keywordTemplates :
                     if( !m_isArray( json ) && m_isObject( json ) ){
                         for( const rootRelativeURL in json ){
-                            if( !context.templetes[ rootRelativeURL ] ){
-                                context.templetes[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplete} */ (json[ rootRelativeURL ]);
+                            if( !context.templates[ rootRelativeURL ] ){
+                                context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplate} */ (json[ rootRelativeURL ]);
                             };
                         };
                     };

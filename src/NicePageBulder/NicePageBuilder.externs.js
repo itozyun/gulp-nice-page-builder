@@ -4,7 +4,7 @@
 
 var BuiltinMetadata = {};
 
-    BuiltinMetadata.TEMPLETE    = '';
+    BuiltinMetadata.TEMPLATE    = '';
     BuiltinMetadata.MIXINS      = [ '' ];
     BuiltinMetadata.URL         = '';
     BuiltinMetadata.CREATED_AT  = 0;

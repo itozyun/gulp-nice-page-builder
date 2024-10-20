@@ -1,6 +1,6 @@
 <script type="application/json">
 {
-    "TEMPLETE" : "templete.html"
+    "TEMPLATE" : "template.html"
 }
 </script>
 <main>
