@@ -2890,20 +2890,24 @@ function Bc(a) {
   a = a || {};
   var b = require("path").resolve(a.srcRootPath || "./") + "/";
   b = new wc(a.urlOrigin || "", b);
+  const c = a.allPageMetadata || {};
   this.oa = b.$;
   this.ma = a.allPagesPath || "";
-  this.ra = a.allPageMetadataPath || "metadata-of-all-pages.json";
+  this.ra = a.allPageMetadataPath || "all-page-metadata.json";
   this.la = a.allMixinsPath || "all-mixins.json";
   this.na = a.allTemplatesPath || "all-templates.json";
   this.fa = Cc(this.la);
   this.ga = Cc(this.na);
   this.ba = a.mixins || {};
   this.$ = a.templates || {};
-  this.ea = a.allPageMetadata || {};
+  this.ea = c;
   this.ia = {};
   this.ca = {};
   this.ka = a.additionalJsons || {};
   this.path = b;
+  for (const d in c) {
+    c[d].URL = d;
+  }
 }
 function Lb(a, b) {
   for (let c = 0, d = b.length; c < d; c += 2) {
@@ -2912,8 +2916,8 @@ function Lb(a, b) {
   }
 }
 function Dc(a, b) {
-  const c = b.URL, d = a.ea[c];
-  d ? d.URL || (d.URL = c) : a.ea[c] = JSON.parse(JSON.stringify(b));
+  const c = b.URL;
+  a.ea[c] || (a.ea[c] = JSON.parse(JSON.stringify(b)));
 }
 function Bb(a, b, c) {
   const d = b.URL;

@@ -97,7 +97,7 @@ __NicePageBuilder_internal__._json2jsonGulpPlugin = function( opt_onInstruction,
          */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();
-    
+
             if( file.isStream() ){
                 this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
                 return callback();
