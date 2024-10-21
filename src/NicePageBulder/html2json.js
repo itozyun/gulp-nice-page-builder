@@ -67,7 +67,6 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.html2json',
-          PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
