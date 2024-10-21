@@ -40,6 +40,7 @@
       * `<? ?>` と動的属性(`<a :href="">`) を置き換える
       * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
    5. nicePageBuilder.builder.stream
+      * Streaming SSR
    6. nicePageBuilder.json2html.stream
       * Streaming SSR
    7. nicePageBuilder.dest
@@ -87,8 +88,8 @@ gulp.task('html', function(){
 |:----------------|:--------------------------|:-----------------------------------------------------------------------------------------------------------|
 | メタ情報 *1     |                           | ページ、テンプレート内 `<script type="application/json">{...}</script>` または Mixin に書いておく          |
 | ページ *2       | .html, .htm, .xhtml, .php | コンテンツとメタ情報だけが書かれた HTML                                                                    |
-| テンプレート *3 | .html, .htm, .xhtml, .php | ページ、Mixin から参照される．必ず単一の `<slot></slot>` を持つ                                            |
-| Mixin *4        | .json                     | 複数ページで共通のメタ情報を記述した json ファイル．ページ(.html), テンプレート, 他の Mixin から参照される |
+| テンプレート    | .html, .htm, .xhtml, .php | ページ、Mixin から参照される．必ず単一の `<slot></slot>` を持つ．テンプレートは入れ子にできます．          |
+| Mixin           | .json                     | 複数ページで共通のメタ情報を記述した json ファイル．ページ(.html), テンプレート, 他の Mixin から参照される |
 
 1. メタ情報の各プロパティの優先度
    1. ページ
@@ -100,14 +101,13 @@ gulp.task('html', function(){
       * テンプレートの MIXINS\[0] の MIXINS\[0] ~ MIXINS\[z] (MIXIN は入れ子にできる)
    6. テンプレートの MIXINS\[z]
 2. テンプレート、メタ情報、Mixin を使用しないプロジェクトも可能だが、その場合 [html.json](https://github.com/itozyun/html.json) だけで事足りる．
-3. テンプレートは入れ子にできます
 
 ## メタ情報の定義積みプロパティ
 
 | 名称        | 型               | 説明                         | ページ(.html)     | テンプレート | Mixin |
 |:------------|:-----------------|:-----------------------------|:------------------|:-------------|:------|
 | TEMPLATE    | `string`         | テンプレート(.html) へのパス | ✓                | ✓           | ✓    |
-| MIXINS      | `Array.<string>` |                              | ✓                | ✓           | - *2  |
+| MIXINS      | `Array.<string>` |                              | ✓                | ✓           | ✓    |
 | URL         | `string`         | `"/contact/"`                | ✓                | -            | -     |
 | CREATED_AT  | `number`         |  `file.stat.birthtimeMs`     | ✓                | -            | -     |
 | MODIFIED_AT | `number`         |  `file.stat.ctimeMs`         | ✓                | -            | -     |
