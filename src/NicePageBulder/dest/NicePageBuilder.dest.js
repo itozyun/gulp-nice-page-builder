@@ -35,15 +35,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
           through     = require( 'through2'     );
 
     return through.obj(
-        /**
-         * @this {stream.Writable}
-         * @param {!Vinyl} file
-         * @param {string} encoding
-         * @param {function(Error=, Vinyl=)} callback
-         */
-        function( file, encoding, callback ){
-            return callback( null, file );
-        },
+        NicePageBuilder.transform( context, pluginName, false, function(){ return false }, null ),
         /**
          * @this {stream.Writable}
          * @param {function()} callback

@@ -79,83 +79,13 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
     const MIXIN_LIST = context.mixins;
 
     return through.obj(
-        /**
-         * @this {stream.Writable}
-         * @param {!Vinyl} file
-         * @param {string} encoding
-         * @param {function(Error=, Vinyl=)} callback
-         */
-        function( file, encoding, callback ){
-            const filePath = context.path.normalizeFilePath( file.path );
+        NicePageBuilder.transform( context, pluginName, true, m_isArray,
+            function( rootRelativeURL, htmlString,  createdTimeMs, updatedTimeMs ){
+                const htmlJson = __NicePageBuilder_internal__.html2json.call( context, htmlString, false, opt_onError, opt_options );
 
-            if( file.isNull() ) return callback();
-    
-            if( file.isStream() ){
-                this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
-                return callback();
-            };
-            if( filePath.indexOf( context.srcRootPath ) !== 0 ){
-                this.emit( 'error', new PluginError( pluginName, '"' + filePath + '" is outside of srcRootPath:"' + context.srcRootPath + '"' ) );
-                return callback();
-            };
-    
-            const contents        = file.contents.toString( encoding ),
-                  createdTimeMs   = parseInt( file.stat.birthtimeMs, 10 ),
-                  updatedTimeMs   = parseInt( file.stat.ctimeMs, 10 ),
-                  rootRelativeURL = context.path.filePathToURL( context.path.isAbsoluteFilePath( filePath ) ? context.path.absoluteFilePathToSrcRootRelativeFilePath( filePath ) : filePath );
-
-            switch( file.extname ){
-                case '.html'  :
-                case '.htm'   :
-                case '.xhtml' :
-                case '.php'   :
-                    const htmlJson = __NicePageBuilder_internal__.html2json.call( context, contents, false, opt_onError, opt_options );
-
-                    PAGES_OR_TEMPLATES[ rootRelativeURL ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
-                    break;
-                case '.json' :
-                    const json = JSON.parse( contents );
-
-                    switch( file.stem ){
-                        case context.keywordTemplates :
-                            if( !m_isArray( json ) && m_isObject( json ) ){
-                                for( const rootRelativeURL in json ){
-                                    if( !context.templates[ rootRelativeURL ] ){
-                                        context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplate} */ (json[ rootRelativeURL ]);
-                                    };
-                                };
-                                this.push( file );
-                            } else if( NicePageBuilder.DEFINE.DEBUG ){
-                                console.log( 'Invalid templates ' + file.path );
-                            };
-                            break;
-                        case context.keywordMixins :
-                            if( !m_isArray( json ) && m_isObject( json ) ){
-                                for( const rootRelativeURL in json ){
-                                    if( !context.mixins[ rootRelativeURL ] ){
-                                        context.mixins[ rootRelativeURL ] = /** @type {!NicePageBuilder.Mixin} */ (json[ rootRelativeURL ]);
-                                    };
-                                };
-                                this.push( file );
-                            } else if( NicePageBuilder.DEFINE.DEBUG ){
-                                console.log( 'Invalid mixins ' + file.path );
-                            };
-                            break;
-                        default :
-                            if( !m_isArray( json ) && m_isObject( json ) ){
-                                MIXIN_LIST[ rootRelativeURL ] = [ /** @type {!NicePageBuilder.Metadata} */ (json), createdTimeMs, updatedTimeMs ];
-                            } else {
-                                this.push( file );
-                            };
-                            break;
-                    };
-                    break;
-                default :
-                    this.push( file );
-                    break;
-            };
-            callback();
-        },
+                PAGES_OR_TEMPLATES[ rootRelativeURL ] = [ htmlJson, createdTimeMs, updatedTimeMs ];
+            }
+        ),
         /**
          * @this {stream.Writable}
          * @param {function()} callback

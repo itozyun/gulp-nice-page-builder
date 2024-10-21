@@ -12,29 +12,28 @@ goog.require( 'NicePageBuilder.util.isPrebuild' );
 goog.require( 'NicePageBuilder.util.traverseMetadataStack' );
 
 /**
- * @package
  * @constructor
  * 
  * @param {Object=} opt_options
  * @return {!NicePageBuilder.Context}
  */
 NicePageBuilder.Context = function( opt_options ){
-    const options     = opt_options || {},
-          Path        = require( 'path' ),
-          srcRootPath = Path.resolve( options[ 'srcRootPath' ] || './' ) + '/', // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
-          tinyPath    = new TinyPath( options[ 'urlOrigin' ] || '', srcRootPath ),
-          allPageMetadata = options[ 'allPageMetadata' ] || {};
+    const options         = opt_options || {},
+          Path            = require( 'path' ),
+          srcRootPath     = Path.resolve( options[ 'srcRootPath' ] || './' ) + '/', // 'src' -> 'C://XX/XX/MyWebSiteProject/src/'
+          tinyPath        = new TinyPath( options[ 'urlOrigin' ] || '', srcRootPath );
 
     this.srcRootPath         = tinyPath._absolutePathOfSrcRoot;
     this.allPagesPath        = options[ 'allPagesPath'        ] || '';
     this.allPageMetadataPath = options[ 'allPageMetadataPath' ] || 'all-page-metadata.json';
     this.allMixinsPath       = options[ 'allMixinsPath'       ] || 'all-mixins.json';
     this.allTemplatesPath    = options[ 'allTemplatesPath'    ] || 'all-templates.json';
-    this.keywordMixins       = _jsonFilePathToOriginalExtname( this.allMixinsPath   , tinyPath );
-    this.keywordTemplates    = _jsonFilePathToOriginalExtname( this.allTemplatesPath, tinyPath );
+    this.keywordAllPageMeta  = _jsonFilePathToOriginalExtname( this.allPageMetadataPath, tinyPath );
+    this.keywordMixins       = _jsonFilePathToOriginalExtname( this.allMixinsPath      , tinyPath );
+    this.keywordTemplates    = _jsonFilePathToOriginalExtname( this.allTemplatesPath   , tinyPath );
     this.mixins              = options[ 'mixins'             ] || {};
     this.templates           = options[ 'templates'          ] || {};
-    this.allPageMetadata     = allPageMetadata;
+    this.allPageMetadata     = {};
     this.mergedPropertiesOf  = {};
     this.allPages            = {};
     /** @const {!Object.<string, (!Object | !Array)>} */
@@ -47,8 +46,20 @@ NicePageBuilder.Context = function( opt_options ){
     /** @type {*} */ this.json2html;
     /** @type {*} */ this.dest;
 
+    this.storeAllPageMetadata( options[ 'allPageMetadata' ] || {} );
+};
+
+/**
+ * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata>} allPageMetadata
+ */
+NicePageBuilder.Context.prototype.storeAllPageMetadata = function( allPageMetadata ){
     for( const rootRelativeURL in allPageMetadata ){
-        allPageMetadata[ rootRelativeURL ].URL = rootRelativeURL;
+        if( !this.allPageMetadata[ rootRelativeURL ] ){
+            const metadata = allPageMetadata[ rootRelativeURL ];
+
+            this.allPageMetadata[ rootRelativeURL ] = metadata;
+            metadata.URL = rootRelativeURL;
+        };
     };
 };
 
@@ -56,7 +67,6 @@ NicePageBuilder.Context = function( opt_options ){
  * [2n+0] Vinyl
  * [2n+1] HTMLJson | HTMLJsonWithMetadata
  * 
- * @this {!NicePageBuilder.Context}
  * @param {!Array.<string | !HTMLJson | !HTMLJsonWithMetadata>} PAGE_FILE_LIST 
  */
 NicePageBuilder.Context.prototype.storeMetadataOfNewPages = function( PAGE_FILE_LIST ){
@@ -70,7 +80,6 @@ NicePageBuilder.Context.prototype.storeMetadataOfNewPages = function( PAGE_FILE_
 };
 
 /**
- * @this {!NicePageBuilder.Context}
  * @param {!NicePageBuilder.Metadata} metadata
  * @return {!NicePageBuilder.Metadata}
  */
@@ -85,7 +94,6 @@ NicePageBuilder.Context.prototype.storeMetadata = function( metadata ){
 };
 
 /**
- * @this {!NicePageBuilder.Context}
  * @param {!NicePageBuilder.Metadata} metadata
  * @param {!function((string | !Error))=} opt_onError
  * @return {!NicePageBuilder.Metadata}

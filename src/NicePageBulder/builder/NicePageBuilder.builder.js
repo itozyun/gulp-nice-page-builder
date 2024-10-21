@@ -31,66 +31,18 @@ __NicePageBuilder_internal__._builderGulpPlugin = function(){
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.builder',
-          PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
     /** @const {!Array.<string | !HTMLJson | !HTMLJsonWithMetadata>} */
     const PAGE_FILE_LIST = [];
-
+    
     return through.obj(
-        /**
-         * @this {stream.Writable}
-         * @param {!Vinyl} file
-         * @param {string} encoding
-         * @param {function(Error=, Vinyl=)} callback
-         */
-        function( file, encoding, callback ){
-            if( file.isNull() ) return callback();
-    
-            if( file.isStream() ){
-                this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
-                return callback();
-            };
-
-            if( file.extname !== '.json' ){
-                return callback( null, file );
-            };
-    
-            const originalExtname = file.stem.split( '.' ).pop(); // _jsonFilePathToOriginalExtname
-            const json = JSON.parse( file.contents.toString( encoding ) );
-
-            switch( originalExtname ){
-                case 'html'  :
-                case 'htm'   :
-                case 'xhtml' :
-                case 'php'   :
-                    if( NicePageBuilder.util.isHTMLJsonWithMetadata( /** @type {!HTMLJson} */ (json) ) ){
-                        PAGE_FILE_LIST.push( file.path, /** @type {!HTMLJsonWithMetadata} */ (json) );
-                        return callback();
-                    };
-                    break;
-                case context.keywordTemplates :
-                    if( !m_isArray( json ) && m_isObject( json ) ){
-                        for( const rootRelativeURL in json ){
-                            if( !context.templates[ rootRelativeURL ] ){
-                                context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplate} */ (json[ rootRelativeURL ]);
-                            };
-                        };
-                    };
-                    break;
-                case context.keywordMixins :
-                    if( !m_isArray( json ) && m_isObject( json ) ){
-                        for( const rootRelativeURL in json ){
-                            if( !context.mixins[ rootRelativeURL ] ){
-                                context.mixins[ rootRelativeURL ] = /** @type {!NicePageBuilder.Mixin} */ (json[ rootRelativeURL ]);
-                            };
-                        };
-                    };
-                    break;
-            };
-            callback( null, file );
-        },
+        NicePageBuilder.transform( context, pluginName, false, NicePageBuilder.util.isHTMLJsonWithMetadata, null,
+            function( rootRelativeURL, htmlJson ){
+                PAGE_FILE_LIST.push( rootRelativeURL, htmlJson );
+            }
+        ),
         /**
          * @this {stream.Writable}
          * @param {function()} callback

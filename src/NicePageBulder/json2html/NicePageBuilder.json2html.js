@@ -9,6 +9,7 @@ goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Mixin' );
+goog.require( 'NicePageBuilder.transform' );
 goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToEnterNodeHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToErrorHandler' );
@@ -60,7 +61,6 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.json2html',
-          PluginError = require( 'plugin-error' ),
           _Vinyl      = require( 'vinyl'        ),
           through     = require( 'through2'     );
 
@@ -68,59 +68,11 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
     const PAGE_FILE_LIST = [];
 
     return through.obj(
-        /**
-         * @this {stream.Writable}
-         * @param {!Vinyl} file
-         * @param {string} encoding
-         * @param {function(Error=, Vinyl=)} callback
-         */
-        function( file, encoding, callback ){
-            if( file.isNull() ) return callback();
-    
-            if( file.isStream() ){
-                this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
-                return callback();
-            };
-
-            if( file.extname !== '.json' ){
-                return callback( null, file );
-            };
-
-            const filePath = context.path.normalizeFilePath( file.path );
-            const originalExtname = file.stem.split( '.' ).pop(); // _jsonFilePathToOriginalExtname
-            const json = JSON.parse( file.contents.toString( encoding ) );
-
-            switch( originalExtname ){
-                case 'html'  :
-                case 'htm'   :
-                case 'xhtml' :
-                case 'php'   :
-                    if( m_isArray( json ) ){
-                        PAGE_FILE_LIST.push( context.path.isAbsoluteFilePath( filePath ) ? context.path.absoluteFilePathToSrcRootRelativeFilePath( filePath ) : filePath, /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (json) );
-                        return callback();
-                    };
-                    break;
-                case context.keywordTemplates :
-                    if( !m_isArray( json ) && m_isObject( json ) ){
-                        for( const rootRelativeURL in json ){
-                            if( !context.templates[ rootRelativeURL ] ){
-                                context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplate} */ (json[ rootRelativeURL ]);
-                            };
-                        };
-                    };
-                    break;
-                case context.keywordMixins :
-                    if( !m_isArray( json ) && m_isObject( json ) ){
-                        for( const rootRelativeURL in json ){
-                            if( !context.mixins[ rootRelativeURL ] ){
-                                context.mixins[ rootRelativeURL ] = /** @type {!NicePageBuilder.Mixin} */ (json[ rootRelativeURL ]);
-                            };
-                        };
-                    };
-                    break;
-            };
-            callback( null, file );
-        },
+        NicePageBuilder.transform( context, pluginName, false, m_isArray, null,
+            function( rootRelativeURL, htmlJson ){
+                PAGE_FILE_LIST.push( rootRelativeURL, htmlJson );
+            }
+        ),
         /**
          * @this {stream.Writable}
          * @param {function()} callback
