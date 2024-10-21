@@ -3,7 +3,6 @@ goog.provide( 'NicePageBuilder.gulp' );
 goog.require( 'NicePageBuilder.module' );
 goog.require( 'NicePageBuilder.Context' );
 goog.require( '__NicePageBuilder_internal__' );
-goog.requireType( 'NicePageBuilder.Context' );
 
 /**
  * @param {Object=} opt_options

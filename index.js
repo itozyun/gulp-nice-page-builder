@@ -1077,6 +1077,67 @@ function Eb(a, b, c) {
   let e = a[0], f;
   return !Q(e) && R(e) ? (a.shift(), f = d(a), !c && (a.unshift(e), f && f[1] === a) ? [f[0], a, ++f[2]] : f) : d(a);
 }
+;function Fb(a, b, c, d, e, f) {
+  const k = require("plugin-error");
+  return function(h, r, n) {
+    function p(m) {
+      return -1 !== [".html", ".htm", ".xhtml", ".php"].indexOf(m);
+    }
+    if (h.isNull()) {
+      return n();
+    }
+    if (h.isStream()) {
+      return this.emit("error", new k(b, "Streaming not supported")), n();
+    }
+    const l = h.path.split("\\").join("/"), w = Gb(Hb(a.path, l) ? Ib(a.path, l) : l);
+    var g = h.contents.toString(r);
+    r = h.stat ? parseInt(h.stat.birthtimeMs, 10) : 0;
+    const q = h.stat ? parseInt(h.stat.ctimeMs, 10) : 0;
+    if (c && p(h.extname)) {
+      return 0 !== l.indexOf(a.na) ? this.emit("error", new k(b, '"' + l + '" is outside of srcRootPath:"' + a.na + '"')) : e(w, g, r, q), n();
+    }
+    if (".json" !== h.extname) {
+      return n(null, h);
+    }
+    const y = "." + h.stem.split(".").pop();
+    g = JSON.parse(g);
+    if (!c && p(y)) {
+      return d(g) ? f(w, g) : this.push(h), n();
+    }
+    switch(h.stem) {
+      case a.ua:
+        if (!Q(g) && R(g)) {
+          for (const m in g) {
+            a.ba[m] || (a.ba[m] = g[m]);
+          }
+        } else {
+          return this.emit("error", new k(b, "Invalid templates!" + l)), n();
+        }
+        break;
+      case a.ra:
+        if (!Q(g) && R(g)) {
+          for (const m in g) {
+            a.ea[m] || (a.ea[m] = g[m]);
+          }
+        } else {
+          return this.emit("error", new k(b, "Invalid mixins!" + l)), n();
+        }
+        break;
+      case a.qa:
+        if (!Q(g) && R(g)) {
+          Jb(a, g);
+        } else {
+          return this.emit("error", new k(b, "Invalid allPageMetadata!" + l)), n();
+        }
+        break;
+      default:
+        if (c) {
+          return !Q(g) && R(g) ? a.ea[w] = [g, r, q] : this.emit("error", new k(b, "Invalid mixin!" + l)), n();
+        }
+    }
+    n(null, h);
+  };
+}
 ;qb = function(a, b, c, d) {
   a = nb(a, b, c, d);
   if (b = Db(a)) {
@@ -1084,16 +1145,16 @@ function Eb(a, b, c) {
   }
   return a;
 };
-function Fb(a, b) {
+function Kb(a, b) {
   const c = this, d = require("vinyl"), e = require("through2"), f = {}, k = c.ba, h = c.ea;
-  return e.obj(Gb(c, "NicePageBuilder.gulp.html2json", !0, Q, function(r, n, p, l) {
+  return e.obj(Fb(c, "NicePageBuilder.gulp.html2json", !0, Q, function(r, n, p, l) {
     n = qb.call(c, n, !1, a, b);
     f[r] = [n, p, l];
   }), function(r) {
     function n(m, z) {
       function u(E, t) {
-        var x = c.path.Oa(E, Hb(t));
-        E = c.path.va(E, Hb(t));
+        var x = c.path.Oa(E, Gb(t));
+        E = c.path.va(E, Gb(t));
         return x.length < E.length ? x : E;
       }
       const A = z.MIXINS, v = z.TEMPLATE;
@@ -1137,73 +1198,12 @@ function Fb(a, b) {
     r();
   });
 }
-;function Gb(a, b, c, d, e, f) {
-  const k = require("plugin-error");
-  return function(h, r, n) {
-    function p(m) {
-      return -1 !== [".html", ".htm", ".xhtml", ".php"].indexOf(m);
-    }
-    if (h.isNull()) {
-      return n();
-    }
-    if (h.isStream()) {
-      return this.emit("error", new k(b, "Streaming not supported")), n();
-    }
-    const l = h.path.split("\\").join("/"), w = Hb(Ib(a.path, l) ? Jb(a.path, l) : l);
-    var g = h.contents.toString(r);
-    r = h.stat ? parseInt(h.stat.birthtimeMs, 10) : 0;
-    const q = h.stat ? parseInt(h.stat.ctimeMs, 10) : 0;
-    if (c && p(h.extname)) {
-      return 0 !== l.indexOf(a.na) ? this.emit("error", new k(b, '"' + l + '" is outside of srcRootPath:"' + a.na + '"')) : e(w, g, r, q), n();
-    }
-    if (".json" !== h.extname) {
-      return n(null, h);
-    }
-    const y = "." + h.stem.split(".").pop();
-    g = JSON.parse(g);
-    if (!c && p(y)) {
-      return d(g) ? f(w, g) : this.push(h), n();
-    }
-    switch(h.stem) {
-      case a.ua:
-        if (!Q(g) && R(g)) {
-          for (const m in g) {
-            a.ba[m] || (a.ba[m] = g[m]);
-          }
-        } else {
-          return this.emit("error", new k(b, "Invalid templates!" + l)), n();
-        }
-        break;
-      case a.ra:
-        if (!Q(g) && R(g)) {
-          for (const m in g) {
-            a.ea[m] || (a.ea[m] = g[m]);
-          }
-        } else {
-          return this.emit("error", new k(b, "Invalid mixins!" + l)), n();
-        }
-        break;
-      case a.qa:
-        if (!Q(g) && R(g)) {
-          Kb(a, g);
-        } else {
-          return this.emit("error", new k(b, "Invalid allPageMetadata!" + l)), n();
-        }
-        break;
-      default:
-        if (c) {
-          return !Q(g) && R(g) ? a.ea[w] = [g, r, q] : this.emit("error", new k(b, "Invalid mixin!" + l)), n();
-        }
-    }
-    n(null, h);
-  };
-}
 ;rb = function(a) {
   return yb(a) ? Ab(this, a) : a;
 };
 function Lb() {
   const a = this, b = require("vinyl"), c = [];
-  return require("through2").obj(Gb(a, "NicePageBuilder.gulp.builder", !1, yb, null, function(d, e) {
+  return require("through2").obj(Fb(a, "NicePageBuilder.gulp.builder", !1, yb, null, function(d, e) {
     c.push(d, e);
   }), function(d) {
     for (Mb(a, c); c.length;) {
@@ -2542,7 +2542,7 @@ function pc(a, b, c) {
 };
 function tc(a, b, c, d, e) {
   const f = this, k = require("vinyl"), h = require("through2"), r = e && e.processTemplates, n = [];
-  return h.obj(Gb(f, "NicePageBuilder.gulp.json2json", !1, Q, null, function(p, l) {
+  return h.obj(Fb(f, "NicePageBuilder.gulp.json2json", !1, Q, null, function(p, l) {
     n.push(p, l);
   }), function(p) {
     Mb(f, n);
@@ -2574,7 +2574,7 @@ function tc(a, b, c, d, e) {
 };
 function uc(a, b, c, d) {
   const e = this, f = require("vinyl"), k = [];
-  return require("through2").obj(Gb(e, "NicePageBuilder.gulp.json2html", !1, Q, null, function(h, r) {
+  return require("through2").obj(Fb(e, "NicePageBuilder.gulp.json2html", !1, Q, null, function(h, r) {
     k.push(h, r);
   }), function(h) {
     for (Mb(e, k); k.length;) {
@@ -2631,7 +2631,7 @@ function vc(a, b) {
 }
 ;function wc(a, b) {
   const c = this, d = require("vinyl");
-  return require("through2").obj(Gb(c, "NicePageBuilder.gulp.dest", !1, function() {
+  return require("through2").obj(Fb(c, "NicePageBuilder.gulp.dest", !1, function() {
     return !1;
   }, null), function(e) {
     function f(n) {
@@ -2675,7 +2675,7 @@ function vc(a, b) {
   this.ba = a + ("/" === a.charAt(a.length - 1) ? "" : "/");
   b && (b = b.split("\\").join("/"), this.$ = b + ("/" === b.charAt(b.length - 1) ? "" : "/"));
 }
-function Hb(a) {
+function Gb(a) {
   a = a.split("index.html");
   a[a.length - 1] || a.pop();
   return a.join("index.html");
@@ -2688,17 +2688,17 @@ function X(a) {
   a[a.length - 1] || (a[a.length - 1] = "index.html");
   return a.join("/");
 }
-function Ib(a, b) {
+function Hb(a, b) {
   if (!a.$) {
     throw "absoluteDirectoryPathOfRoot is empty!";
   }
   return 0 === b.indexOf(a.$);
 }
-function Jb(a, b) {
+function Ib(a, b) {
   if (!a.$) {
     throw "absoluteDirectoryPathOfRoot is empty!";
   }
-  if (!Ib(a, b)) {
+  if (!Hb(a, b)) {
     throw b + " is not a absolute path!";
   }
   return b.split("\\").join("/").substr(a.$.length - 1);
@@ -2750,7 +2750,7 @@ function Bc(a, b) {
     (c || r !== f) && b.push(f);
     b = b.join("/");
   }
-  b = Hb(b);
+  b = Gb(b);
   d && (b += d);
   return b ? b : "./";
 }
@@ -2779,7 +2779,7 @@ xc.prototype.va = function(a, b) {
       --e.length;
     }
     a = (e.length ? "/" + e.join("/") : "") + "/" + b;
-    a = Hb(a);
+    a = Gb(a);
     c && (a += c);
     c = a;
   }
@@ -2811,9 +2811,9 @@ function Cc(a) {
   this.ca = {};
   this.ha = a.additionalJsons || {};
   this.path = b;
-  Kb(this, a.allPageMetadata || {});
+  Jb(this, a.allPageMetadata || {});
 }
-function Kb(a, b) {
+function Jb(a, b) {
   for (const c in b) {
     if (!a.$[c]) {
       const d = b[c];
@@ -2910,7 +2910,7 @@ module.exports.ELEMENT_START_TAG = 17;
 module.exports.ELEMENT_END_TAG = 18;
 module.exports.gulp = function(a) {
   a = new Cc(a);
-  qb && (a.html2json = Fb);
+  qb && (a.html2json = Kb);
   rb && (a.builder = Lb);
   sb && (a.builder || (a.builder = {}), a.builder.stream = sb.bind(a));
   tb && (a.json2json = tc);
