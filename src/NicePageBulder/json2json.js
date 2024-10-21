@@ -17,6 +17,7 @@ goog.require( 'NicePageBuilder.PageContext.bindToErrorHandler' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.require( 'NicePageBuilder.util.getHTMLJson' );
+goog.require( 'NicePageBuilder.transform' );
 
 /**
  * @this {NicePageBuilder.Context}

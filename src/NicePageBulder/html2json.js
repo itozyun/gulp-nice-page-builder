@@ -17,6 +17,7 @@ goog.require( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.require( 'NicePageBuilder.util.getSLotElement' );
 goog.require( 'NicePageBuilder.util.isPrebuild' );
 goog.require( 'NicePageBuilder.util.traverseMetadataStack' );
+goog.require( 'NicePageBuilder.transform' );
 
 /**
  * @this {NicePageBuilder.Context}

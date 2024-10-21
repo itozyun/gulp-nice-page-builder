@@ -9,6 +9,7 @@ goog.requireType( 'HTMLJsonWithMetadata' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.require( 'NicePageBuilder.util.completePage' );
+goog.require( 'NicePageBuilder.transform' );
 
 /**
  * @this {NicePageBuilder.Context}

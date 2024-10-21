@@ -7,6 +7,7 @@ goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
+goog.require( 'NicePageBuilder.transform' );
 
 /**
  * @enum {number}
