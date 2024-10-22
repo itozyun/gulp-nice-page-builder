@@ -430,7 +430,7 @@ function Ma(a, b) {
   var c, d;
   na(a, function(e, f, h, k) {
     function r(v, g, p) {
-      c ? (k + 1 < d.length && (d.length = k + 1), v = Na(d[d.length - 1], v, g, p), O(e) && oa(e) < e.length && (d[k + 1] = v)) : (c = new Oa(b, 0, v, g, p), d = [c]);
+      c ? (k < d.length && (d.length = k), v = Na(d[d.length - 1], v, g, p), O(e) && oa(e) < e.length && (d[k] = v)) : (c = new Oa(b, 0, v, g, p), d = [c]);
     }
     if (wa(e)) {
       r(3, e);
