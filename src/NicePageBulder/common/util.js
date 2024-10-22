@@ -49,7 +49,7 @@ NicePageBuilder.util.getMetadata = function( nicePageOrTemplate ){
 
 /**
  * 
- * @param {!HTMLJson | !HTMLJsonWithMetadata} htmlJson 
+ * @param {*} htmlJson 
  * @return {boolean}
  */
 NicePageBuilder.util.isHTMLJsonWithMetadata = function( htmlJson ){
