@@ -1,8 +1,8 @@
 goog.provide( 'NicePageBuilder.json2html.stream' );
 goog.provide( '__NicePageBuilder_internal__.json2htmlStream' );
 
-goog.requireType( 'Parser' );
-goog.require( 'Parser.C' );
+goog.requireType( 'JsonParser' );
+goog.require( 'JsonParser.C' );
 goog.require( 'json2html.stream' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
@@ -25,21 +25,29 @@ goog.require( 'NicePageBuilder.util.isPrebuild' );
  * @return {!Through}
  */
 __NicePageBuilder_internal__.json2htmlStream = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
-    const stream = json2html.stream( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
+    const pageContext = new NicePageBuilder.PageContext( this, '' );
+
+    const through = json2html.stream(
+        NicePageBuilder.PageContext.bindToInstructuionHandler( pageContext, opt_onInstruction, true ),
+        NicePageBuilder.PageContext.bindToEnterNodeHandler( pageContext, opt_onEnterNode, true ),
+        NicePageBuilder.PageContext.bindToErrorHandler( pageContext, opt_onError ),
+        opt_options
+    );
     /** @suppress {missingProperties} */
-    const parser = stream._parser;
+    const parser = through._jsonParser;
 
     parser._onTokenForHTMLJson = parser.onToken;
     parser.onToken = onTokenForMeta;
     parser._context = this;
+    parser._pageContext = pageContext;
     parser._metadataPhase = 0;
 
-    return stream;
+    return through;
 };
 
 /**
  * @private
- * @this {Parser}
+ * @this {JsonParser}
  * @param {number} token 
  * @param {*} value 
  */
@@ -56,16 +64,16 @@ function onTokenForMeta( token, value ){
 
     switch( this._metadataPhase ){
         case 0 :
-            if( token === Parser.C.LEFT_BRACKET ){ // [
+            if( token === JsonParser.C.LEFT_BRACKET ){ // [
                 this._metadataPhase = 1;
                 this._onTokenForHTMLJson( token, value );
             } else if( NicePageBuilder.DEFINE.DEBUG ){
                 this._onError( 'Not html.json format!' );
-                this._stream.emit( 'error', 'Not html.json format!' );
+                this._through.emit( 'error', 'Not html.json format!' );
             };
             break;
         case 1 :
-            if( token === Parser.C.LEFT_BRACE ){ // {
+            if( token === JsonParser.C.LEFT_BRACE ){ // {
                 this._metadataPhase = 2;
                 this._createValue( token, value );
             } else {
@@ -75,7 +83,7 @@ function onTokenForMeta( token, value ){
             };
             break;
         case 2 :
-            if( token === Parser.C.RIGHT_BRACE && this.jsonStack.length === 1 ){ // }
+            if( token === JsonParser.C.RIGHT_BRACE && this.jsonStack.length === 1 ){ // }
                 this._metadataPhase = 3;
                 const metadata = /** @type {!NicePageBuilder.Metadata} */ (this.currentValue);
                 this.currentValue = null;
@@ -85,24 +93,20 @@ function onTokenForMeta( token, value ){
                         throw this._context.path.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
                     };
                 };
-
-                const pageContext = new NicePageBuilder.PageContext( this._context, metadata.URL );
-
-                /** @suppress {constantProperty} @const {InstructionHandler | void} */ this._onInstruction = NicePageBuilder.PageContext.bindToInstructuionHandler( pageContext, this._onInstruction, true );
-                /** @suppress {constantProperty} @const {EnterNodeHandler | void}   */ this._onEnterNode   = NicePageBuilder.PageContext.bindToEnterNodeHandler( pageContext, this._onEnterNode, true );
-                /**                     @const {function((string | !Error)) | void} */ this._onError       = NicePageBuilder.PageContext.bindToErrorHandler( pageContext, this._onError );
+                this._context.storeMetadata( metadata );
+                this._pageContext._baseURL = metadata.URL;
             };
             this._createValue( token, value );
             break;
         case 3 :
-            if( token === Parser.C.COMMA ){ // ,
+            if( token === JsonParser.C.COMMA ){ // ,
                 startHTMLJson();
-            // } else if( token === Parser.C.RIGHT_BRACKET ){ // ]  // empty aray
+            // } else if( token === JsonParser.C.RIGHT_BRACKET ){ // ]  // empty aray
             //    startHTMLJson();
             //    this.onToken( token, value );
             } else if( NicePageBuilder.DEFINE.DEBUG ){
                 this._onError( 'Not html.json format!' );
-                this._stream.emit( 'error', 'Not html.json format!' );
+                this._through.emit( 'error', 'Not html.json format!' );
             };
     };
 };
