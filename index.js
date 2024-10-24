@@ -342,8 +342,8 @@ function Ha(a, b, c) {
   return a;
 }
 function O(a) {
-  var b = a[0];
-  return 1 === ya(a) ? (b = b === +b ? 2 : 1, za(a[b]) ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
+  var b = a[0], c = ya(a);
+  return 1 === c || 17 === c ? (b = b === +b ? 2 : 1, za(a[b]) ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
 function Ia(a) {
   function b() {
@@ -2756,7 +2756,7 @@ function Cc(a, b, c, d) {
       f.ba = !0;
     }
   }, function(f, k, h, g) {
-    f !== a && !f.$ && O(f) < f.length && (d(f, k, h, g), f.$ = !0);
+    f === a || f.left || -1 === [9, 11, 1, 17, 13, 16].indexOf(ya(f)) || (d(f, k, h, g), f.left = !0);
   });
   return e;
 }
