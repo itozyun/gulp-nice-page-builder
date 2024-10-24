@@ -180,12 +180,16 @@ function _bindPageContextToHandler( isStreamContext, pageContext, originalHandle
 
         if( stream.pause && stream.resume ){
             pageContext.pause = function(){
-                stream.pause();
-                pageContext.paused = stream.paused;
+                if( !stream.paused ){
+                    pageContext.paused = true;
+                    stream.pause();
+                };
             };
             pageContext.resume = function(){
-                stream.resume();
-                pageContext.paused = stream.paused;
+                if( stream.paused ){
+                    pageContext.paused = false;
+                    stream.resume();
+                };
             };
         };
 
