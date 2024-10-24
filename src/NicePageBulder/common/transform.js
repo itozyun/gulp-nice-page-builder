@@ -1,6 +1,11 @@
 goog.provide( 'NicePageBuilder.transform' );
 
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
+goog.require( 'NicePageBuilder.Context' );
+goog.require( 'NicePageBuilder.NicePageOrTemplate' );
+goog.require( 'NicePageBuilder.Mixin' );
+goog.require( 'NicePageBuilder.RootRelativeURL' );
+goog.require( 'NicePageBuilder.Metadata' );
 
 /**
  * 
@@ -94,7 +99,7 @@ NicePageBuilder.transform = function( context, pluginName, isHTML2JSON, testHTML
                 break;
             case context.keywordAllPageMeta :
                 if( !m_isArray( json ) && m_isObject( json ) ){
-                    context.storeAllPageMetadata( json );
+                    context.storeAllPageMetadata( /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata>} */ (json) );
                 } else if( NicePageBuilder.DEFINE.DEBUG ){
                     this.emit( 'error', new PluginError( pluginName, 'Invalid allPageMetadata!' + filePath ) );
                     return callback();
