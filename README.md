@@ -20,8 +20,9 @@
 
 ---
 
-1. テンプレートから完全な HTML 文書を生成します
-2. 複数ページで共通するデータを JSON ファイルに分離する(Mixin)
+1. テンプレートとメタ情報から完全な HTML 文書を生成します
+   * SSG, Streaming SSR が可能です
+2. 複数ページで共通するメタ情報を JSON ファイルに分離する(Mixin)
 3. [html.json](https://github.com/itozyun/html.json) をラップしています
    1. nicePageBuilder.html2json
       * *.html ファイルを *.html.json ファイルに変換する
@@ -159,15 +160,20 @@ gulp.task('html', function(){
 先頭が数値(9: DOCUMENT または 11: DOCUMENT_FRAGMENT)で始まります．
 
 ~~~json
-[9, "<!DOCTYPE html>", ["HTML"]]
+[
+   9, "<!DOCTYPE html>", ["HTML"]
+]
 ~~~
 
 ### nice-page-builder のメタ情報付き html.json のドキュメント
 
-先頭にメタ情報 `{}` のある配列です．nicePageBuilder.builder() を通すとテンプレートが適用されます．
+先頭にメタ情報 `{}` のある配列です．`TEMPLATE` を持つので、nicePageBuilder.builder() を通すとテンプレートが適用されます．
 
 ~~~json
-[{"URL":"/contact/"}, 9, "<!DOCTYPE html>", ["HTML"]]
+[
+   {"URL":"/contact/", "TEMPLATE":"/base.html"},
+   11, ["P", "Hello, world."]
+]
 ~~~
 
 ## Links
