@@ -21,9 +21,9 @@ goog.scope(
             },
             /** @this {!Through} */
             'date' : function( arg1, arg2, arg3 ){
-                if( nodata && this.pause ){
-                    this.pause();
-                    setTimeout( () => { nodata = false, this.resume() }, 1000 );
+                if( nodata && this.stop ){
+                    this.stop();
+                    setTimeout( () => { nodata = false, this.restart() }, 1000 );
                 } else {
                     return date.toLocaleString() + arg1 + arg2[ 'aa' ] + arg3;
                 };

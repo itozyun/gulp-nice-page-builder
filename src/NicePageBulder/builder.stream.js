@@ -18,7 +18,7 @@ goog.require( 'NicePageBuilder.util.completePage' );
  */
 __NicePageBuilder_internal__.builderStream = function(){
     const parser  = new JsonParser();
-    const through  = /** @type {!Through} */ (new Through( HTMLJsonParser.writeHandler, endHandler ));
+    const through  = /** @type {!Through} */ (new Through( HTMLJsonParser.writeHandler, endHandler, 'builder' ));
 
     /**
      * @suppress {checkTypes}

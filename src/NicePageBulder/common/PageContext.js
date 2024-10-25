@@ -40,9 +40,9 @@ NicePageBuilder.PageContext = function( context, rootRelativeURL, opt_templateMe
 };
 
 // @see _bindPageContextToHandler
-// NicePageBuilder.PageContext.prototype.paused = false;
-// NicePageBuilder.PageContext.prototype.pause;
-// NicePageBuilder.PageContext.prototype.resume;
+// NicePageBuilder.PageContext.prototype.stopped = false;
+// NicePageBuilder.PageContext.prototype.stop;
+// NicePageBuilder.PageContext.prototype.restart;
 
 /**
  * @return {NicePageBuilder.Metadata | null} */
@@ -176,27 +176,29 @@ function _bindPageContextToHandler( isStreamContext, pageContext, originalHandle
         return originalHandler.bind( pageContext );
     };
     return function(){
-        var stream = this || {}, result;
+        var stream = this || {}, _isStreamContext = stream.pause, result;
 
-        if( stream.pause && stream.resume ){
-            pageContext.pause = function(){
-                if( !stream.paused ){
-                    pageContext.paused = true;
-                    stream.pause();
+        if( _isStreamContext ){
+            pageContext.stop = function(){
+                if( !stream.stopped ){
+                    console.log( '  [PageContext] stop()' )
+                    pageContext.stopped = true;
+                    stream.stop();
                 };
             };
-            pageContext.resume = function(){
-                if( stream.paused ){
-                    pageContext.paused = false;
-                    stream.resume();
+            pageContext.restart = function(){
+                if( stream.stopped ){
+                    console.log( '  [PageContext] restart()' )
+                    pageContext.stopped = false;
+                    stream.restart();
                 };
             };
         };
 
         result = originalHandler.apply( pageContext, arguments );
 
-        if( stream.pause && stream.resume ){
-            pageContext.pause = null;
+        if( _isStreamContext ){
+            pageContext.stop = null;
         };
         return result;
     };
