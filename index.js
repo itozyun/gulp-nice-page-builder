@@ -514,6 +514,7 @@ function Qa(a) {
         return k.splice(g, 1, Da(h, "\n")), Infinity;
       }
       k.splice(g, 1);
+      return -1;
     }
   }); d = b(a);) {
     var e = d[0];
