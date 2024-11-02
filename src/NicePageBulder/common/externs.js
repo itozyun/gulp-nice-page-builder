@@ -28,3 +28,5 @@ var nicePageBuilder = function(){};
     nicePageBuilder.gulp.json2html.stream = function(){};
     nicePageBuilder.gulp.dest = function(){};
     nicePageBuilder.gulp.filter = function(){};
+
+stream.Writable.prototype.push = function(vinyl){};
