@@ -62,8 +62,8 @@ function fa(a, b, c) {
   }
   function h(v, r, x, w) {
     function y(La, Ma) {
-      function ab(Kb) {
-        return f(Kb).split('\\"').join('"').split("\\'").join("'").split("&quot;").join('"').split("&apos;").join("'");
+      function ab(Jb) {
+        return f(Jb).split('\\"').join('"').split("\\'").join("'").split("&quot;").join('"').split("&apos;").join("'");
       }
       E[La] = !0 === Ma ? !0 : ca[La.toLowerCase()] ? c ? ab(Ma || La) : !0 : ab(Ma || "");
       ++ba;
@@ -1395,7 +1395,7 @@ function Ib() {
     d();
   });
 }
-;const Jb = Buffer.from ? Buffer.from : (...a) => new Buffer(...a), Lb = Buffer.alloc ? Buffer.alloc : (...a) => new Buffer(...a);
+;const Kb = Buffer.from ? Buffer.from : (...a) => new Buffer(...a), Lb = Buffer.alloc ? Buffer.alloc : (...a) => new Buffer(...a);
 var Mb = {eb:1, nb:2, fb:3, ob:4, Wa:5, Xa:6, zb:7, Ya:8, gb:9, sb:10, kb:11, pb:17, qb:18, Ab:33, Bb:34, Cb:35, Za:49, $a:50, ab:51, bb:52, hb:65, ib:66, jb:67, lb:81, mb:83, tb:97, ub:98, vb:99, wb:100, xb:101, yb:102, Db:113, cb:114, OBJECT:129, Va:130};
 function Nb() {
   this.ia = void 0;
@@ -1435,7 +1435,7 @@ function Pb(a, b, c, d) {
   a.ga += e;
 }
 Nb.prototype.write = function(a) {
-  "string" === typeof a && (a = Jb(a));
+  "string" === typeof a && (a = Kb(a));
   for (var b, c = 0, d = a.length; c < d; c++) {
     switch(this.$) {
       case 17:
@@ -1567,7 +1567,7 @@ Nb.prototype.write = function(a) {
       case 102:
         b = a[c];
         if (48 <= b && 64 > b || 64 < b && 70 >= b || 96 < b && 102 >= b) {
-          this.unicode += String.fromCharCode(b), 102 === this.$++ && (b = parseInt(this.unicode, 16), this.unicode = void 0, void 0 !== this.sa && 56320 <= b && 57344 > b ? (Pb(this, Jb(String.fromCharCode(this.sa, b))), this.sa = void 0) : void 0 === this.sa && 55296 <= b && 56320 > b ? this.sa = b : (void 0 !== this.sa && (Pb(this, Jb(String.fromCharCode(this.sa))), this.sa = void 0), Pb(this, Jb(String.fromCharCode(b)))), this.$ = 97);
+          this.unicode += String.fromCharCode(b), 102 === this.$++ && (b = parseInt(this.unicode, 16), this.unicode = void 0, void 0 !== this.sa && 56320 <= b && 57344 > b ? (Pb(this, Kb(String.fromCharCode(this.sa, b))), this.sa = void 0) : void 0 === this.sa && 55296 <= b && 56320 > b ? this.sa = b : (void 0 !== this.sa && (Pb(this, Kb(String.fromCharCode(this.sa))), this.sa = void 0), Pb(this, Kb(String.fromCharCode(b)))), this.$ = 97);
         } else {
           return Y(this, a, c);
         }
@@ -1910,54 +1910,55 @@ function Ub(a, b, c, d, e, f, g) {
   });
   c = null;
 }
-;var Vb = require("stream");
-function Wb(a) {
+;function Vb() {
+  this.readable = !1;
+  this.writable || process.nextTick(() => this.destroy());
+}
+var Wb = require("stream");
+function Xb(a) {
   for (var b = a.Ca; b.length && !a.paused;) {
     var c = b.shift();
     null === c ? a.emit("end") : a.emit("data", c);
   }
 }
-function Xb(a) {
-  if (a.paused) {
-    a.on("resume", () => Xb(a));
-  } else {
-    a.writable && (a.writable = !1, a.Oa.call(a), !a.readable && a.Ka && a.destroy());
-  }
-}
-var Zb = class extends Vb.Stream {
+var Zb = class extends Wb.Stream {
   constructor(a, b) {
     var c = Yb;
     super();
-    this.Ia = b;
+    this.Ja = b;
     this.Qa = c;
     this.Oa = a;
-    this.destroyed = this.paused = this.Ha = this.ended = !1;
-    this.Ka = this.readable = this.writable = !0;
+    this.destroyed = this.paused = this.Ia = this.ended = !1;
+    this.readable = this.writable = !0;
     this.Ca = [];
-    this.on("end", () => {
-      this.readable = !1;
-      !this.writable && this.Ka && process.nextTick(() => this.destroy());
-    });
+    this.on("end", Vb);
   }
   write(a) {
     this.Qa.call(this, a);
     return !this.paused;
   }
+  Ha() {
+    if (this.paused) {
+      this.on("resume", this.Ha);
+    } else {
+      this.writable && (this.writable = !1, this.Oa.call(this), this.readable || this.destroy());
+    }
+  }
   ra(a) {
-    this.Ha || (null === a && (this.Ha = !0), this.Ca.push(a), Wb(this));
+    this.Ia || (null === a && (this.Ia = !0), this.Ca.push(a), Xb(this));
   }
   end(a) {
-    this.ended || (this.ended = !0, arguments.length && this.write(a), Xb(this));
+    this.ended || (this.ended = !0, arguments.length && this.write(a), this.Ha());
   }
   destroy() {
     this.destroyed || (this.ended = this.destroyed = !0, this.Ca.length = 0, this.writable = this.readable = !1, this.emit("close"));
   }
   pause() {
-    this.paused || (this.paused = !0, console.log("[Through: " + this.Ia + "] pause()"), this.emit("pause"));
+    this.paused || (this.paused = !0, console.log("[Through: " + this.Ja + "] pause()"), this.emit("pause"));
   }
   resume() {
-    this.paused && (this.paused = !1, console.log("[Through: " + this.Ia + "] resume()"), this.emit("resume"));
-    Wb(this);
+    this.paused && (this.paused = !1, console.log("[Through: " + this.Ja + "] resume()"), this.emit("resume"));
+    Xb(this);
     this.paused || this.emit("drain");
   }
 };
@@ -1988,7 +1989,7 @@ function Yb(a) {
   if (a === +a || a === !!a) {
     a = "" + a;
   }
-  R(a) && (a = Jb(a));
+  R(a) && (a = Kb(a));
   this.pa.write(a);
 }
 function ac(a) {
@@ -2046,7 +2047,7 @@ function bc(a, b) {
     var m = k.ja, q = t.length - 1;
     -1 === q && 9 !== l[0] && 11 !== l[0] && (t.push([[11], -1]), q = 0, k.Ta = !0);
     const n = t[q] || [null, -1];
-    q = k.Sa(l, n[0], n[1] + 1, q, p, m);
+    q = k.Sa(l, n[0], n[1] + 1, q + 1, p, m);
     (m = m.stopped) ? -1 !== q && k.Fa.push(a, b) : (k.ua.length = 0, k.wa = null, ++n[1], p ? t.push([l, -1]) : f(l));
     return m;
   }
@@ -2054,7 +2055,7 @@ function bc(a, b) {
     const p = k.qa;
     let t = p.length - 1, m = p[t];
     l || (l = m[0], p.pop(), --t, m = p[t] || [null, 0]);
-    k.La && k.La(l, m[0], m[1], t);
+    k.La && k.La(l, m[0], m[1], t + 1);
   }
   function g() {
     return k.qa.length - (k.Ta ? 1 : 0) ? 36 : 37;
@@ -2334,8 +2335,8 @@ function bc(a, b) {
 };
 function gc(a) {
   null != a && this.write(a);
-  if (a = this.pa.Ja) {
-    this.ra(a), delete this.pa.Ja;
+  if (a = this.pa.Ka) {
+    this.ra(a), delete this.pa.Ka;
   }
   this.ra(null);
   this.pa = this.pa.ja = null;
@@ -2354,7 +2355,7 @@ function hc(a, b) {
         return c("--" + Math.random() + "--");
       }
       d.ja.ra(e[0].substr(1));
-      d.Ja = e[1].substr(0, e[1].length - 1);
+      d.Ka = e[1].substr(0, e[1].length - 1);
     } else {
       d.ja.ra(JSON.stringify(g[0]) + ","), d.Ua = !0;
     }
