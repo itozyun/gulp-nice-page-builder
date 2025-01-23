@@ -2,7 +2,7 @@ goog.provide( 'NicePageBuilder.builder.stream' );
 goog.provide( '__NicePageBuilder_internal__.builderStream' );
 
 goog.require( 'htmljson.NODE_TYPE' );
-goog.requireType( 'JsonParser' );
+goog.require( 'JsonParser' );
 goog.require( 'JsonParser.C' );
 goog.require( 'HTMLJsonParser.writeHandler' );
 goog.require( '__NicePageBuilder_internal__' );
