@@ -72,7 +72,7 @@ function fa(a, b, c) {
       (N = "/>" === w.substr(z, 2)) && ++z;
       return N;
     }
-    for (var u = 1, A = w.length, z = 2, E = {}, ba = 0, N = !1, C, G, K, F, L, X; z < A && 9 > u;) {
+    for (var u = 1, A = w.length, z = 2, E = {}, ba = 0, N = !1, C, G, K, F, M, X; z < A && 9 > u;) {
       C = w.charAt(z);
       switch(u) {
         case 1:
@@ -98,11 +98,11 @@ function fa(a, b, c) {
           "=" === C ? u = 5 : ">" === C || B() ? (u = 9, y(F, !0)) : H[C] & 4 || (u = 3, y(F, !0), K = z);
           break;
         case 5:
-          '"' === C || "'" === C ? (u = 6, L = C, K = z + 1) : H[C] & 4 || (u = 7, K = z);
+          '"' === C || "'" === C ? (u = 6, M = C, K = z + 1) : H[C] & 4 || (u = 7, K = z);
           X = !1;
           break;
         case 6:
-          X || C !== L || (u = 2, y(F, w.substring(K, z)));
+          X || C !== M || (u = 2, y(F, w.substring(K, z)));
           X = "\\" === C && !X;
           break;
         case 7:
@@ -272,7 +272,7 @@ function xa(a) {
     case 17:
       b.push(ya(a.fa, a.sa, a.qa));
       a = a.wa;
-      za(a) && (b.push(a), a.style && M(a.style) && (a.style = Aa(a.style)));
+      za(a) && (b.push(a), a.style && L(a.style) && (a.style = Aa(a.style)));
       break;
     case 18:
       b[1] = a.fa;
@@ -420,7 +420,7 @@ function oa(a) {
 function Q(a) {
   return !(!a || a.pop !== [].pop);
 }
-function M(a) {
+function L(a) {
   return !(!a || "object" !== typeof a);
 }
 function R(a) {
@@ -450,7 +450,7 @@ function T(a) {
   return a;
 }
 function za(a) {
-  return !Q(a) && M(a);
+  return !Q(a) && L(a);
 }
 function Oa(a, b, c, d) {
   var e = b[1], f = b.slice(2), g;
@@ -920,11 +920,11 @@ function ib(a) {
 }
 function jb(a) {
   a = ib(a)[0];
-  return !Q(a) && M(a) ? a : null;
+  return !Q(a) && L(a) ? a : null;
 }
 function U(a) {
   var b = a[0];
-  return Q(a) && !Q(b) && M(b);
+  return Q(a) && !Q(b) && L(b);
 }
 function kb(a, b, c, d, e, f) {
   function g(l, p) {
@@ -1040,7 +1040,7 @@ function pb(a, b, c) {
     }
   }
   let e = a[0], f;
-  return !Q(e) && M(e) ? (a.shift(), f = d(a), !c && (a.unshift(e), f && f[1] === a) ? [f[0], a, ++f[2]] : f) : d(a);
+  return !Q(e) && L(e) ? (a.shift(), f = d(a), !c && (a.unshift(e), f && f[1] === a) ? [f[0], a, ++f[2]] : f) : d(a);
 }
 ;function qb(a, b) {
   this.ba = a + ("/" === a.charAt(a.length - 1) ? "" : "/");
@@ -1279,7 +1279,7 @@ function yb(a) {
     }
     switch(k.stem) {
       case a.va:
-        if (!Q(q) && M(q)) {
+        if (!Q(q) && L(q)) {
           for (const r in q) {
             a.ba[r] || (a.ba[r] = q[r]);
           }
@@ -1288,7 +1288,7 @@ function yb(a) {
         }
         break;
       case a.wa:
-        if (!Q(q) && M(q)) {
+        if (!Q(q) && L(q)) {
           for (const r in q) {
             a.da[r] || (a.da[r] = q[r]);
           }
@@ -1297,7 +1297,7 @@ function yb(a) {
         }
         break;
       case a.sa:
-        if (!Q(q) && M(q)) {
+        if (!Q(q) && L(q)) {
           zb(a, q);
         } else {
           return this.emit("error", new g(b, "Invalid allPageMetadata!" + t)), l();
@@ -1305,7 +1305,7 @@ function yb(a) {
         break;
       default:
         if (c) {
-          return !Q(q) && M(q) ? a.da[m] = [q, h, n] : this.emit("error", new g(b, "Invalid mixin!" + t)), l();
+          return !Q(q) && L(q) ? a.da[m] = [q, h, n] : this.emit("error", new g(b, "Invalid mixin!" + t)), l();
         }
     }
     l(null, k);
@@ -1321,7 +1321,7 @@ function yb(a) {
   null == d.keepEmptyConditionalComment && (d.keepEmptyConditionalComment = !1);
   Xa(a, void 0, c, d);
   if (c = ob(a)) {
-    b = c[0], c[1].splice(c[2], 1), b && 3 === b.length && (c = JSON.parse(b[2]), !Q(c) && M(c) && a.unshift(c));
+    b = c[0], c[1].splice(c[2], 1), b && 3 === b.length && (c = JSON.parse(b[2]), !Q(c) && L(c) && a.unshift(c));
   }
   return a;
 };
@@ -1375,7 +1375,7 @@ function Hb(a, b) {
     }
     const v = this;
     for (const r in f) {
-      n = f[r], q = V(r), delete f[r], t = n[0], m = t[0], m = !Q(m) && M(m) ? m : {}, m.CREATED_AT = n[1], m.MODIFIED_AT = n[2], m !== t[0] && t.unshift(m), p(q + ".json", t), c.ma && (c.ea[r] = t), c.$[r] = m;
+      n = f[r], q = V(r), delete f[r], t = n[0], m = t[0], m = !Q(m) && L(m) ? m : {}, m.CREATED_AT = n[1], m.MODIFIED_AT = n[2], m !== t[0] && t.unshift(m), p(q + ".json", t), c.ma && (c.ea[r] = t), c.$[r] = m;
     }
     h();
   });
@@ -1829,26 +1829,22 @@ function Ub(a, b, c, d, e, f, g) {
         break;
       case 7:
         if (d) {
-          var L = Oa(d, n, f, y);
-          y = Q(L);
-          if (null != L && "" !== L) {
-            if (S(L)) {
-              B(L);
-            } else if (y) {
-              if (a) {
-                return L;
-              }
-              Pa(v, r, L);
-              return -1;
+          var M = Oa(d, n, f, y);
+          if (y = Q(M)) {
+            if (a) {
+              return M;
             }
+            Pa(v, r, M);
+            return -1;
           }
+          S(M) && "" !== M && B(M);
         }
         break;
       case 18:
         u[++A] = "</" + G + ">";
         break;
       case 17:
-        L = !0;
+        M = !0;
       case 1:
         C === +C && (C = G, K = 2);
         C = pa(C);
@@ -1872,14 +1868,14 @@ function Ub(a, b, c, d, e, f, g) {
               return;
             }
             if (!(null == v || ca[F] && !1 === v || (u[++A] = " " + F, ca[F] || !0 === v))) {
-              if ("style" === F && M(v) && (v = Aa(v), !v)) {
+              if ("style" === F && L(v) && (v = Aa(v), !v)) {
                 continue;
               }
               u[++A] = "=" + h(v, p, w || l);
             }
           }
         }
-        !w || z || L ? u[++A] = ">" : u[++A] = " />";
+        !w || z || M ? u[++A] = ">" : u[++A] = " />";
     }
     m[5 * x + 5] = w;
     m[5 * x + 6] = E;
