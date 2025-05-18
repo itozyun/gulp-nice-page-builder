@@ -52,7 +52,7 @@
 ~~~sh
 npm install gulp-nice-page-builder
 git submodule update --init --force --recursive --depth=2
-git submodule foreach git pull origin master
+git submodule foreach git pull origin main
 ~~~
 
 ## Build and test
