@@ -74,7 +74,7 @@ NicePageBuilder.transform = function( context, pluginName, isHTML2JSON, testHTML
         // templates & mixins
         switch( file.stem ){
             case context.keywordTemplates :
-                if( !m_isArray( json ) && m_isObject( json ) ){
+                if( !core.isArray( json ) && core.isObject( json ) ){
                     for( const rootRelativeURL in json ){
                         if( !context.templates[ rootRelativeURL ] ){
                             context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplate} */ (json[ rootRelativeURL ]);
@@ -86,7 +86,7 @@ NicePageBuilder.transform = function( context, pluginName, isHTML2JSON, testHTML
                 };
                 break;
             case context.keywordMixins :
-                if( !m_isArray( json ) && m_isObject( json ) ){
+                if( !core.isArray( json ) && core.isObject( json ) ){
                     for( const rootRelativeURL in json ){
                         if( !context.mixins[ rootRelativeURL ] ){
                             context.mixins[ rootRelativeURL ] = /** @type {!NicePageBuilder.Mixin} */ (json[ rootRelativeURL ]);
@@ -98,7 +98,7 @@ NicePageBuilder.transform = function( context, pluginName, isHTML2JSON, testHTML
                 };
                 break;
             case context.keywordAllPageMeta :
-                if( !m_isArray( json ) && m_isObject( json ) ){
+                if( !core.isArray( json ) && core.isObject( json ) ){
                     context.storeAllPageMetadata( /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata>} */ (json) );
                 } else if( NicePageBuilder.DEFINE.DEBUG ){
                     this.emit( 'error', new PluginError( pluginName, 'Invalid allPageMetadata!' + filePath ) );
@@ -107,7 +107,7 @@ NicePageBuilder.transform = function( context, pluginName, isHTML2JSON, testHTML
                 break;
             default :
                 if( isHTML2JSON ){
-                    if( !m_isArray( json ) && m_isObject( json ) ){
+                    if( !core.isArray( json ) && core.isObject( json ) ){
                         context.mixins[ rootRelativeURL ] = [ /** @type {!NicePageBuilder.Metadata} */ (json), createdTimeMs, updatedTimeMs ];
                     } else if( NicePageBuilder.DEFINE.DEBUG ){
                         this.emit( 'error', new PluginError( pluginName, 'Invalid mixin!' + filePath ) );

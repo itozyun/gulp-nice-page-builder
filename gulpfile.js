@@ -15,6 +15,7 @@ gulp.task(
                     [
                         './node_modules/@externs/nodejs/**/*.js',
                         './.submodules/html.json/.submodules/htmlparser/src/closure-primitives/base.js',
+                        './.submodules/html.json/.submodules/es2-core/src/js/**/*.js',
                         './.submodules/html.json/.submodules/htmlparser/src/js/**/*.js',
                         './.submodules/tiny-path/src/js/**/*.js', 
                         './.submodules/html.json/src/**/*.js',

@@ -288,13 +288,13 @@ function _deepEquals( d1, d2 ){
         return true;
     };
 
-    if( !m_isObject( d1 ) || !m_isObject( d2 ) ){
+    if( !core.isObject( d1 ) || !core.isObject( d2 ) ){
         return false;
     };
 
-    isArray = m_isArray( d1 );
+    isArray = core.isArray( d1 );
 
-    if( isArray !== m_isArray( d2 ) ){
+    if( isArray !== core.isArray( d2 ) ){
         return false;
     };
 

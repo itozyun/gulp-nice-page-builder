@@ -68,7 +68,7 @@ __NicePageBuilder_internal__._json2htmlGulpPlugin = function( opt_onInstruction,
     const PAGE_FILE_LIST = [];
 
     return through.obj(
-        NicePageBuilder.transform( context, pluginName, false, m_isArray, null,
+        NicePageBuilder.transform( context, pluginName, false, core.isArray, null,
             function( rootRelativeURL, htmlJson ){
                 PAGE_FILE_LIST.push( rootRelativeURL, htmlJson );
             }

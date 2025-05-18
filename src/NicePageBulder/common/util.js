@@ -29,7 +29,7 @@ NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplate ){
     var htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (nicePageOrTemplate[ NicePageBuilder.INDEXES.HTML_JSON ]);
 
     if( NicePageBuilder.DEFINE.DEBUG ){
-        if( !m_isArray( htmlJson ) ){
+        if( !core.isArray( htmlJson ) ){
             throw 'Not html.json! ' + JSON.stringify( htmlJson );
         };
     };
@@ -44,7 +44,7 @@ NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplate ){
 NicePageBuilder.util.getMetadata = function( nicePageOrTemplate ){
     var metadata = /** @type {!NicePageBuilder.Metadata} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplate )[ 0 ]);
 
-    return !m_isArray( metadata ) && m_isObject( metadata ) ? metadata : null;
+    return !core.isArray( metadata ) && core.isObject( metadata ) ? metadata : null;
 };
 
 /**
@@ -55,7 +55,7 @@ NicePageBuilder.util.getMetadata = function( nicePageOrTemplate ){
 NicePageBuilder.util.isHTMLJsonWithMetadata = function( htmlJson ){
     var metadata = htmlJson[ 0 ];
 
-    return m_isArray( htmlJson ) && !m_isArray( metadata ) && m_isObject( metadata );
+    return core.isArray( htmlJson ) && !core.isArray( metadata ) && core.isObject( metadata );
 };
 
 /**
@@ -253,7 +253,7 @@ NicePageBuilder.util.getSLotElement = function( rootJSONNode, dropMetadata ){
 function _getElementByFilter( rootJSONNode, filter, opt_dropMetadata ){
     let metadata = rootJSONNode[ 0 ], result;
 
-    if( !m_isArray( metadata ) && m_isObject( metadata ) ){
+    if( !core.isArray( metadata ) && core.isObject( metadata ) ){
         rootJSONNode.shift();
         result = walkChildNodes( /** @type {!HTMLJson} */ (rootJSONNode) );
 
@@ -281,7 +281,7 @@ function _getElementByFilter( rootJSONNode, filter, opt_dropMetadata ){
         for( ; i < l; ++i ){
             const childNode = currentJSONNode[ i ];
 
-            if( m_isArray( childNode ) ){
+            if( core.isArray( childNode ) ){
                 if( result = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i ) ){
                     return result;
                 };
@@ -312,7 +312,7 @@ function _getElementByFilter( rootJSONNode, filter, opt_dropMetadata ){
                 tagName = arg1;
                 attrsIndex = 2;
             default :
-                if( m_isString( tagName ) ){
+                if( core.isString( tagName ) ){
                     const attrs = currentJSONNode[ attrsIndex ];
 
                     if( filter( /** @type {string} */ (tagName), m_isAttributes( attrs ) ? /** @type {!Attrs} */ (attrs) : null ) ){

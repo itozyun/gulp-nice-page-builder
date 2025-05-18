@@ -50,7 +50,7 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
         if( scriptJSONNode && scriptJSONNode.length === 3 ){
             const metadata = JSON.parse( /** @type {string} */ (scriptJSONNode[ 2 ]) );
 
-            if( !m_isArray( metadata ) && m_isObject( metadata ) ){
+            if( !core.isArray( metadata ) && core.isObject( metadata ) ){
                 htmlJson.unshift( metadata );
             };
         };
@@ -79,7 +79,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
     const MIXIN_LIST = context.mixins;
 
     return through.obj(
-        NicePageBuilder.transform( context, pluginName, true, m_isArray,
+        NicePageBuilder.transform( context, pluginName, true, core.isArray,
             function( rootRelativeURL, htmlString,  createdTimeMs, updatedTimeMs ){
                 const htmlJson = __NicePageBuilder_internal__.html2json.call( context, htmlString, false, opt_onError, opt_options );
 
@@ -207,7 +207,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 const htmlJson = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];
 
                 let metadata = htmlJson[ 0 ];
-                metadata = !m_isArray( metadata ) && m_isObject( metadata ) ? metadata : {};
+                metadata = !core.isArray( metadata ) && core.isObject( metadata ) ? metadata : {};
                 metadata.CREATED_AT  = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.CREATED_AT ]);
                 metadata.MODIFIED_AT = /** @type {number} */ (nicePage[ NicePageBuilder.INDEXES.UPDATED_AT ]);
 
