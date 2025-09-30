@@ -14,7 +14,7 @@ goog.require( 'NicePageBuilder.transform' );
  */
 var DEST_TARGET = {
     ALL_MIXINS           :  1,
-    ALL_TEMPLETS         :  2,
+    ALL_TEMPLETES        :  2,
     ALL_PAGE_METADATA    :  4,
     ALL_ADDITIONAL_JSONS :  8,
     ALL_PAGES_DATA       : 16
@@ -69,7 +69,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
             if( destTargets & DEST_TARGET.ALL_MIXINS ){
                 writeFile( context.allMixinsPath, sortByURL( context.mixins ) );
             };
-            if( destTargets & DEST_TARGET.ALL_TEMPLETS ){
+            if( destTargets & DEST_TARGET.ALL_TEMPLETES ){
                 writeFile( context.allTemplatesPath, sortByURL( context.templates ) );
             };
             if( destTargets & DEST_TARGET.ALL_PAGE_METADATA ){

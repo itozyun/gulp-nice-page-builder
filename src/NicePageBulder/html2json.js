@@ -42,7 +42,7 @@ __NicePageBuilder_internal__.html2json = function( htmlString, allowInvalidTree,
 
         // [ 11, [ 'SCRIPT', {}, {...} ], [ 'p' ] ]
         // ↓
-        // [ {...}, [ 'p' ] ]
+        // [ {...}, 11, [ 'p' ] ]
 
         // [ 9, '<!DOCTYPE html>', [ 'SCRIPT', {}, {...} ], [ 'p' ] ]
         // ↓
@@ -68,8 +68,8 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.html2json',
-          _Vinyl      = require( 'vinyl'        ),
-          through     = require( 'through2'     );
+          _Vinyl      = require( 'vinyl'    ),
+          through     = require( 'through2' );
 
     /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplate>} */
     const PAGES_OR_TEMPLATES = {};
@@ -126,7 +126,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 if( metadata && NicePageBuilder.util.isPrebuild( metadata ) ){
                     metadata.URL = pageOrTemplateRootRelativeURL;
 
-                    toShortestURL( pageOrTemplateRootRelativeURL, metadata ); // TODO traverse
+                    toShortestURL( pageOrTemplateRootRelativeURL, metadata );
 
                     NicePageBuilder.util.traverseMetadataStack(
                         context, metadata,
@@ -197,8 +197,6 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             };
 
         // 書出し
-            const self = this;
-
             for( const pageRootRelativeURL in PAGE_LIST ){
                 const nicePage = PAGE_LIST[ pageRootRelativeURL ];
                 const filePath = context.path.urlToFilePath( pageRootRelativeURL );
@@ -215,7 +213,15 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                     htmlJson.unshift( metadata );
                 };
 
-                writeFile( filePath + '.json', htmlJson );
+                const file = new _Vinyl(
+                        {
+                            path     : filePath + '.json',
+                            contents : Buffer.from( JSON.stringify( htmlJson ) )
+                        }
+                    );
+                file.extname = '.json';
+
+                this.push( file );
 
                 // delete metadata.URL;
                 if( context.allPagesPath ){
@@ -225,17 +231,6 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
             };
 
             callback();
-
-            function writeFile( filePath, json ){
-                const file = new _Vinyl(
-                    {
-                        path     : filePath,
-                        contents : Buffer.from( JSON.stringify( json ) )
-                    }
-                );
-                file.extname = '.json';
-                self.push( file );
-            };
         }
     );
 };
