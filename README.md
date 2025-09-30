@@ -194,4 +194,4 @@ gulp.task('html', function(){
 
 [gulp-nice-page-builder](https://github.com/itozyun/gulp-nice-page-builder) is licensed under MIT license.
 
-(C) 2024 [itozyun](https://github.com/itozyun)([blog](//outcloud.blogspot.com/))
+(C) 2024-2025 [itozyun](https://github.com/itozyun)([blog](//outcloud.blogspot.com/))
