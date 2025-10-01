@@ -68,7 +68,14 @@ gulp.task(
                 ).pipe(
                     NicePageBuilder.html2json( null, { trimWhitespaces: 'aggressive' } )
                 ).pipe(
-                    NicePageBuilder.json2json( null, null, function(){console.log( this )} )
+                    NicePageBuilder.json2json(
+                        function( funcName ){
+                            if( funcName === 'title' ) return 'Hello Tutorial!'
+                        },
+                        null, null,
+                        function(){console.log( this )},
+                        { processTemplates : true }
+                    )
                 ).pipe(
                     NicePageBuilder.dest( 1 + 2 + 4 + 8 + 16 )
                 ).pipe(
