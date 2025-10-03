@@ -31,7 +31,7 @@ __NicePageBuilder_internal__.builderStream = function(){
     /** @const */ parser.onToken = onTokenBeforeLeaveMetadata;
 
     parser._context = this;
-    parser._metadataPhase = 0;
+    parser._metadataPhase = parser._treeDepth = 0;
 
     return through;
 };
@@ -75,7 +75,14 @@ function onTokenAfterLeaveMetadata( token, value ){
                            .split( '\t' ).join( '\\t' ) +
                 '"';
     } else if( token === JsonParser.C.NULL ){
-        value += ';'
+        value += ''
+    } else if( token === JsonParser.C.LEFT_BRACKET ){ // [
+        ++this._treeDepth;
+    } else if( token === JsonParser.C.RIGHT_BRACKET ){ // ]
+        --this._treeDepth;
+        if( !this._noTemplate && this._treeDepth < 0 ){
+            return; // 最後の ] を送らない
+        };
     };
     // console.log( '>> ', token, value )
     this._through.queue( value );
@@ -102,9 +109,8 @@ function onTokenBeforeLeaveMetadata( token, value ){
             if( htmlJsonBeforeAndAfter.length !== 2 ){
                 return onLeaveMetadata( '--' + Math.random() + '--' );
             } else {
-                // console.log( htmlJsonBeforeAndAfter )
                 self._through.queue( htmlJsonBeforeAndAfter[ 0 ].substr( 1 ) ); // [ を除く
-                self._templateAfter = htmlJsonBeforeAndAfter[ 1 ].substr( 0, htmlJsonBeforeAndAfter[ 1 ].length - 1 );
+                self._templateAfter = htmlJsonBeforeAndAfter[ 1 ];
             };
         } else {
             self._through.queue( JSON.stringify( completeHTMLJson[ 0 ] ) + ',' );
