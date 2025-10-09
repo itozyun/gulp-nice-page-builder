@@ -6,6 +6,7 @@ goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'HTMLJsonWithMetadata' );
+goog.require( 'core.deepCopy' );
 goog.require( 'TinyPath' );
 goog.require( 'NicePageBuilder.util.isHTMLJsonWithMetadata' );
 goog.require( 'NicePageBuilder.util.isPrebuild' );
@@ -64,7 +65,7 @@ NicePageBuilder.Context.prototype.storeAllPageMetadata = function( allPageMetada
 };
 
 /**
- * [2n+0] Vinyl
+ * [2n+0] rootRelativeURL
  * [2n+1] HTMLJson | HTMLJsonWithMetadata
  * 
  * @param {!Array.<string | !HTMLJson | !HTMLJsonWithMetadata>} PAGE_FILE_LIST 
@@ -88,7 +89,7 @@ NicePageBuilder.Context.prototype.storeMetadata = function( metadata ){
     const metadataStored = this.allPageMetadata[ rootRelativeURL ];
 
     if( !metadataStored ){
-        this.allPageMetadata[ rootRelativeURL ] = _deepCopyMetadata( metadata );
+        this.allPageMetadata[ rootRelativeURL ] = core.deepCopy( metadata );
     };
     return this.allPageMetadata[ rootRelativeURL ];
 };
@@ -132,7 +133,7 @@ NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt
 NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
     const rootRelativeURL  = metadata.URL;
     const mergedProperties = this.mergedPropertiesOf[ rootRelativeURL ];
-    const _metadata        = _deepCopyMetadata( metadata );
+    const _metadata        = core.deepCopy( metadata );
 
     if( mergedProperties ){
         _unmerge( mergedProperties, _metadata );
@@ -235,14 +236,6 @@ function _merge( context, targetMetadata, opt_onError ){
 };
 
 /**
- * @param {!NicePageBuilder.Metadata} metadata
- * @return {!NicePageBuilder.Metadata}
- */
-function _deepCopyMetadata( metadata ){
-    return /** @type {!NicePageBuilder.Metadata} */ (JSON.parse( JSON.stringify( metadata ) ));
-};
-
-/**
  * @private
  * `"/.json/xxx.AAA.json" => "AAA"`
  * 
@@ -262,71 +255,4 @@ function _jsonFilePathToOriginalExtname( filePath, path ){
     filePathElements = filePathElements.join( '.json' ).split( '/' );
 
     return filePathElements.pop().split( '.' ).pop();
-};
-
-/**
- * @private
- *   original:
- *     https://qiita.com/dojyorin/items/a5eb096c195aa1377737
- * @param {*} d1 
- * @param {*} d2 
- * @return {boolean}
- */
-function _deepEquals( d1, d2 ){
-    function toKV( obj ){
-        var keyList = [], i = -1, key;
-
-        for( key in obj  ){
-            keyList[ ++i ] = key;
-        };
-        return keyList.sort();
-    };
-
-    var isArray, l, i, keyList1, keyList2, keyList1Len, k1, k2;
-
-    if( d1 === d2 ){
-        return true;
-    };
-
-    if( !core.isObject( d1 ) || !core.isObject( d2 ) ){
-        return false;
-    };
-
-    isArray = core.isArray( d1 );
-
-    if( isArray !== core.isArray( d2 ) ){
-        return false;
-    };
-
-    if( isArray ){
-        l = d1.length;
-
-        if( l !== d2.length ){
-            return false;
-        };
-
-        for( i = 0; i < l; ++i ){
-            if( !_deepEquals( d1[ i ], d2[ i ] ) ){
-                return false;
-            };
-        };
-    } else {
-        keyList1 = toKV( d1 ),
-        keyList2 = toKV( d2 ),
-        keyList1Len = keyList1.length;
-
-        if( keyList1Len !== keyList2.length ){
-            return false;
-        };
-
-        for( i = 0; i < keyList1Len; ++i ){
-            k1 = keyList1[ i ];
-            k2 = keyList2[ i ];
-
-            if( k1 !== k2 || !_deepEquals( d1[ k1 ], d2[ k1 ] ) ){
-                return false;
-            };
-        };
-    };
-    return true;
 };

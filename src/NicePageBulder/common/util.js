@@ -184,7 +184,7 @@ NicePageBuilder.util.completePage = function( context, htmlJson, opt_onError ){
         return templateJSONNode;
     };
 
-    const metadata = _deepCopyMetadata( context.getMergedMetadata( /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]) ) );
+    const metadata = core.deepCopy( context.getMergedMetadata( /** @type {!NicePageBuilder.Metadata} */ (htmlJson[ 0 ]) ) );
 
     NicePageBuilder.util.traverseMetadataStack(
         context, metadata,
