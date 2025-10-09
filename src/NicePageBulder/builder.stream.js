@@ -9,7 +9,6 @@ goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.Metadata' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
-goog.require( 'NicePageBuilder.util.isPrebuild' );
 goog.require( 'NicePageBuilder.util.completePage' );
 
 /**

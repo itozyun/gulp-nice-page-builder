@@ -60,11 +60,11 @@ NicePageBuilder.util.isHTMLJsonWithMetadata = function( htmlJson ){
 
 /**
  * 
- * @param {!NicePageBuilder.Metadata} htmlJsonOrMetadata
+ * @param {!NicePageBuilder.Metadata} metadata
  * @return {boolean}
  */
-NicePageBuilder.util.isPrebuild = function( htmlJsonOrMetadata ){
-    return !!htmlJsonOrMetadata.MIXINS || !!htmlJsonOrMetadata.TEMPLATE;
+NicePageBuilder.util.isPrebuild = function( metadata ){
+    return !!metadata.MIXINS || !!metadata.TEMPLATE;
 };
 
 /**
