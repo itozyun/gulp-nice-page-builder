@@ -4,6 +4,8 @@
 
 [html.json](https://github.com/itozyun/html.json) をラップして使用する Static Site Generator. 通常 gulp プラグイン版を使う．
 
+Streaming SSR が可能です．
+
 ---
 
 ## Overview 概要
@@ -116,6 +118,8 @@ gulp.task('html', function(){
 
 1. Mixin のメタ情報がページ(.html)にコピーされなかった場合、ページ(.html)の UPDATED_AT は更新されません．
 
+これ以外のプロパティは Web 開発者が任意に定義します。ページのメタ情報は `pageContext.getMetadata()`, `pageContext.getMetadataOf(path)` で取得できます。
+
 ### ページの例
 
 `src/index.html`
@@ -181,6 +185,7 @@ gulp.task('html', function(){
 * [github](https://github.com/itozyun/gulp-nice-page-builder)
 * [npm](https://www.npmjs.com/package/gulp-nice-page-builder)
 * [html.json](https://github.com/itozyun/html.json)
+* [MemoryReadableStream]
 
 ## History
 
