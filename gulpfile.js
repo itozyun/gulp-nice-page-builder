@@ -33,6 +33,7 @@ gulp.task(
                                 'htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE='     + true,
                                 'htmlparser.DEFINE.USE_CDATA_SECTION='          + true,
                                 'htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION=' + true,
+                                'htmlparser.DEFINE.USE_TRADITIONAL_TAGS='       + true,
                                 'htmlparser.DEFINE.USE_PAUSE='                  + false,
 
                                 'TinyPath.DEFINE.DEBUG=' + isDebug,
