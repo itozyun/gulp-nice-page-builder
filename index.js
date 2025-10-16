@@ -1193,29 +1193,27 @@ function Gb(a, b) {
   var c = b.indexOf("#"), d;
   -1 !== c && (d = b.substr(c));
   var e = Y(a), f = Y(b);
-  b = [];
-  a = 0;
-  c = !1;
-  var g;
-  var k = e.split("/");
-  var h = k.pop();
+  c = [];
+  var g = 0, k = !1, h;
+  var m = e.split("/");
+  var n = m.pop();
   if (e === f) {
-    b = h;
+    c = n;
   } else {
     e = f.split("/");
     f = e.pop();
-    var m = k.length;
-    for (g = Math.max(e.length, m); a < g; ++a) {
-      if (c || e[a] !== k[a]) {
-        a < m && b.unshift(".."), e[a] && b.push(e[a]), c = !0;
+    var q = m.length;
+    for (h = Math.max(e.length, q); g < h; ++g) {
+      if (k || e[g] !== m[g]) {
+        g < q && c.unshift(".."), e[g] && c.push(e[g]), k = !0;
       }
     }
-    (c || h !== f) && b.push(f);
-    b = b.join("/");
+    (k || n !== f) && c.push(f);
+    c = c.join("/");
   }
-  b = Ab(b);
-  d && (b += d);
-  return b ? b : "./";
+  (c = Ab(c)) || (a.split("#")[0].split("/").pop() || "index.html") === (b.split("#")[0].split("/").pop() || "index.html") && d || (c = "./");
+  d && (c += d);
+  return c;
 }
 zb.prototype.ya = function(a, b) {
   if (Bb(b) || Eb(b)) {
