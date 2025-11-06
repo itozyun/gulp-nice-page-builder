@@ -12,13 +12,11 @@ Streaming SSR が可能です．
 
 ![](nice-page-builder.drawio.png)
 
-[Edit on draw.io](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=%E5%90%8D%E7%A7%B0%E6%9C%AA%E8%A8%AD%E5%AE%9A%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB.drawio#R%3Cmxfile%3E%3Cdiagram%20name%3D%22%E3%83%9A%E3%83%BC%E3%82%B81%22%20id%3D%22hWPulbVjfiungVMZC6j8%22%3E7VvBdps4FP2WWXhZHxAg42USZ9pFO%2FY56Wmb2RFQbBKMXCzH9nz9SCDZSCgxuMZyaDeJ9ABZuvfy9PQkes7NfPMxCxazLzhCSQ9Y0abnjHoA%2BPaA%2FmWGbWEYQLcwTLM4Kkz23nAX%2F4e40eLWVRyhpXQjwTgh8UI2hjhNUUgkW5BleC3f9ogT%2BVcXwRRVDHdhkFSt3%2BOIzPiwLGtv%2F4Ti6YwoF%2BaBuJcblrMgwuuSybntOTcZxqQozTc3KGHQCViK5%2F5%2B5equXxlKSZ0Hvvnf5h%2FtOb7%2BN%2FJ%2FPkVj92kIPvBWXoJkxcfLO0u2AgDa7wUrppjQf9frWUzQ3SIImW1NKae2GZkntGbT4kMQPk8zvEqj8YokcYq4PQqy5zF9KiZMB1bf8nLjcoYifgfvCcoI2rw6RHsHHNUbwnNEsi29hT%2Fg%2BF7xyFbW0LpMXGGalTizBWcB18p01%2FIeT1rgkDaAF3QL3oEMLzANr9MteKEMr2MaXrdT8Hr%2BhakXHoY3xyoHwTqM7q9gJBym51VAAQMNKrAtUIYaUGBCmB7iF1qcsiJB80WCCOrno%2BfX6c%2BVbqlASUEhMl5BEk9TWg4pOCijBgZdTGf%2BK35hHkdR8pqsZWoecUp47AKs0%2BgVKnqFVWp22ixT47RFja0LFircXDEMk25TA9xLo6ZBoBEGWXTYmZx%2BcrNk72t8drMbRA%2BGMBsomLnGMWsQEhjCzFcw84xj5tVxm8Fv4DYdS3abA40PsL2z%2Bs0aMZhZPXuqns37gGqI9k8cokkwRderOIlQlosYPC1x%2Bo41KyLiQRVvbUTcmkbFOqVBSNwvsO%2BmF4GO%2FEY4mjfivF4EmM2inQBTdyhjCjWqP3PmrEFEe6GYKp4b%2BsYxNZsvOwWmSkQMh8YxrRERnzuL42iUdt4sDqgV86phw0Pxv3MTl6BlWDO51t5EdYEpR2gZF%2BvgGLGyEAt0crUmiLGNy9WvP1%2FVW521MAW55kMlXc7cOExK9OMaj36ETC8LJiXwdo0HNI42yx%2FM2dhzP7dMMGE%2FIYyX4O7a3ivUJPh1rLTmCR3daqhMykKm4xNtE%2FfAjZibHjKJHfhzxU6d5DB%2BWOY4XtEbbH%2BxyfET18Vk9h1nSfSXOY5tv5UdCZnjmg6qPY5rrCRQGl2xM009tkBjqy0ZFSUPOQkIZSHNLcBy2LtLMvy8O8cEKpijTUx%2B8BZY%2BZ7Z%2Bx6vjTal20ZbXik6iaLKMSqFCDoQvMpC9AYERWqxyliJEl1iR9gylAQkfpH7oeOJ%2F8IEx7SHe0F4ii%2F2FKqL%2FvOn9mxXGhooc58tvIloiATZFJFKQ7lsdsP%2BBSXpVl8HlVQSjyKKlHbnx14JrHovRMIqe13ktW25NkFZTMfDnEFDtRQgvaUW16RaPKCoxT5SLa6lNKRO7W2rpcaisAtqgX%2FUcgq11FiTldQSJsFyGYdvCaYux%2B%2BeukpDakajbepqrBPfc4BhSiBAORbrWsO%2Bd5xEBv7BploWidhM%2ByOSdkUCwclEommqbZHUOglYPtLS6R3p3XcG4oyGrzkPeNYdaVebL%2FhtCXIUgjxgnKAaW7EdC6PsnZcSLAxPFEjBMwdSbrNMTQfIc4ZDCXFbfTGOXb7svsI4F3XNUiMdoA4CV3nvjiYPAuULGrWhtsnTZCq8Urr67vP4ayl57Y3MzVytZKwrZ0E1ccZZU9auZue8TMjkQthoZY%2BoctLcOBua1Ix3Pcy3gSxpU6e0cTQaN90kgq9sEn29n9yyoRZHIsp7g42oT9AjOd1rCNt4DWtEk%2FA0xNPq%2FgPxwo3uP7J3bv8H%3C%2Fdiagram%3E%3C%2Fmxfile%3E)
+[Edit on draw.io](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&dark=auto#R%3Cmxfile%3E%3Cdiagram%20name%3D%22%E3%83%9A%E3%83%BC%E3%82%B81%22%20id%3D%22hWPulbVjfiungVMZC6j8%22%3E7Vxde6I4FP4tc%2BHl%2BED4EC9b7XYuZqc%2B2%2Fnq3FFIlRbBYqy6v34TIEJCrGANsWyvhEMI5H3fnJycBHvGaL65TtzF7O%2FYh2EPaP6mZ4x7AOiao%2BMfYtlmlsEgN0yTwM8LFYbb4F9I78ytq8CHS6YgiuMQBQvW6MVRBD3E2NwkiddssYc4ZJ%2B6cKewYrj13LBq%2FRX4aJZZHU0r7F9gMJ0h7sLcpWVzw3Lm%2BvG6ZDKuesYoiWOUHc03IxgS7Cgs2X1%2F7bm6e68ERqjODT%2Bdn%2FNrfR5f%2FvGd50f%2Fxnwcgs95LS9uuMrbm78s2lIA8HsvyGEUI%2FxzuZ4FCN4uXI%2FY1phzbJuheYjPdHx473pP0yReRf7NCoVBBHO77yZPN%2FiuABEdaH3NSo3LGfTzEtX20JeDCYKbkilv3zWM5xAlW1wkv2o4VnbLltXQukxcZpqVONMpZ26ulemu5gJPfJBD2gBe0C14Byy8QDW8RrfgtVl4DdXwmp2C13LOTL32YXhTrFIQtMPovgUj6jAtqwIKGAhQsWWBMhSAYoeI6CF4wYdTcojgfBG6CPbT1ufX8eNKRSpQYgQQi5cbBtMIH3sYL5hgA8EpwCP%2FRX5hHvh%2BuE%2FWLDUPcYTy2AVop9GrzenVrlKz02aZGkMWNbooWKhw4xIMw25TA8xzo6ZBoOG5iX%2FYmZx%2BcNNY76t8dNMbRA%2BKMBtwmJnKMWsQEijCzOEws5RjZn24Ter%2BWLc5EPgA3WrVb9aIwdTq2eL1rN4HVEO0b4EHJ%2B4UXq6C0IdJKmLwuIyjd6xZGhEPqngLI2JpGqXzlAYhcT%2FDvptexDbYHmEIekS7XgSozaKdAFNzyGJqC1TfcuasQUR7pphyntt2lGOqNl92Cky5iNgeKse0RkTcdhbHECit3SwOqBXz8mHDffbbuYGL0jKsmVyTN1CdYcrR1pSLdXCMWEmIBTo5W6PE6Mrl6tQfr%2BrNziQMQab6UEmUM1cOExf9mMqjHyrT84KJC7xN5QGNIczyu3PS9tTPLcMYkUdQ4zm4O9lrhQ6oxYo0T2iIZkNlUhYsHV9wnXEPjOjYdJ8w7NjPK7LrJIXx8zLF8QIX0J3FJsWPXqeD2a84Cf1P6jjWHSkrEhzH9XqePI5rzCRg5F%2BQPU09MkEjsy0WFS4POXERZiFKLUAzSN9FSfy028cEKpjDTYB%2B5zWQ4zti71v52XhTKjbe5id7qVjGq8SDr7SYZhKhz2zBqjJWokSU2KG2BIYuCl4g8xYinvInTOIAv3IhCIvzxRZHddag%2FK6C7UpFA27s06k3oRUhN5lCVKkolc2u2W9Qkmj2dVBJJfFwoojw6%2FwulEBO76hIyEmhi%2FRsWz6bwCTA7SHO4HW1ZJi8phbzrNRiAU4t%2BpFqMTWuIn5ol62WGpPCd6gW%2B0MtUtRSY05WUosXustl4L0mmL0cd426SkV8RkM2dTXmie8qwDgTgQBuW6ypDfvWcRIZOAerkiwSupj2IRK5IrHByUQiqEq2SBrvBOz0ivTuOwO6R8MR7AdsdUXaFOYL%2FrcEGRxBFlBOUI2l2I6FUfrOS1EWhicKpOyWAymzWaamA%2BQZwyGDuM53jGOnL7uvMNqirllqpAPU2cDk%2Bt3R5NmA%2B4KGr0g2eYJMhVVKV99%2BvfleSl5bY3Ujl5SMdWUvqCDOaDVlbQpWzsuETM6EDSlrRJWd5srZEKRmrMthugykMYs6pYWj8U3TRSJ7zyLR97vJFWlqtiWivDbYiPoQPqDTdUNbRjesEU3akohf%2FeOsfzyt%2FngWmv5Yzr5%2Be3yOhB9xlzn%2BhEnO2CmIpqF9aVKgUQoKbpP07StUCzg%2Bs5mDDsTEV1gWaGE%2F8TYbBVlGhXddb5P4A7M8AaFp76rwuXMT%2B%2FTB00orKJRF%2B%2F2u5lHXyK98WCSYQ7bKvmgKeRz74zd339N6bTn8cV%2FXC%2F4cgjryN9KHT4u%2F9ciC3%2BK%2FUYyr%2FwA%3D%3C%2Fdiagram%3E%3C%2Fmxfile%3E)
 
 1. Generate HTML from template
 2. Separate common data shared by multiple pages into external files
-3. Site developers can freely add and call functions that return HTML strings
-4. Rewrite pages or add new pages based on aggregation of pages
-5. Rewrite pages or add new pages based on JSON files
+3. Site developers can freely add and call functions that return html(.json)
 
 ---
 
@@ -72,7 +70,7 @@ gulp.task('html', function(){
     const nicePageBuilder = require('gulp-nice-page-builder').gulp({srcRootPath: 'src', urlOrigin: '//example.com/'});
 
     return gulp.src(
-                   ['./src/**/*.html', './src/**/*.htm', './src/**/*.php', './src/**/*.json']
+                   ['./src/**/*.html', './src/**/*.htm', './src/**/*.xhtml', './src/**/*.php', './src/**/*.json']
               ).pipe(
                    nicePageBuilder.html2json(null, {trimWhitespaces: 'aggressive'})
               ).pipe(
@@ -185,7 +183,7 @@ gulp.task('html', function(){
 * [github](https://github.com/itozyun/gulp-nice-page-builder)
 * [npm](https://www.npmjs.com/package/gulp-nice-page-builder)
 * [html.json](https://github.com/itozyun/html.json)
-* [MemoryReadableStream]
+* [MemoryReadableStream](https://outcloud.blogspot.com/2025/10/memory-readable-stream.html) 「Node.js でメモリ上のデータから stream を作る」
 
 ## History
 
