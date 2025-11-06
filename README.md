@@ -46,6 +46,7 @@ Streaming SSR が可能です．
       * Streaming SSR
    7. nicePageBuilder.dest
       * gulp plugin only
+      * ALL_MIXINS, ALL_TEMPLATES, ALL_PAGE_METADATA, ALL_ADDITIONAL_JSONS, ALL_PAGES_DATA の各 json ファイルを gulp の出力に加えます
 
 ## Install
 

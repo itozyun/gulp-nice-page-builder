@@ -1,4 +1,4 @@
-// .dest( ALL_OPTIONS | MIXINS | TEMPLATES )
+// .dest( ALL_MIXINS | ALL_TEMPLATES | ALL_PAGE_METADATA | ALL_ADDITIONAL_JSONS | ALL_PAGES_DATA )
 
 goog.provide( 'NicePageBuilder.dest' );
 goog.provide( 'NicePageBuilder.DEST_TARGET' );
