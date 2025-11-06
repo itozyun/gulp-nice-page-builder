@@ -5,7 +5,7 @@
         "MODIFIED_AT": 1234567890,
         "title": "My First Stream"
     },
-    "DIV",
+    "div",
     {
         "color": "red",
         "true": true,
@@ -28,7 +28,7 @@
         13,
         "if IE",
         [
-            "P",
+            "p",
             "Hello, IE"
         ]
     ],
@@ -44,14 +44,14 @@
     "< Hello, World! >",
     [
         1,
-        "B",
+        "b",
         [
             3,
             "♥"
         ]
     ],
     [
-        "I",
+        "i",
         123
     ]
 ]

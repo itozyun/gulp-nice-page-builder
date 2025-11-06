@@ -1,1 +1,1 @@
-{"/main.php":[[{"TEMPLATE":"template.html"},11,["MAIN",["SLOT"]]],1726546571712,1759504855762],"/template.html":[[9,"<!DOCTYPE html>",["HTML"],["TITLE","Hello Tutorial!"],["BODY",["SLOT"]]],1726278627669,1759305678829]}
+{"/main.php":[[{"TEMPLATE":"template.html"},11,["main",["slot"]]],1726546571712,1759504855762],"/template.html":[[9,"<!DOCTYPE html>",["html"],["title","Hello Tutorial!"],["body",["slot"]]],1726278627669,1759305678829]}
