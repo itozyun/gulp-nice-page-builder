@@ -164,7 +164,7 @@ gulp.task('html', function(){
 
 ~~~json
 [
-   9, "<!DOCTYPE html>", ["HTML"]
+   9, "<!DOCTYPE html>", ["html"]
 ]
 ~~~
 
@@ -175,7 +175,7 @@ gulp.task('html', function(){
 ~~~json
 [
    {"URL":"/contact/", "TEMPLATE":"/base.html"},
-   11, ["P", "Hello, world."]
+   11, ["p", "Hello, world."]
 ]
 ~~~
 
