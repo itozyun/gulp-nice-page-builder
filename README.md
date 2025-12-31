@@ -26,7 +26,7 @@ Streaming SSR が可能です．
 3. [html.json](https://github.com/itozyun/html.json) をラップしています
    1. nicePageBuilder.html2json
       * *.html ファイルを *.html.json ファイルに変換する
-        * メタ情報を `Array` の先頭に追加した HTMLJsonWithMetadata 形式の .json ファイルです
+        * メタ情報を `Array` の先頭に追加した `HTMLJsonWithMetadata` 形式の .json ファイルです
       * 参照されているテンプレートと Mixin をまとめたファイルを作成する
    2. nicePageBuilder.json2json
       * 動的ページのリストを出力する
@@ -37,7 +37,7 @@ Streaming SSR が可能です．
       * 参照する Mixin とテンプレートのメタ情報をページのメタ情報にコピーする
       * *.html.json をテンプレートに埋め込んで完全な html.json 文書にする
    4. nicePageBuilder.json2html
-      * *.html.json(HTMLJsonWithMetadata 形式) を *.html に変換する
+      * *.html.json(`HTMLJsonWithMetadata` 形式) を *.html に変換する
       * `<? ?>` と動的属性(`<a :href="">`) を置き換える
       * `onEnterNode(currentVNode)` で VDOM を使った文書ツリーの変更ができる
    5. nicePageBuilder.builder.stream
@@ -46,7 +46,12 @@ Streaming SSR が可能です．
       * Streaming SSR
    7. nicePageBuilder.dest
       * gulp plugin only
-      * ALL_MIXINS, ALL_TEMPLATES, ALL_PAGE_METADATA, ALL_ADDITIONAL_JSONS, ALL_PAGES_DATA の各 json ファイルを gulp の出力に加えます
+      * json ファイルを gulp の出力に加えます
+        * NicePageBuilder.DEST_TARGET.ALL_MIXINS
+        * NicePageBuilder.DEST_TARGET.ALL_TEMPLATES
+        * NicePageBuilder.DEST_TARGET.ALL_PAGE_METADATA
+        * NicePageBuilder.DEST_TARGET.ALL_ADDITIONAL_JSONS
+        * NicePageBuilder.DEST_TARGET.ALL_PAGES
 
 ## Install
 

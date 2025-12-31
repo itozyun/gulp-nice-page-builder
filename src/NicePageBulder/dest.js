@@ -1,4 +1,4 @@
-// .dest( ALL_MIXINS | ALL_TEMPLATES | ALL_PAGE_METADATA | ALL_ADDITIONAL_JSONS | ALL_PAGES_DATA )
+// .dest( ALL_MIXINS | ALL_TEMPLATES | ALL_PAGE_METADATA | ALL_ADDITIONAL_JSONS | ALL_PAGES )
 
 goog.provide( 'NicePageBuilder.dest' );
 goog.provide( 'NicePageBuilder.DEST_TARGET' );
@@ -17,7 +17,7 @@ var DEST_TARGET = {
     ALL_TEMPLATES        :  2,
     ALL_PAGE_METADATA    :  4,
     ALL_ADDITIONAL_JSONS :  8,
-    ALL_PAGES_DATA       : 16
+    ALL_PAGES            : 16
 };
 
 NicePageBuilder.DEST_TARGET = DEST_TARGET;
@@ -76,7 +76,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
                 const allPageMetadata = {};
 
                 for( const rootRelativeURL in context.allPageMetadata ){
-                    const metadata = allPageMetadata[ rootRelativeURL ] = context.unmergeMetadata( context.allPageMetadata[ rootRelativeURL ] );
+                    const metadata = allPageMetadata[ rootRelativeURL ] = context.getUnmergedMetadata( context.allPageMetadata[ rootRelativeURL ] );
 
                     delete metadata.URL;
                 };
@@ -94,12 +94,12 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
                     );
                 };
             };
-            if( destTargets & DEST_TARGET.ALL_PAGES_DATA ){
+            if( destTargets & DEST_TARGET.ALL_PAGES ){
                 for( const rootRelativeURL in context.allPages ){
                     const htmlJson = context.allPages[ rootRelativeURL ];
 
                     if( NicePageBuilder.util.isHTMLJsonWithMetadata( htmlJson ) ){
-                        htmlJson[ 0 ] = context.unmergeMetadata( htmlJson[ 0 ] );
+                        htmlJson[ 0 ] = context.getUnmergedMetadata( htmlJson[ 0 ] );
                         delete htmlJson[ 0 ].URL;
                     };
                 };

@@ -4,7 +4,7 @@ goog.provide( 'NicePageBuilder.RootRelativeURL' );
 goog.provide( 'NicePageBuilder.SourceRootRelativeFilePath' );
 goog.provide( 'NicePageBuilder.Metadata' );
 goog.provide( 'HTMLJsonWithMetadata' );
-goog.provide( 'NicePageBuilder.NicePageOrTemplate' );
+goog.provide( 'NicePageBuilder.PageOrTemplate' );
 goog.provide( 'NicePageBuilder.Mixin' );
 
 var __NicePageBuilder_internal__ = {};
@@ -67,7 +67,7 @@ var HTMLJsonWithMetadata;
  * 
  * @typedef {!Array.<(!HTMLJson | !HTMLJsonWithMetadata | number | boolean)>}
  */
-NicePageBuilder.NicePageOrTemplate;
+NicePageBuilder.PageOrTemplate;
 
 /**
  * [0] {Object} NicePageBuilder.Metadata

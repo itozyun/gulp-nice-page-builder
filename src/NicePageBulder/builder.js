@@ -2,7 +2,7 @@ goog.provide( 'NicePageBuilder.builder' );
 goog.provide( '__NicePageBuilder_internal__.builder' );
 
 goog.require( 'htmljson.base' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
+goog.requireType( 'NicePageBuilder.PageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'HTMLJsonWithMetadata' );

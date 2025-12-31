@@ -2,7 +2,7 @@ goog.provide( 'NicePageBuilder.transform' );
 
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
 goog.require( 'NicePageBuilder.Context' );
-goog.require( 'NicePageBuilder.NicePageOrTemplate' );
+goog.require( 'NicePageBuilder.PageOrTemplate' );
 goog.require( 'NicePageBuilder.Mixin' );
 goog.require( 'NicePageBuilder.RootRelativeURL' );
 goog.require( 'NicePageBuilder.Metadata' );
@@ -77,7 +77,7 @@ NicePageBuilder.transform = function( context, pluginName, isHTML2JSON, testHTML
                 if( !core.isArray( json ) && core.isObject( json ) ){
                     for( const rootRelativeURL in json ){
                         if( !context.templates[ rootRelativeURL ] ){
-                            context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.NicePageOrTemplate} */ (json[ rootRelativeURL ]);
+                            context.templates[ rootRelativeURL ] = /** @type {!NicePageBuilder.PageOrTemplate} */ (json[ rootRelativeURL ]);
                         };
                     };
                 } else if( NicePageBuilder.DEFINE.DEBUG ){

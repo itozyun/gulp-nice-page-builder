@@ -3,7 +3,7 @@ goog.provide( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.SourceRootRelativeFilePath' );
 goog.requireType( 'NicePageBuilder.Mixin' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
+goog.requireType( 'NicePageBuilder.PageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'HTMLJsonWithMetadata' );
 goog.require( 'core.deepCopy' );
@@ -129,8 +129,9 @@ NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt
 
 /**
  * @param {!NicePageBuilder.Metadata} metadata
+ * @return {!NicePageBuilder.Metadata} cloned Metadata
  */
-NicePageBuilder.Context.prototype.unmergeMetadata = function( metadata ){
+NicePageBuilder.Context.prototype.getUnmergedMetadata = function( metadata ){
     const rootRelativeURL  = metadata.URL;
     const mergedProperties = this.mergedPropertiesOf[ rootRelativeURL ];
     const _metadata        = core.deepCopy( metadata );

@@ -8,7 +8,7 @@ goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'HTMLJsonWithMetadata' );
 goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
+goog.requireType( 'NicePageBuilder.PageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
 goog.require( 'NicePageBuilder.PageContext.bindToEnterNodeHandler' );
@@ -60,7 +60,7 @@ __NicePageBuilder_internal__.json2json = function( htmlJson, opt_onInstruction, 
             delete metadata.URL;
             htmlJson.unshift( metadata );
         } else {
-            htmlJson.unshift( this.unmergeMetadata( metadata ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
+            htmlJson.unshift( this.getUnmergedMetadata( metadata ) ); // 更新済の metadata から mergedProperties を削除したものを htmljson に戻す
         };
     };
 

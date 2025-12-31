@@ -4,7 +4,7 @@ goog.provide( '__NicePageBuilder_internal__.html2json' );
 goog.require( 'html2json.main' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'NicePageBuilder.Metadata' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
+goog.requireType( 'NicePageBuilder.PageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'HTMLJsonWithMetadata' );
@@ -71,7 +71,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
           _Vinyl      = require( 'vinyl'    ),
           through     = require( 'through2' );
 
-    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplate>} */
+    /** @type {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.PageOrTemplate>} */
     const PAGES_OR_TEMPLATES = {};
 
     const TEMPLATE_LIST = context.templates;
@@ -186,7 +186,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
                 const pageOrTemplate = PAGES_OR_TEMPLATES[ pageOrTemplateRootRelativeURL ];
                 const htmlJson       = NicePageBuilder.util.getHTMLJson( pageOrTemplate );
 
-                if( pageOrTemplate.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){ // NicePageBuilder.NicePageOrTemplate[4] use template == false
+                if( pageOrTemplate.length === NicePageBuilder.INDEXES.UPDATED_AT + 1 ){ // NicePageBuilder.PageOrTemplate[4] use template == false
                     if( NicePageBuilder.util.getSLotElement( htmlJson, false ) ){
                         if( NicePageBuilder.DEFINE.DEBUG ){
                             console.log( 'Unused template found! ' + pageOrTemplateRootRelativeURL );

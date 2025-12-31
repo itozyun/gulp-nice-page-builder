@@ -11,7 +11,7 @@ goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
 goog.require( 'htmljson.base' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
+goog.requireType( 'NicePageBuilder.PageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Metadata' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.requireType( 'NicePageBuilder.Context' );
@@ -22,11 +22,11 @@ NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , fal
 
 /**
  * 
- * @param {!NicePageBuilder.NicePageOrTemplate} nicePageOrTemplate 
+ * @param {!NicePageBuilder.PageOrTemplate} pageOrTemplate 
  * @return {!HTMLJson | !HTMLJsonWithMetadata}
  */
-NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplate ){
-    var htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (nicePageOrTemplate[ NicePageBuilder.INDEXES.HTML_JSON ]);
+NicePageBuilder.util.getHTMLJson = function( pageOrTemplate ){
+    var htmlJson = /** @type {!HTMLJson | !HTMLJsonWithMetadata} */ (pageOrTemplate[ NicePageBuilder.INDEXES.HTML_JSON ]);
 
     if( NicePageBuilder.DEFINE.DEBUG ){
         if( !core.isArray( htmlJson ) ){
@@ -38,11 +38,11 @@ NicePageBuilder.util.getHTMLJson = function( nicePageOrTemplate ){
 
 /**
  * 
- * @param {!NicePageBuilder.NicePageOrTemplate} nicePageOrTemplate 
+ * @param {!NicePageBuilder.PageOrTemplate} pageOrTemplate 
  * @return {NicePageBuilder.Metadata | null}
  */
-NicePageBuilder.util.getMetadata = function( nicePageOrTemplate ){
-    var metadata = /** @type {!NicePageBuilder.Metadata} */ (NicePageBuilder.util.getHTMLJson( nicePageOrTemplate )[ 0 ]);
+NicePageBuilder.util.getMetadata = function( pageOrTemplate ){
+    var metadata = /** @type {!NicePageBuilder.Metadata} */ (NicePageBuilder.util.getHTMLJson( pageOrTemplate )[ 0 ]);
 
     return !core.isArray( metadata ) && core.isObject( metadata ) ? metadata : null;
 };
@@ -73,7 +73,7 @@ NicePageBuilder.util.isPrebuild = function( metadata ){
  * @param {!function(NicePageBuilder.RootRelativeURL, !NicePageBuilder.Metadata, number)} onReachMixin 
  * @param {!function(NicePageBuilder.RootRelativeURL, (NicePageBuilder.Metadata | null ), number)} onReachTemplate
  * @param {!function((string | !Error))=} opt_onError
- * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.NicePageOrTemplate>=} opt_altTemplates for html2json
+ * @param {!Object.<NicePageBuilder.RootRelativeURL, !NicePageBuilder.PageOrTemplate>=} opt_altTemplates for html2json
  */
 NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, onReachMixin, onReachTemplate, opt_onError, opt_altTemplates ){
     function traverseMixins( baseRootRelativeURL, metadata ){

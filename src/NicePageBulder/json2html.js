@@ -7,7 +7,7 @@ goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'HTMLJsonWithMetadata' );
 goog.requireType( 'InstructionHandler' );
 goog.requireType( 'EnterNodeHandler' );
-goog.requireType( 'NicePageBuilder.NicePageOrTemplate' );
+goog.requireType( 'NicePageBuilder.PageOrTemplate' );
 goog.requireType( 'NicePageBuilder.Mixin' );
 goog.require( 'NicePageBuilder.transform' );
 goog.require( 'NicePageBuilder.PageContext.bindToInstructuionHandler' );
