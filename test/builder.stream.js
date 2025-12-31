@@ -42,7 +42,7 @@ test('builder.stream - 11', async t => {
           .on('end', ()=> {resolve(chunks.join(''))});
     });
 
-    t.deepEqual(chunks.join(''), '[{"URL":"/","CREATED_AT":1726278571695,"MODIFIED_AT":1728347629480,"apple":1,"TOC":[1,"intro"],"pen":2,"pinapple":3},11,["p","Hello, World!"]]');
+    t.deepEqual(JSON.parse(chunks.join('')), [{"URL":"/","CREATED_AT":1726278571695,"MODIFIED_AT":1728347629480,"apple":1,"TOC":[1,"intro"],"pen":2,"pinapple":3},11,["p","Hello, World!"]]);
 });
 
 test('builder.stream - null false', async t => {
@@ -63,5 +63,5 @@ test('builder.stream - null false', async t => {
           .on('end', ()=> {resolve(chunks.join(''))});
     });
 
-    t.deepEqual(chunks.join(''), '[{"URL":"/","CREATED_AT":1726278571695,"MODIFIED_AT":1728347629480,"apple":false,"TOC":[1,"intro"],"pen":null,"pinapple":0},11,["p","Hello, World!"]]');
+    t.deepEqual(JSON.parse(chunks.join('')), [{"URL":"/","CREATED_AT":1726278571695,"MODIFIED_AT":1728347629480,"apple":false,"TOC":[1,"intro"],"pen":null,"pinapple":0},11,["p","Hello, World!"]]);
 });
