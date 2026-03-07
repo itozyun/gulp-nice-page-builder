@@ -541,9 +541,9 @@ function ab(a, b) {
   }
   return a;
 }
-function bb(a) {
+function bb(a, b) {
   for (; a;) {
-    if (0 <= "\t\f ".indexOf(a.charAt(a.length - 1))) {
+    if (0 <= b.indexOf(a.charAt(a.length - 1))) {
       a = a.substr(0, a.length - 1);
     } else {
       break;
@@ -717,7 +717,7 @@ function Za(a, b) {
             I = $a(I, "\n");
           } else {
             for (; I;) {
-              if (0 <= "\t\f ".indexOf(I.charAt(0))) {
+              if (0 <= "\n\t\f ".indexOf(I.charAt(0))) {
                 I = I.substr(1);
               } else {
                 break;
@@ -736,7 +736,7 @@ function Za(a, b) {
       u = u[2];
       w = "" + (V(w) ? w : w[1]);
       if (x(w)) {
-        C.splice(u, 1, v ? ab(w, "\n") : bb(w));
+        C.splice(u, 1, v ? ab(w, "\n") : bb(w, "\n\t\f "));
         break;
       } else {
         C.splice(u, 1);
@@ -750,7 +750,7 @@ function Za(a, b) {
         var z = "" + (V(x) ? x : x[1]);
         z = z.split("\n");
         for (var F = 0, D = z.length; F < D - (C ? 0 : 1); ++F) {
-          z[F] = bb(z[F]);
+          z[F] = bb(z[F], "\t\f ");
         }
         z = z.join("\n");
         if ("\n" === z && v) {
