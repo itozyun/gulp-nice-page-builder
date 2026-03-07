@@ -51,7 +51,7 @@ NicePageBuilder.PageContext.prototype.getMetadata = function(){
 };
 
 /**
- * 
+ *   var json = this.getAdditionalJson(this.toRootRelativeURL('comment.json'));
  * @param {string} filePath
  * @param {boolean=} opt_isArray
  * @return {!Object | !Array} */
@@ -179,13 +179,16 @@ function _bindPageContextToHandler( isStreamContext, pageContext, originalHandle
         var stream = this || {}, _isStreamContext = stream.pause, result;
 
         if( _isStreamContext ){
+            /** @lends NicePageBuilder.PageContext.prototype.stop */
             pageContext.stop = function(){
                 if( !stream.stopped ){
                     console.log( '  [PageContext] stop()' )
+                    /** @lends NicePageBuilder.PageContext.prototype.stopped */
                     pageContext.stopped = true;
                     stream.stop();
                 };
             };
+            /** @lends NicePageBuilder.PageContext.prototype.restart */
             pageContext.restart = function(){
                 if( stream.stopped ){
                     console.log( '  [PageContext] restart()' )
@@ -198,6 +201,7 @@ function _bindPageContextToHandler( isStreamContext, pageContext, originalHandle
         result = originalHandler.apply( pageContext, arguments );
 
         if( _isStreamContext ){
+            /** @suppress {checkTypes} */
             pageContext.stop = null;
         };
         return result;

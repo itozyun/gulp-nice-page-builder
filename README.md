@@ -145,7 +145,7 @@ gulp.task('html', function(){
 
 `<slot>` 要素を持つファイルはテンプレートとして扱われます．テンプレートにひとつです．
 
-`<? ?>` PROCESSING_INSTRUCTION を使う場合、コードハイライトの効く .php などの適当なファイル拡張子にするのが良い、その場合 `gulp.src()` に `"src/**/*.php"` を加えること．
+`<? ?>` PROCESSING_INSTRUCTION を使う場合、ファイル拡張子をコードハイライトの効く .php にするのが良い、その場合 `gulp.src()` に `"src/**/*.php"` を加えること．
 
 ~~~html
 <!DOCTYPE html>
@@ -203,4 +203,4 @@ gulp.task('html', function(){
 
 [gulp-nice-page-builder](https://github.com/itozyun/gulp-nice-page-builder) is licensed under MIT license.
 
-(C) 2024-2025 [itozyun](https://github.com/itozyun)([blog](//outcloud.blogspot.com/))
+(C) 2024-2026 [itozyun](https://github.com/itozyun)([blog](//outcloud.blogspot.com/))
