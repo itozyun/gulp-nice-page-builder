@@ -79,13 +79,13 @@ function ka(a, b, c) {
       var Oa = a.substring(I, J);
       0 < H.indexOf(":") || (Oa = Oa.toLowerCase());
       z = z || {};
-      z[Oa] = null != ea ? ia(a.substring(F, ea)).split('\\"').join('"').split("\\'").join("'") : !0;
+      z[Oa] = null != ea ? ia(a.substring(G, ea)).split('\\"').join('"').split("\\'").join("'") : !0;
     }
     function x() {
-      (G = "/>" === a.substr(C, 2)) && ++C;
-      return G;
+      (F = "/>" === a.substr(C, 2)) && ++C;
+      return F;
     }
-    for (var u = 1, w = a.length, C = 2, z = null, G = !1, D, I, J, F, H, O, P; C < w && 9 > u; ++C) {
+    for (var u = 1, w = a.length, C = 2, z = null, F = !1, D, I, J, G, H, O, P; C < w && 9 > u; ++C) {
       switch(D = a.charAt(C), u) {
         case 1:
           K[D] & 4 ? (u = 2, n(C)) : ">" === D ? (u = 9, n(C)) : x() && (u = 9, n(C - 1));
@@ -100,7 +100,7 @@ function ka(a, b, c) {
           "=" === D ? u = 5 : ">" === D || x() ? (u = 9, v()) : K[D] & 4 || (u = 3, v(), I = C);
           break;
         case 5:
-          '"' === D || "'" === D ? (u = 6, O = D, P = !1, F = C + 1) : K[D] & 4 || (u = 7, F = C);
+          '"' === D || "'" === D ? (u = 6, O = D, P = !1, G = C + 1) : K[D] & 4 || (u = 7, G = C);
           break;
         case 6:
           P || D !== O || (u = 2, v(C));
@@ -120,9 +120,9 @@ function ka(a, b, c) {
           }
         }
       }
-      (G = G || !!ca[H]) || (p = k[k.length] = H);
+      (F = F || !!ca[H]) || (p = k[k.length] = H);
       a = a.substr(C);
-      na(b, H, z, G);
+      na(b, H, z, F);
     } else {
       return d(a), !0;
     }
@@ -541,9 +541,9 @@ function ab(a, b) {
   }
   return a;
 }
-function bb(a, b) {
+function bb(a) {
   for (; a;) {
-    if (0 <= b.indexOf(a.charAt(a.length - 1))) {
+    if (0 <= "\t\f ".indexOf(a.charAt(a.length - 1))) {
       a = a.substr(0, a.length - 1);
     } else {
       break;
@@ -675,9 +675,9 @@ function Za(a, b) {
 }
 ;function eb(a, b, c, f) {
   function e(n, v, x) {
-    function u(C, z) {
-      for (; 0 <= n.indexOf(C);) {
-        n = n.split(C).join(z);
+    function u(z, F) {
+      for (; 0 <= n.indexOf(z);) {
+        n = n.split(z).join(F);
       }
     }
     x && (n = n.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2"));
@@ -685,12 +685,14 @@ function Za(a, b) {
     u("\n\n", "\n");
     u("  ", " ");
     if (v) {
-      var w = " \n" === n.substr(0, 2) || "\n" === n.charAt(0) || "\n " === n.substr(n.length - 2) || "\n" === n.charAt(n.length - 1);
+      var w = " \n" === n.substr(0, 2) || "\n" === n.charAt(0), C = "\n " === n.substr(n.length - 2) || "\n" === n.charAt(n.length - 1);
     }
+    n = $a(n, "\n");
     n = ab(n, "\n");
     n = n.split("\n").join(" ");
     u("  ", " ");
-    w && (n = ab($a(n, " "), " "));
+    w && (n = $a(n, " "));
+    C && (n = ab(n, " "));
     n = n.split("\\u0020").join(" ").split("&#x20;").join(" ").split("&#32;").join(" ");
     return L(n);
   }
@@ -706,26 +708,26 @@ function Za(a, b) {
       return z.split("\n").join("").split("\t").join("").split("\f").join("").split(" ").join("");
     }
     var u;
-    for (S(n, function(z, G, D) {
+    for (S(n, function(z, F, D) {
       if (3 === W(z)) {
         var I = "" + (V(z) ? z : z[1]);
         if (x(I)) {
-          z = G.splice;
+          z = F.splice;
           if (v) {
             I = $a(I, "\n");
           } else {
             for (; I;) {
-              if (0 <= "\n\t\f ".indexOf(I.charAt(0))) {
+              if (0 <= "\t\f ".indexOf(I.charAt(0))) {
                 I = I.substr(1);
               } else {
                 break;
               }
             }
           }
-          z.call(G, D, 1, I);
+          z.call(F, D, 1, I);
           return Infinity;
         }
-        G.splice(D, 1);
+        F.splice(D, 1);
         return -1;
       }
     }); u = d(n);) {
@@ -734,7 +736,7 @@ function Za(a, b) {
       u = u[2];
       w = "" + (V(w) ? w : w[1]);
       if (x(w)) {
-        C.splice(u, 1, v ? ab(w, "\n") : bb(w, "\n\t\f "));
+        C.splice(u, 1, v ? ab(w, "\n") : bb(w));
         break;
       } else {
         C.splice(u, 1);
@@ -747,12 +749,12 @@ function Za(a, b) {
         var C = (C = d(n)) ? u === C[1] && w === C[2] : !1;
         var z = "" + (V(x) ? x : x[1]);
         z = z.split("\n");
-        for (var G = 0, D = z.length; G < D - (C ? 0 : 1); ++G) {
-          z[G] = bb(z[G], "\t\f ");
+        for (var F = 0, D = z.length; F < D - (C ? 0 : 1); ++F) {
+          z[F] = bb(z[F]);
         }
         z = z.join("\n");
         if ("\n" === z && v) {
-          return x = v[0], C = v[1], G = v[2], V(x) ? C[G] += z : x[1] += z, u.splice(w, 1), -1;
+          return x = v[0], C = v[1], F = v[2], V(x) ? C[F] += z : x[1] += z, u.splice(w, 1), -1;
         }
         V(x) ? u[w] = z : x[1] = z;
         v = [x, u, w];
@@ -761,10 +763,10 @@ function Za(a, b) {
     }
   }
   function m(n, v) {
-    for (var x = T(n), u = n.length, w, C, z, G, D; x < u; ++x) {
-      w = n[x], 3 === W(w) && (C = C || x, z = z || w, G = x, D = w);
+    for (var x = T(n), u = n.length, w, C, z, F, D; x < u; ++x) {
+      w = n[x], 3 === W(w) && (C = C || x, z = z || w, F = x, D = w);
     }
-    C && (R(z) && (z = z[1]), R(D) && (D = D[1]), C !== G || v ? (M(z) && !v && (z = la(z), z = $a(z, "\n"), n[C] = L(z)), M(D) && (D = la(D), D = ab(D, "\n"), n[G] = L(D))) : M(z) && (z = la(z), z = ab($a(z, "\n"), "\n"), n[C] = L(z)));
+    C && (R(z) && (z = z[1]), R(D) && (D = D[1]), C !== F || v ? (M(z) && !v && (z = la(z), z = $a(z, "\n"), n[C] = L(z)), M(D) && (D = la(D), D = ab(D, "\n"), n[F] = L(D))) : M(z) && (z = la(z), z = ab($a(z, "\n"), "\n"), n[C] = L(z)));
   }
   f = f || {};
   var k = -1 !== ["normal", !0, "aggressive"].indexOf(f.trimWhitespaces), l = "aggressive" === f.trimWhitespaces, q = !!f.removeNewlineBetweenFullWidthChars, p = !1 !== f.keepCDATASections, y = !1 !== f.keepComments, r = !0 === f.keepEmptyConditionalComment, t = f.instructionAttrPrefix || ":", A, B;
@@ -828,32 +830,32 @@ function Za(a, b) {
         if (Fa(v)) {
           x = C - 1;
           w = 0;
-          var z, G = ua(n[x]), D = G[1], I = G[2];
-          G = G[0];
+          var z, F = ua(n[x]), D = F[1], I = F[2];
+          F = F[0];
           for (H in v) {
             var J = H;
-            var F = v[H];
+            var G = v[H];
             if (z = 0 === H.indexOf(t)) {
               var H = H.substr(t.length);
               "className" === H && (H = "class");
               if (b) {
-                if (F = Xa(b, H, F, c), void 0 !== F) {
-                  if (delete v[J], R(F)) {
-                    M(F[0]) ? (v[J] = F, ++w) : c && c("Invalid dynamic attribute callback value! [" + J + "=" + F + "]");
-                  } else if ((!ba[H] || !1 !== F) && null !== F) {
-                    if (M(F)) {
+                if (G = Xa(b, H, G, c), void 0 !== G) {
+                  if (delete v[J], R(G)) {
+                    M(G[0]) ? (v[J] = G, ++w) : c && c("Invalid dynamic attribute callback value! [" + J + "=" + G + "]");
+                  } else if ((!ba[H] || !1 !== G) && null !== G) {
+                    if (M(G)) {
                       if ("id" === H) {
-                        D = F;
+                        D = G;
                         continue;
                       } else if ("class" === H) {
-                        J = F.split(" ");
-                        for (F = J.length; F;) {
-                          z = J[--F], -1 === (" " + I + " ").indexOf(" " + z + " ") && (I = (I ? " " : "") + z);
+                        J = G.split(" ");
+                        for (G = J.length; G;) {
+                          z = J[--G], -1 === (" " + I + " ").indexOf(" " + z + " ") && (I = (I ? " " : "") + z);
                         }
                         continue;
                       }
                     }
-                    v[H] = F;
+                    v[H] = G;
                     ++w;
                   }
                 } else {
@@ -866,7 +868,7 @@ function Za(a, b) {
               ++w;
             }
           }
-          n[x] = Ea(G, D, I);
+          n[x] = Ea(F, D, I);
           0 === w && n.splice(C, 1);
         }
         Ta[u] && l ? g(n, !1) : Sa[u] ? (g(n, !0), l && h(n), B = n) : Ra[u] ? m(B = n) : ("xmp" === u || "plaintext" === u) && m(n, !0);
@@ -1895,34 +1897,34 @@ function cc(a, b, c, f, e, d, g) {
     function x(ea) {
       u[++w] = h() + (D ? ea : ja("" + ea));
     }
-    var u = [], w = -1, C = p[6 * B], z = p[6 * B + 1], G = p[6 * B + 2], D = p[6 * B + 3], I = !1, J = !1;
+    var u = [], w = -1, C = p[6 * B], z = p[6 * B + 1], F = p[6 * B + 2], D = p[6 * B + 3], I = !1, J = !1;
     R(r) && (a ? I = n : I = T(r) < r.length);
     n = e ? Ya(r, z, e) : null;
     z = r[0];
-    var F = r[1], H = 1, O;
+    var G = r[1], H = 1, O;
     switch(W(r)) {
       case 9:
-        Ua(F) && (C = G = !0);
-        u[++w] = F;
+        Ua(G) && (C = F = !0);
+        u[++w] = G;
         break;
       case 3:
-        R(r) || (F = r);
-        x(F);
+        R(r) || (G = r);
+        x(G);
         break;
       case 4:
-        u[++w] = "<![CDATA[" + ja("" + F) + "]]\x3e";
+        u[++w] = "<![CDATA[" + ja("" + G) + "]]\x3e";
         break;
       case 8:
-        u[++w] = "\x3c!--" + ja("" + F) + "--\x3e";
+        u[++w] = "\x3c!--" + ja("" + G) + "--\x3e";
         break;
       case 13:
-        u[++w] = h() + "\x3c!--[" + F + "]>";
+        u[++w] = h() + "\x3c!--[" + G + "]>";
         break;
       case 16:
-        u[++w] = h() + "\x3c!--{" + F + "};";
+        u[++w] = h() + "\x3c!--{" + G + "};";
         break;
       case 14:
-        u[++w] = h() + "\x3c!--[" + F + "]>\x3c!--\x3e";
+        u[++w] = h() + "\x3c!--[" + G + "]>\x3c!--\x3e";
         break;
       case 15:
         u[++w] = h() + "\x3c!--<![endif]--\x3e";
@@ -1941,12 +1943,12 @@ function cc(a, b, c, f, e, d, g) {
         }
         break;
       case 18:
-        u[++w] = "</" + F + ">";
+        u[++w] = "</" + G + ">";
         break;
       case 17:
         P = !0;
       case 1:
-        N(z) && (z = F, H = 2);
+        N(z) && (z = G, H = 2);
         z = ua(z);
         t = z[1];
         A = z[2];
@@ -1954,7 +1956,7 @@ function cc(a, b, c, f, e, d, g) {
         r = r[H];
         "p" !== y || Qa[z] ? y = "" : u[++w] = h();
         J = (C = C || !!aa[z]) || 0 < z.indexOf(":");
-        G = G || J || !!Na[z];
+        F = F || J || !!Na[z];
         D = D || fa[z] && !ha[z];
         u[++w] = "<" + z;
         t && (u[++w] = " id=" + m(t, l, J || k));
@@ -1983,7 +1985,7 @@ function cc(a, b, c, f, e, d, g) {
     }
     p[6 * B + 6] = C;
     p[6 * B + 7] = n;
-    p[6 * B + 8] = G;
+    p[6 * B + 8] = F;
     p[6 * B + 9] = D;
     p[6 * B + 10] = I;
     p[6 * B + 11] = J;
