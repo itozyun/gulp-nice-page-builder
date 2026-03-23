@@ -1,1 +1,16 @@
-{"/":[{"CREATED_AT":1726278571695,"MODIFIED_AT":1759504855762,"MIXINS":["mixin.json"]},11,["p","Hello, World!"]]}
+{
+    "/": [
+        {
+            "CREATED_AT": 1726278571695,
+            "MODIFIED_AT": 1759504855762,
+            "MIXINS": [
+                "mixin.json"
+            ]
+        },
+        11,
+        [
+            "p",
+            "Hello, World!"
+        ]
+    ]
+}

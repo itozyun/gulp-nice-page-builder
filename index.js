@@ -2764,7 +2764,7 @@ function Cc(a, b) {
     }
     if (a & 8) {
       for (const k in c.fa) {
-        this.push(new f({path:k, contents:Buffer.from(JSON.stringify(c.fa[k]))}));
+        g(k, c.fa[k]);
       }
     }
     if (a & 16) {

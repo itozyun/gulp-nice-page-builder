@@ -84,14 +84,7 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
             };
             if( destTargets & DEST_TARGET.ALL_ADDITIONAL_JSONS ){
                 for( const filePath in context.additionalJsons ){
-                    this.push(
-                        new _Vinyl(
-                            {
-                                path     : filePath,
-                                contents : Buffer.from( JSON.stringify( context.additionalJsons[ filePath ] ) )
-                            }
-                        )
-                    );
+                    writeFile( filePath, context.additionalJsons[ filePath ] );
                 };
             };
             if( destTargets & DEST_TARGET.ALL_PAGES ){
