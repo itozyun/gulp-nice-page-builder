@@ -478,7 +478,7 @@ function Xa(a, b, c, f) {
   return g;
 }
 function Ya(a, b, c) {
-  11 === c[0] ? (c.shift(), c.unshift(b, 1), a.splice.apply(a, c)) : a.splice(b, 1, c);
+  11 === c[0] ? (c.splice(0, 1, b, 1), a.splice.apply(a, c)) : a.splice(b, 1, c);
 }
 function Za(a, b, c, f, e) {
   var d;
