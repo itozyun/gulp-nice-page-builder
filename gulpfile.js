@@ -77,7 +77,7 @@ gulp.task(
                         { processTemplates : true }
                     )
                 ).pipe(
-                    NicePageBuilder.dest( 1 + 2 + 4 + 8 + 16, true )
+                    NicePageBuilder.dest( 1 + 2 + 4 + 8 + 16, true, true )
                 ).pipe(
                     NicePageBuilder.builder()
                 ).pipe(

@@ -3,6 +3,8 @@
 goog.provide( 'NicePageBuilder.dest' );
 goog.provide( 'NicePageBuilder.DEST_TARGET' );
 
+goog.require( 'core.isArray' );
+goog.require( 'core.isObject' );
 goog.require( '__NicePageBuilder_internal__' );
 goog.requireType( 'NicePageBuilder.Context' );
 goog.require( 'NicePageBuilder.DEFINE.DEBUG' );
@@ -26,14 +28,15 @@ NicePageBuilder.DEST_TARGET = DEST_TARGET;
  * @this {NicePageBuilder.Context}
  * 
  * @param {number} destTargets
+ * @param {boolean=} opt_sortKeys
  * @param {boolean=} opt_prettify
  */
-__NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_prettify ){
+__NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_sortKeys, opt_prettify ){
     const context = this;
 
     const pluginName  = 'NicePageBuilder.gulp.dest',
-          _Vinyl      = require( 'vinyl'        ),
-          through     = require( 'through2'     );
+          _Vinyl      = require( 'vinyl'    ),
+          through     = require( 'through2' );
 
     return through.obj(
         NicePageBuilder.transform( context, pluginName, false, function(){ return false }, null ),
@@ -54,6 +57,16 @@ __NicePageBuilder_internal__._destGulpPlugin = function( destTargets, opt_pretti
                 return _obj;
             };
             function writeFile( filePath, json ){
+                if( opt_sortKeys && !core.isArray( json ) && core.isObject( json ) ){
+                    json = Object.keys( json )
+                                 .sort()
+                                 .reduce(
+                                     ( acc, key ) => {
+                                         acc[ key ] = json[ key ];
+                                         return acc;
+                                     }, {}
+                                 );
+                };
                 const file = new _Vinyl(
                     {
                         path     : filePath,
