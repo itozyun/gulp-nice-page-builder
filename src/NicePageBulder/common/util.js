@@ -9,6 +9,7 @@ goog.provide( 'NicePageBuilder.util.completePage' );
 goog.provide( 'NicePageBuilder.util.getJsonScriptElement' );
 goog.provide( 'NicePageBuilder.util.getSLotElement' );
 
+goog.require( 'core.deepCopy' );
 goog.require( 'htmljson.base' );
 goog.requireType( 'NicePageBuilder.RootRelativeURL' );
 goog.requireType( 'NicePageBuilder.PageOrTemplate' );
@@ -18,7 +19,7 @@ goog.requireType( 'NicePageBuilder.Context' );
 goog.requireType( 'HTMLJsonWithMetadata' );
 
 /** @define {boolean} */
-NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG' , false );
+NicePageBuilder.DEFINE.DEBUG = goog.define( 'NicePageBuilder.DEFINE.DEBUG', false );
 
 /**
  * 
@@ -154,7 +155,7 @@ NicePageBuilder.util.completePage = function( context, htmlJson, opt_onError ){
      * @return {!HTMLJson | !HTMLJsonWithMetadata}
      */
     function _insertContentToTemplate( templateJSONNode, contentJSONNode ){
-        templateJSONNode = /** @type {!HTMLJson} */ (JSON.parse( JSON.stringify( templateJSONNode ) )); // deep copy
+        templateJSONNode = /** @type {!HTMLJson} */ (core.deepCopy( templateJSONNode ));
 
         let result = NicePageBuilder.util.getSLotElement( templateJSONNode, true );
 
