@@ -32,10 +32,10 @@ NicePageBuilder.transform = function( context, pluginName, isHTML2JSON, testHTML
             return callback();
         };
 
-        const filePath        = context.path.normalizeFilePath( file.path ),
-              rootRelativeURL = context.path.filePathToURL(
-                                    context.path.isAbsoluteFilePath( filePath )
-                                        ? context.path.absoluteFilePathToSrcRootRelativeFilePath( filePath )
+        const filePath        = context.tinyPath.normalizeFilePath( file.path ),
+              rootRelativeURL = context.tinyPath.filePathToURL(
+                                    context.tinyPath.isAbsoluteFilePath( filePath )
+                                        ? context.tinyPath.absoluteFilePathToSrcRootRelativeFilePath( filePath )
                                         : filePath
                                 ),
               contents        = file.contents.toString( encoding ),

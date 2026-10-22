@@ -33,7 +33,7 @@ __NicePageBuilder_internal__.json2html = function( htmlJson, opt_onInstruction, 
 
         if( NicePageBuilder.DEFINE.DEBUG ){
             if( NicePageBuilder.util.isPrebuild( metadata ) ){
-                throw this.path.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
+                throw this.tinyPath.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
             };
         };
 

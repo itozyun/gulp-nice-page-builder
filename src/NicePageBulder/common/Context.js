@@ -39,7 +39,7 @@ NicePageBuilder.Context = function( opt_options ){
     this.allPages            = {};
     /** @const {!Object.<string, (!Object | !Array)>} */
     this.additionalJsons     = options[ 'additionalJsons'    ] || {};
-    this.path                = tinyPath;
+    this.tinyPath            = tinyPath;
 
     /** @type {*} */ this.html2json;
     /** @type {*} */ this.builder;
@@ -117,7 +117,7 @@ NicePageBuilder.Context.prototype.getMergedMetadata = function( metadata, opt_on
  * @return {NicePageBuilder.Metadata | null} 
  */
 NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt_onError ){
-    rootRelativeURL = this.path.normalizeURL( rootRelativeURL );
+    rootRelativeURL = this.tinyPath.normalizeURL( rootRelativeURL );
 
     let metadata = this.allPageMetadata[ rootRelativeURL ] || null;
 

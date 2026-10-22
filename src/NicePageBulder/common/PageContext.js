@@ -18,7 +18,7 @@ goog.requireType( 'VNode' );
  * @param {!NicePageBuilder.Metadata=} opt_templateMetadata
  */
 NicePageBuilder.PageContext = function( context, rootRelativeURL, opt_templateMetadata ){
-    this.path = context.path;
+    this.tinyPath = context.tinyPath;
     /** @private */ this._additionalJsons = context.additionalJsons;
     /** @private */ this._baseURL         = rootRelativeURL;
 
@@ -63,21 +63,21 @@ NicePageBuilder.PageContext.prototype.getAdditionalJson = function( filePath, op
  * @param {string} url 
  * @return {string} */
 NicePageBuilder.PageContext.prototype.toRelativeURL = function( url ){
-    return this.path.toRelativeURL( this._baseURL, url );
+    return this.tinyPath.toRelativeURL( this._baseURL, url );
 };
 
 /**
  * @param {string} url 
  * @return {string} */
 NicePageBuilder.PageContext.prototype.toRootRelativeURL = function( url ){
-    return this.path.toRootRelativeURL( this._baseURL, url );
+    return this.tinyPath.toRootRelativeURL( this._baseURL, url );
 };
 
 /**
  * @param {string} url 
  * @return {string} */
 NicePageBuilder.PageContext.prototype.toAbsoluteURL = function( url ){
-    return this.path.rootRelativeURLToAbsoluteURL( this.toRootRelativeURL( url ) );
+    return this.tinyPath.rootRelativeURLToAbsoluteURL( this.toRootRelativeURL( url ) );
 };
 
 /**

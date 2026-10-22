@@ -82,21 +82,21 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
 
         if( mixinPathList ){
             for( let i = 0; i < mixinPathList.length; ++i ){
-                const mixinRootRelativeURL = context.path.toRootRelativeURL( baseRootRelativeURL, mixinPathList[ i ] );
+                const mixinRootRelativeURL = context.tinyPath.toRootRelativeURL( baseRootRelativeURL, mixinPathList[ i ] );
                 const mixin                = context.mixins[ mixinRootRelativeURL ];
 
                 if( !mixin ){
                     if( opt_onError ){
                         opt_onError( 'Mixin not found!' );
                     } else if( NicePageBuilder.DEFINE.DEBUG ){
-                        throw '[merge] Mixin: ' + mixinRootRelativeURL + ' required by ' + context.path.urlToFilePath( baseRootRelativeURL ) + ' not found!';
+                        throw '[merge] Mixin: ' + mixinRootRelativeURL + ' required by ' + context.tinyPath.urlToFilePath( baseRootRelativeURL ) + ' not found!';
                     };
                 };
                 const metadataMixin = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_METADATA ]);
 
                 onReachMixin( mixinRootRelativeURL, metadataMixin, /** @type {number} */ (mixin[ NicePageBuilder.INDEXES.UPDATED_AT ]) );
                 if( !templateRootRelativeURL && metadataMixin.TEMPLATE ){
-                    templateRootRelativeURL = context.path.toRootRelativeURL( mixinRootRelativeURL, metadataMixin.TEMPLATE );
+                    templateRootRelativeURL = context.tinyPath.toRootRelativeURL( mixinRootRelativeURL, metadataMixin.TEMPLATE );
                     requiredBy = mixinRootRelativeURL;
                 };
                 // MIXINS[i].MIXINS
@@ -108,7 +108,7 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
     let templateRootRelativeURL, requiredBy;
 
     if( baseMetadata.TEMPLATE ){
-        templateRootRelativeURL = context.path.toRootRelativeURL( baseMetadata.URL, baseMetadata.TEMPLATE );
+        templateRootRelativeURL = context.tinyPath.toRootRelativeURL( baseMetadata.URL, baseMetadata.TEMPLATE );
         requiredBy = baseMetadata.URL;
     };
 
@@ -123,7 +123,7 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
             if( opt_onError ){
                 opt_onError( 'Template not found!' );
             } else if( NicePageBuilder.DEFINE.DEBUG ){
-                throw '[merge] Template: ' + context.path.urlToFilePath( tmpTemplateRootRelativeURL ) + ' required by ' + context.path.urlToFilePath( requiredBy ) + ' not found!';
+                throw '[merge] Template: ' + context.tinyPath.urlToFilePath( tmpTemplateRootRelativeURL ) + ' required by ' + context.tinyPath.urlToFilePath( requiredBy ) + ' not found!';
             };
         };
         templateRootRelativeURL = requiredBy = '';
@@ -134,7 +134,7 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
 
         if( templateMetadata ){
             if( templateMetadata.TEMPLATE ){
-                templateRootRelativeURL = context.path.toRootRelativeURL( tmpTemplateRootRelativeURL, templateMetadata.TEMPLATE );
+                templateRootRelativeURL = context.tinyPath.toRootRelativeURL( tmpTemplateRootRelativeURL, templateMetadata.TEMPLATE );
                 requiredBy = tmpTemplateRootRelativeURL;
             };
             traverseMixins( tmpTemplateRootRelativeURL, templateMetadata );
