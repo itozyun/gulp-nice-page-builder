@@ -117,7 +117,7 @@ NicePageBuilder.Context.prototype.getMergedMetadata = function( metadata, opt_on
  * @return {NicePageBuilder.Metadata | null} 
  */
 NicePageBuilder.Context.prototype.getMetadataOf = function( rootRelativeURL, opt_onError ){
-    rootRelativeURL = this.tinyPath.normalizeURL( rootRelativeURL );
+    rootRelativeURL = this.tinyPath.cleanURL( rootRelativeURL );
 
     let metadata = this.allPageMetadata[ rootRelativeURL ] || null;
 

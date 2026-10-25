@@ -90,7 +90,7 @@ function onTokenForMeta( token, value ){
 
                 if( NicePageBuilder.DEFINE.DEBUG ){
                     if( NicePageBuilder.util.isPrebuild( metadata ) ){
-                        throw this._context.tinyPath.urlToFilePath( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
+                        throw this._context.tinyPath.supplementIndexHtml( metadata.URL ) + ' is not complete document! Use nicePageBuilder.builder() before json2html().';
                     };
                 };
                 this._context.storeMetadata( metadata );

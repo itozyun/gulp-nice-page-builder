@@ -33,7 +33,7 @@ NicePageBuilder.transform = function( context, pluginName, isHTML2JSON, testHTML
         };
 
         const filePath        = context.tinyPath.normalizeFilePath( file.path ),
-              rootRelativeURL = context.tinyPath.filePathToURL(
+              rootRelativeURL = context.tinyPath.removeIndexHtml(
                                     context.tinyPath.isAbsoluteFilePath( filePath )
                                         ? context.tinyPath.absoluteFilePathToSrcRootRelativeFilePath( filePath )
                                         : filePath

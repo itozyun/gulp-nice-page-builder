@@ -97,8 +97,8 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
              */
             function toShortestURL( baseRootRelativeURL, metadata ){
                 function getShortestURL( baseURL, uriOrFilePath ){
-                    var relativeURL     = context.tinyPath.toRelativeURL( baseURL, context.tinyPath.filePathToURL( uriOrFilePath ) ),
-                        rootRelativeURL = context.tinyPath.toRootRelativeURL( baseURL, context.tinyPath.filePathToURL( uriOrFilePath ) );
+                    var relativeURL     = context.tinyPath.toRelativeURL( baseURL, context.tinyPath.removeIndexHtml( uriOrFilePath ) ),
+                        rootRelativeURL = context.tinyPath.toRootRelativeURL( baseURL, context.tinyPath.removeIndexHtml( uriOrFilePath ) );
 
                     return relativeURL.length < rootRelativeURL.length ? relativeURL : rootRelativeURL;
                 };
@@ -199,7 +199,7 @@ __NicePageBuilder_internal__._html2jsonGulpPlugin = function( opt_onError, opt_o
         // 書出し
             for( const pageRootRelativeURL in PAGE_LIST ){
                 const nicePage = PAGE_LIST[ pageRootRelativeURL ];
-                const filePath = context.tinyPath.urlToFilePath( pageRootRelativeURL );
+                const filePath = context.tinyPath.supplementIndexHtml( pageRootRelativeURL );
                 delete PAGE_LIST[ pageRootRelativeURL ];
 
                 const htmlJson = nicePage[ NicePageBuilder.INDEXES.HTML_JSON ];

@@ -89,7 +89,7 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
                     if( opt_onError ){
                         opt_onError( 'Mixin not found!' );
                     } else if( NicePageBuilder.DEFINE.DEBUG ){
-                        throw '[merge] Mixin: ' + mixinRootRelativeURL + ' required by ' + context.tinyPath.urlToFilePath( baseRootRelativeURL ) + ' not found!';
+                        throw '[merge] Mixin: ' + mixinRootRelativeURL + ' required by ' + context.tinyPath.supplementIndexHtml( baseRootRelativeURL ) + ' not found!';
                     };
                 };
                 const metadataMixin = /** @type {!NicePageBuilder.Metadata} */ (mixin[ NicePageBuilder.INDEXES.MIXIN_METADATA ]);
@@ -123,7 +123,7 @@ NicePageBuilder.util.traverseMetadataStack = function( context, baseMetadata, on
             if( opt_onError ){
                 opt_onError( 'Template not found!' );
             } else if( NicePageBuilder.DEFINE.DEBUG ){
-                throw '[merge] Template: ' + context.tinyPath.urlToFilePath( tmpTemplateRootRelativeURL ) + ' required by ' + context.tinyPath.urlToFilePath( requiredBy ) + ' not found!';
+                throw '[merge] Template: ' + context.tinyPath.supplementIndexHtml( tmpTemplateRootRelativeURL ) + ' required by ' + context.tinyPath.supplementIndexHtml( requiredBy ) + ' not found!';
             };
         };
         templateRootRelativeURL = requiredBy = '';
