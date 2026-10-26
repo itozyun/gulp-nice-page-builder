@@ -250,34 +250,43 @@ function ta(a) {
         if (Infinity === g) {
           return l;
         }
-        if (-Infinity !== g) {
-          if (-1 >= g) {
-            h += g, l = !0;
-          } else {
-            if (1 <= g && (h += g, l = !0), S(k) < k.length) {
-              m[f] = h, f += 3, m[f] = h = -1, m[f + 1] = e = k, m[f + 2] = d = S(k);
-            } else if (c) {
-              g = c(k, e, h + d, f / 3 + 1);
-              if (Infinity === g) {
-                return l;
-              }
-              -Infinity !== g && (-1 >= g || 1 <= g) && (h += g, l = !0);
-            }
+        if (-Infinity === g) {
+          continue;
+        } else if (-1 >= g) {
+          h += g;
+          l = !0;
+          continue;
+        } else {
+          if (1 <= g && (h += g, l = !0), S(k) < k.length) {
+            m[f] = h;
+            f += 3;
+            m[f] = h = -1;
+            m[f + 1] = e = k;
+            m[f + 2] = d = S(k);
+            continue;
+          } else if (!c) {
+            continue;
           }
         }
       } else {
-        if (3 <= f) {
-          if (m.length = f, f -= 3, h = m[f], e = m[f + 1], d = m[f + 2], c) {
-            g = c(e[h + d], e, h + d, f / 3 + 1);
-            if (Infinity === g) {
-              return l;
-            }
-            -Infinity !== g && (-1 >= g || 1 <= g) && (h += g, l = !0);
-          }
-        } else {
+        if (0 === f) {
           break;
         }
+        m.length = f;
+        f -= 3;
+        h = m[f];
+        e = m[f + 1];
+        d = m[f + 2];
+        if (!c) {
+          continue;
+        }
+        k = e[h + d];
       }
+      g = c(k, e, h + d, f / 3 + 1);
+      if (Infinity === g) {
+        return l;
+      }
+      -Infinity !== g && (-1 >= g || 1 <= g) && (h += g, l = !0);
     }
   }
   c && c(a, null, -1, 0);
